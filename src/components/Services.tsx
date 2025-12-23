@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { SERVICES_LIST } from "@/lib/constants";
 import { IMAGES } from "@/lib/images";
 
@@ -37,31 +38,39 @@ export default function Services() {
   }, []);
 
   useEffect(() => {
-    const lenis = (window as Window & typeof globalThis & { lenis: Lenis }).lenis;
+    interface LenisInstance {
+      scroll: number;
+      on: (event: string, callback: (e: { scroll: number }) => void) => void;
+      off: (event: string, callback: (e: { scroll: number }) => void) => void;
+    }
+    const lenis = (window as unknown as { lenis?: LenisInstance }).lenis;
     if (!lenis) return;
 
-    const handleScroll = (e: any) => {
+    const handleScroll = () => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      
+
       const windowHeight = window.innerHeight;
       const elementTop = rect.top;
-      const scrollProgress = Math.max(0, Math.min(1, (windowHeight - elementTop) / (windowHeight + rect.height)));
-      
+      const scrollProgress = Math.max(
+        0,
+        Math.min(1, (windowHeight - elementTop) / (windowHeight + rect.height))
+      );
+
       // Parallax for left image
       if (leftImageRef.current) {
         const translateY = (scrollProgress - 0.5) * 60;
         const translateX = (scrollProgress - 0.5) * -30;
         leftImageRef.current.style.transform = `translateY(${translateY}px) translateX(${translateX}px) rotate(-6deg)`;
       }
-      
+
       // Parallax for right image (opposite direction)
       if (rightImageRef.current) {
         const translateY = (scrollProgress - 0.5) * -50;
         const translateX = (scrollProgress - 0.5) * 25;
         rightImageRef.current.style.transform = `translateY(${translateY}px) translateX(${translateX}px) rotate(3deg)`;
       }
-      
+
       // Parallax for services list
       if (servicesRef.current) {
         const translateY = (scrollProgress - 0.5) * 30;
@@ -70,7 +79,7 @@ export default function Services() {
     };
 
     lenis.on("scroll", handleScroll);
-    handleScroll({ scroll: lenis.scroll });
+    handleScroll();
 
     return () => {
       lenis.off("scroll", handleScroll);
@@ -87,15 +96,18 @@ export default function Services() {
       <div
         className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
         style={{
-          backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')",
+          backgroundImage:
+            "url('https://www.transparenttextures.com/patterns/cubes.png')",
         }}
       ></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className={`text-center mb-16 transition-all duration-1000 ease-out ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}>
+        <div
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
+        >
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">
             — What We Do —
           </span>
@@ -103,16 +115,16 @@ export default function Services() {
 
         {/* Services List */}
         <div className="relative min-h-[500px] flex items-center justify-center py-10">
-          <div 
+          <div
             ref={servicesRef}
             className="flex flex-col items-center space-y-4 text-center z-20 w-full transition-transform duration-300 ease-out"
           >
             {SERVICES_LIST.map((service, index) => (
-              <div 
-                key={service.title} 
+              <div
+                key={service.title}
                 className={`group w-full text-center relative transition-all duration-1000 ease-out ${
-                  isVisible 
-                    ? "opacity-100 translate-y-0" 
+                  isVisible
+                    ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-12"
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
@@ -136,26 +148,28 @@ export default function Services() {
           </div>
 
           {/* Left Image */}
-          <div 
+          <div
             ref={leftImageRef}
             className="absolute left-4 lg:left-10 top-1/4 w-48 lg:w-64 h-32 lg:h-44 rounded-xl overflow-hidden shadow-2xl transform -rotate-6 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
           >
-            <img
+            <Image
               src={IMAGES.services.left}
               alt="Construction work"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
 
           {/* Right Image */}
-          <div 
+          <div
             ref={rightImageRef}
             className="absolute right-4 lg:right-10 bottom-1/4 w-56 lg:w-72 h-36 lg:h-48 rounded-xl overflow-hidden shadow-2xl transform rotate-3 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
           >
-            <img
+            <Image
               src={IMAGES.services.right}
               alt="Construction site"
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
         </div>
@@ -163,4 +177,3 @@ export default function Services() {
     </section>
   );
 }
-

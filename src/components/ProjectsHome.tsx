@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { PROJECTS } from "@/lib/constants";
 import { IMAGES } from "@/lib/constants";
 
@@ -126,10 +127,11 @@ export default function ProjectsHome() {
             }`}
             style={{ transitionDelay: `${index * 100}ms` }}
           >
-            <img
+            <Image
               src={IMAGES.projects[project.imageKey]}
               alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90"></div>
 

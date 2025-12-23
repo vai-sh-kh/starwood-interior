@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -88,6 +89,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 type SortField = "title" | "created_at" | "category" | "status";
 type SortDirection = "asc" | "desc";
 
+// Extended Project type with SEO fields
+type ProjectWithSeo = Project & {
+  meta_title?: string | null;
+  meta_description?: string | null;
+};
+
 const ITEMS_PER_PAGE = 10;
 
 // Zod validation schema
@@ -126,7 +133,7 @@ const projectSchema = z.object({
     )
     .optional(),
   status: z.enum(["draft", "published"], {
-    required_error: "Status is required",
+    message: "Status is required",
   }),
 });
 
@@ -319,40 +326,11 @@ export default function ProjectsPage() {
     }
   };
 
-  // Validate form
-  const validateForm = useCallback(() => {
-    // Sanitize slug before validation
-    const sanitizedSlug = generateSlug(slug);
-    const finalSlug = sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
-    
-    const validationResult = projectSchema.safeParse({
-      title,
-      slug: finalSlug,
-      description,
-      content,
-      image,
-      categoryId: categoryId || undefined,
-      status,
-    });
-
-    if (!validationResult.success) {
-      const fieldErrors: Partial<Record<keyof ProjectFormData, string>> = {};
-      validationResult.error.issues.forEach((issue) => {
-        const field = issue.path[0] as keyof ProjectFormData;
-        fieldErrors[field] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return false;
-    }
-
-    setErrors({});
-    return true;
-  }, [title, slug, description, content, image, categoryId, status]);
-
   // Check if form is valid
   const isFormValid = useMemo(() => {
     const sanitizedSlug = generateSlug(slug);
-    const finalSlug = sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
+    const finalSlug =
+      sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
     const result = projectSchema.safeParse({
       title,
       slug: finalSlug,
@@ -368,8 +346,9 @@ export default function ProjectsPage() {
   const handleSave = async () => {
     // Sanitize slug before validation
     const sanitizedSlug = generateSlug(slug);
-    const finalSlug = sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
-    
+    const finalSlug =
+      sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
+
     // Validate form using Zod with sanitized slug
     const validationResult = projectSchema.safeParse({
       title,
@@ -388,7 +367,7 @@ export default function ProjectsPage() {
         fieldErrors[field] = issue.message;
       });
       setErrors(fieldErrors);
-      
+
       const firstError = validationResult.error.issues[0];
       if (firstError) {
         toast.error(firstError.message);
@@ -478,8 +457,9 @@ export default function ProjectsPage() {
 
   const openSeoDialog = (project: Project) => {
     setSeoProject(project);
-    setMetaTitle((project as any).meta_title || "");
-    setMetaDescription((project as any).meta_description || "");
+    const projectWithSeo = project as ProjectWithSeo;
+    setMetaTitle(projectWithSeo.meta_title || "");
+    setMetaDescription(projectWithSeo.meta_description || "");
     setIsSeoOpen(true);
   };
 
@@ -1034,15 +1014,15 @@ export default function ProjectsPage() {
                     <TableCell className="px-4">
                       <div className="flex items-center gap-3">
                         {project.image && (
-                          <img
-                            src={project.image}
-                            alt={project.title}
-                            className="w-12 h-12 rounded-lg object-cover hidden sm:block shrink-0"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display =
-                                "none";
-                            }}
-                          />
+                          <div className="w-12 h-12 rounded-lg overflow-hidden hidden sm:block shrink-0 relative">
+                            <Image
+                              src={project.image}
+                              alt={project.title}
+                              fill
+                              className="object-cover"
+                              onError={() => {}}
+                            />
+                          </div>
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">

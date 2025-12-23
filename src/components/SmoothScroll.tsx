@@ -2,6 +2,30 @@
 
 import { useEffect } from "react";
 
+interface LenisInstance {
+  raf: (time: number) => void;
+  destroy: () => void;
+}
+
+interface LenisOptions {
+  duration?: number;
+  easing?: (t: number) => number;
+  orientation?: "vertical" | "horizontal";
+  gestureOrientation?: "vertical" | "horizontal";
+  smoothWheel?: boolean;
+  wheelMultiplier?: number;
+  touchMultiplier?: number;
+  infinite?: boolean;
+}
+
+interface LenisConstructor {
+  new (options?: LenisOptions): LenisInstance;
+}
+
+interface WindowWithLenis extends Window {
+  lenis?: LenisInstance;
+}
+
 export default function SmoothScroll({
   children,
 }: {
@@ -9,15 +33,16 @@ export default function SmoothScroll({
 }) {
   useEffect(() => {
     // Dynamically import Lenis
-    import("lenis").then((Lenis) => {
-      const lenis = new Lenis.default({
+    import("lenis").then((LenisModule) => {
+      const Lenis = (LenisModule.default ||
+        LenisModule) as unknown as LenisConstructor;
+      const lenis = new Lenis({
         duration: 1.2,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         orientation: "vertical",
         gestureOrientation: "vertical",
         smoothWheel: true,
         wheelMultiplier: 1,
-        smoothTouch: false,
         touchMultiplier: 2,
         infinite: false,
       });
@@ -30,11 +55,11 @@ export default function SmoothScroll({
       requestAnimationFrame(raf);
 
       // Make lenis available globally for parallax effects
-      (window as any).lenis = lenis;
+      (window as WindowWithLenis).lenis = lenis;
 
       return () => {
         lenis.destroy();
-        delete (window as any).lenis;
+        delete (window as WindowWithLenis).lenis;
       };
     });
   }, []);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import Image from "next/image";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -287,37 +288,6 @@ export default function BlogsPage() {
       resetForm();
     }, 300);
   };
-
-  // Validate form
-  const validateForm = useCallback(() => {
-    // Sanitize slug before validation
-    const sanitizedSlug = generateSlug(slug);
-    const finalSlug =
-      sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
-
-    const validationResult = blogSchema.safeParse({
-      title,
-      slug: finalSlug,
-      excerpt,
-      content,
-      image,
-      author,
-      categoryId: categoryId || undefined,
-    });
-
-    if (!validationResult.success) {
-      const fieldErrors: Partial<Record<keyof BlogFormData, string>> = {};
-      validationResult.error.issues.forEach((issue) => {
-        const field = issue.path[0] as keyof BlogFormData;
-        fieldErrors[field] = issue.message;
-      });
-      setErrors(fieldErrors);
-      return false;
-    }
-
-    setErrors({});
-    return true;
-  }, [title, slug, excerpt, content, image, author, categoryId]);
 
   // Check if form is valid
   const isFormValid = useMemo(() => {
@@ -944,15 +914,15 @@ export default function BlogsPage() {
                     <TableCell className="px-4">
                       <div className="flex items-center gap-3">
                         {blog.image && (
-                          <img
-                            src={blog.image}
-                            alt={blog.title}
-                            className="w-12 h-12 rounded-lg object-cover hidden sm:block shrink-0"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display =
-                                "none";
-                            }}
-                          />
+                          <div className="w-12 h-12 rounded-lg overflow-hidden hidden sm:block shrink-0 relative">
+                            <Image
+                              src={blog.image}
+                              alt={blog.title}
+                              fill
+                              className="object-cover"
+                              onError={() => {}}
+                            />
+                          </div>
                         )}
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">

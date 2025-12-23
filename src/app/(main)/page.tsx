@@ -14,7 +14,7 @@ import FAQ from "@/components/FAQ";
 import { useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
-  const heroRef = useRef<HTMLElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
   const heroContentRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLElement>(null);
   const modernStyleRef = useRef<HTMLElement>(null);
@@ -27,8 +27,8 @@ export default function HomePage() {
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
 
-    const createObserver = (
-      ref: React.RefObject<HTMLElement>,
+    const createObserver = <T extends HTMLElement>(
+      ref: React.RefObject<T | null>,
       key: string,
       threshold = 0.1
     ) => {

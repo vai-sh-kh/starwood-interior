@@ -2,6 +2,7 @@
 
 import { FileText } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 
 interface BlogImageProps {
   src: string | null;
@@ -20,11 +21,14 @@ export default function BlogImage({ src, alt }: BlogImageProps) {
   }
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      className="w-12 h-12 rounded-lg object-cover shrink-0"
-      onError={() => setHasError(true)}
-    />
+    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 relative">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover"
+        onError={() => setHasError(true)}
+      />
+    </div>
   );
 }
