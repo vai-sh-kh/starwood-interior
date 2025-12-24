@@ -145,7 +145,7 @@ export default function ProjectDetail({
             }}
           />
           <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
         </div>
 
         <div
@@ -166,12 +166,12 @@ export default function ProjectDetail({
       </header>
 
       {/* Main Content */}
-      <main className="relative z-20 bg-background-light -mt-10 rounded-t-2xl md:rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
+      <main className="relative z-20 bg-background-light -mt-10 rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8 md:py-16 lg:py-24">
           {/* Featured Image */}
           {featuredImage && (
             <div className="w-full mb-12 md:mb-24 flex flex-col items-center">
-              <div className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-[16/9]">
+              <div className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-video">
                 <Image
                   alt={`${project.title} - Main living area`}
                   src={featuredImage}
@@ -287,6 +287,43 @@ export default function ProjectDetail({
                   </p>
                 )}
 
+                {/* Second Image - After Project Overview */}
+                {allGalleryImages.length > 0 && allGalleryImages[0] && (
+                  <div className="w-full mb-12 md:mb-16 flex flex-col items-center">
+                    <div
+                      className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-[16/9] cursor-pointer group"
+                      onClick={() => setSelectedImageIndex(0)}
+                    >
+                      <Image
+                        alt={`${project.title} - Project detail`}
+                        src={allGalleryImages[0].image_url}
+                        fill
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                            <svg
+                              className="w-6 h-6 text-[#111618]"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <h3 className="font-serif text-3xl md:text-4xl text-[#111618] mb-8">
                   Design Approach
                 </h3>
@@ -329,17 +366,17 @@ export default function ProjectDetail({
           </div>
 
           {/* Gallery Section */}
-          {allGalleryImages.length > 0 && (
+          {allGalleryImages.length > 1 && (
             <section className="mb-0 md:mb-16">
               <h3 className="font-serif text-3xl md:text-4xl text-[#111618] mb-12 text-center">
                 Gallery
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {allGalleryImages.map((img, index) => (
+                {allGalleryImages.slice(1).map((img, index) => (
                   <div
                     key={img.id || index}
                     className="relative group overflow-hidden rounded-xl cursor-pointer aspect-square bg-gray-100"
-                    onClick={() => setSelectedImageIndex(index)}
+                    onClick={() => setSelectedImageIndex(index + 1)}
                   >
                     <Image
                       alt={`${project.title} - Gallery image ${index + 1}`}

@@ -84,14 +84,14 @@ export default function RecentLeadItem({
   return (
     <Link
       href={`/admin/leads`}
-      className="group flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+      className="group flex items-start gap-2.5 p-2.5 hover:bg-gray-50 transition-colors"
     >
       <div
-        className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
+        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
           avatar_color || getAvatarColorClass(name)
         }`}
       >
-        <span className="text-sm font-semibold">
+        <span className="text-xs font-semibold">
           {name
             .split(" ")
             .map((n) => n[0])
@@ -101,20 +101,22 @@ export default function RecentLeadItem({
         </span>
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+        <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+          <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
             {name}
           </p>
           <Badge
             variant="outline"
-            className={`text-xs px-2 py-0 h-5 ${getStatusBadgeColor(status)}`}
+            className={`text-[10px] px-1.5 py-0 h-4 ${getStatusBadgeColor(
+              status
+            )} shrink-0`}
           >
             {getStatusLabel(status)}
           </Badge>
         </div>
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1.5">
-            <Mail className="h-3 w-3 text-gray-400" />
+          <div className="flex items-center gap-1.5 min-w-0">
+            <Mail className="h-3 w-3 text-gray-400 shrink-0" />
             <a
               href={`mailto:${email}`}
               onClick={(e) => e.stopPropagation()}
@@ -125,11 +127,11 @@ export default function RecentLeadItem({
           </div>
           {phone && (
             <div className="flex items-center gap-1.5">
-              <Phone className="h-3 w-3 text-gray-400" />
+              <Phone className="h-3 w-3 text-gray-400 shrink-0" />
               <a
                 href={`tel:${phone}`}
                 onClick={(e) => e.stopPropagation()}
-                className="text-xs text-gray-600 hover:text-blue-600 transition-colors"
+                className="text-xs text-gray-600 hover:text-blue-600 transition-colors truncate"
               >
                 {phone}
               </a>
@@ -140,7 +142,7 @@ export default function RecentLeadItem({
           </span>
         </div>
       </div>
-      <ExternalLink className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+      <ExternalLink className="h-3.5 w-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5" />
     </Link>
   );
 }

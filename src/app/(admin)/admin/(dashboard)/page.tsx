@@ -154,66 +154,72 @@ export default async function DashboardPage() {
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Blogs */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-4">
+        <Card className="border-0 shadow-sm flex flex-col h-full">
+          <CardHeader className="pb-3 border-b">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Clock className="h-5 w-5 text-gray-500" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Clock className="h-4 w-4 text-gray-500" />
                 Recent Blogs
               </CardTitle>
               <Link
                 href="/admin/blogs"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
+                className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
               >
                 View all
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-3 flex-1 overflow-hidden flex flex-col">
             {recentBlogs.length > 0 ? (
-              <div className="space-y-3">
-                {recentBlogs.map((blog) => (
+              <div className="overflow-y-auto max-h-[600px] pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 space-y-2">
+                {recentBlogs.map((blog, index) => (
                   <Link
                     key={blog.id}
                     href={`/admin/blogs`}
-                    className="group flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
+                    className={`group flex items-start gap-3.5 p-2.5 hover:bg-gray-50 transition-colors ${
+                      index < recentBlogs.length - 1
+                        ? "border-b border-gray-200"
+                        : ""
+                    }`}
                   >
                     <BlogImage src={blog.image} alt={blog.title} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
                         {blog.title}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1.5 mt-1.5">
                         {blog.author && (
-                          <span className="text-xs text-gray-500">
-                            {blog.author}
-                          </span>
+                          <>
+                            <span className="text-xs text-gray-500 truncate">
+                              {blog.author}
+                            </span>
+                            <span className="text-xs text-gray-400">•</span>
+                          </>
                         )}
-                        <span className="text-xs text-gray-400">•</span>
                         <span className="text-xs text-gray-500">
                           {formatDate(blog.created_at)}
                         </span>
                       </div>
                     </div>
-                    <ExternalLink className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-1" />
+                    <ExternalLink className="h-3.5 w-3.5 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5" />
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <FileText className="h-8 w-8 text-gray-400" />
+              <div className="text-center py-8 flex-1 flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                  <FileText className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-sm font-medium text-gray-900 mb-1">
                   No blogs yet
                 </p>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-500 mb-3">
                   Start creating content to engage your audience
                 </p>
                 <Link
                   href="/admin/blogs"
-                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium"
                 >
                   Create your first blog
                   <ArrowRight className="h-3 w-3" />
@@ -224,52 +230,60 @@ export default async function DashboardPage() {
         </Card>
 
         {/* Recent Leads */}
-        <Card className="border-0 shadow-sm">
-          <CardHeader className="pb-4">
+        <Card className="border-0 shadow-sm flex flex-col h-full">
+          <CardHeader className="pb-3 border-b">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-gray-500" />
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-gray-500" />
                 Recent Leads
               </CardTitle>
               <Link
                 href="/admin/leads"
-                className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
+                className="text-xs text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 transition-colors"
               >
                 View all
                 <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="pt-3 flex-1 overflow-hidden flex flex-col">
             {recentLeads.length > 0 ? (
-              <div className="space-y-3">
-                {recentLeads.map((lead) => (
-                  <RecentLeadItem
+              <div className="overflow-y-auto max-h-[600px] pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+                {recentLeads.map((lead, index) => (
+                  <div
                     key={lead.id}
-                    id={lead.id}
-                    name={lead.name}
-                    email={lead.email}
-                    phone={lead.phone}
-                    created_at={lead.created_at}
-                    status={lead.status}
-                    avatar_color={lead.avatar_color}
-                  />
+                    className={
+                      index < recentLeads.length - 1
+                        ? "border-b border-gray-200"
+                        : ""
+                    }
+                  >
+                    <RecentLeadItem
+                      id={lead.id}
+                      name={lead.name}
+                      email={lead.email}
+                      phone={lead.phone}
+                      created_at={lead.created_at}
+                      status={lead.status}
+                      avatar_color={lead.avatar_color}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
-                  <Users className="h-8 w-8 text-gray-400" />
+              <div className="text-center py-8 flex-1 flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
+                  <Users className="h-6 w-6 text-gray-400" />
                 </div>
                 <p className="text-sm font-medium text-gray-900 mb-1">
                   No leads yet
                 </p>
-                <p className="text-xs text-gray-500 mb-4">
+                <p className="text-xs text-gray-500 mb-3">
                   Leads will appear here when visitors submit your contact form
                 </p>
                 <Link
                   href="/admin/leads"
-                  className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium"
                 >
                   View leads page
                   <ArrowRight className="h-3 w-3" />
