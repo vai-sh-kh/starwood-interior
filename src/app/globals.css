@@ -340,6 +340,19 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
 /* Smooth scroll behavior */
 html.lenis {
   height: auto;
@@ -385,3 +398,13 @@ html.lenis {
 }
 
 /* shadcn base styles - already applied in main base layer */
+
+/* Ensure toast notifications are always on top */
+[data-sonner-toaster],
+[data-sonner-toast] {
+  z-index: 99999 !important;
+}
+
+[data-sonner-toaster] {
+  position: fixed !important;
+}

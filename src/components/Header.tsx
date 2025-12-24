@@ -16,11 +16,11 @@ export default function Header() {
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <span className="text-xl font-bold font-display tracking-tight text-black">
               ConsMart
             </span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8 text-[13px] font-medium text-gray-600">
@@ -87,9 +87,9 @@ export default function Header() {
       {/* Mobile Menu Sheet */}
       <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <SheetContent side="right" className="w-full sm:w-full max-w-none">
-          <div className="flex flex-col items-start justify-start h-full gap-8 pt-8 px-4">
+          <div className="flex flex-col h-full pt-32 px-4">
             {/* Navigation Links */}
-            <nav className="flex flex-col items-center w-full gap-6">
+            <nav className="flex flex-col w-full items-center gap-6">
               {NAV_LINKS.map((link) => {
                 // For projects and services, check if pathname starts with the href
                 // For other links, check for exact match
@@ -103,13 +103,20 @@ export default function Header() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-lg font-medium transition-colors ${
+                    className={`text-lg font-medium transition-colors w-full text-center ${
                       isActive
                         ? "text-black font-bold"
                         : "text-gray-600 hover:text-black"
                     }`}
                   >
-                    {link.label}
+                    <span className="relative inline-block pb-1">
+                      {link.label}
+                      <span
+                        className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
+                          isActive ? "w-full opacity-100" : "w-0 opacity-0"
+                        }`}
+                      />
+                    </span>
                   </Link>
                 );
               })}

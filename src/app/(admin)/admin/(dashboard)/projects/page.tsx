@@ -10,6 +10,8 @@ import {
   ProjectUpdate,
   BlogCategory,
   ProjectWithCategory,
+  ProjectGalleryImage,
+  ProjectGalleryImageInsert,
 } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -84,6 +86,7 @@ import {
 } from "lucide-react";
 import TipTapEditor from "@/app/(admin)/components/TipTapEditor";
 import ImageDropzone from "@/app/(admin)/components/ImageDropzone";
+import GalleryImagesManager from "@/app/(admin)/components/GalleryImagesManager";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 type SortField = "title" | "created_at" | "category" | "status";
@@ -175,6 +178,18 @@ export default function ProjectsPage() {
   const [tagInput, setTagInput] = useState("");
   const [isNew, setIsNew] = useState(false);
 
+  // Project info state
+  const [projectClient, setProjectClient] = useState("");
+  const [projectLocation, setProjectLocation] = useState("");
+  const [projectSize, setProjectSize] = useState("");
+  const [projectCompletion, setProjectCompletion] = useState("");
+  const [projectServices, setProjectServices] = useState<string[]>([]);
+  const [serviceInput, setServiceInput] = useState("");
+
+  // Quote state
+  const [quote, setQuote] = useState("");
+  const [quoteAuthor, setQuoteAuthor] = useState("");
+
   // Validation errors
   const [errors, setErrors] = useState<
     Partial<Record<keyof ProjectFormData, string>>
@@ -185,6 +200,12 @@ export default function ProjectsPage() {
 
   // Image uploading state
   const [isImageUploading, setIsImageUploading] = useState(false);
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
+
+  // Gallery images state
+  const [galleryImages, setGalleryImages] = useState<
+    Array<{ id?: string; image_url: string; display_order: number }>
+  >([]);
 
   // Delete dialog
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -278,6 +299,16 @@ export default function ProjectsPage() {
     setErrors({});
     setCategorySearchQuery("");
     setIsImageUploading(false);
+    setIsGalleryUploading(false);
+    setGalleryImages([]);
+    setProjectClient("");
+    setProjectLocation("");
+    setProjectSize("");
+    setProjectCompletion("");
+    setProjectServices([]);
+    setServiceInput("");
+    setQuote("");
+    setQuoteAuthor("");
   };
 
   const openCreate = () => {
@@ -285,7 +316,7 @@ export default function ProjectsPage() {
     setIsOpen(true);
   };
 
-  const openEdit = (project: Project) => {
+  const openEdit = async (project: Project) => {
     setSelectedProject(project);
     setTitle(project.title);
     setSlug(project.slug || "");
@@ -298,6 +329,52 @@ export default function ProjectsPage() {
     setIsNew(project.is_new || false);
     setIsEditing(true);
     setIsOpen(true);
+
+    // Load project_info if it exists
+    if (project.project_info && typeof project.project_info === "object") {
+      const info = project.project_info as {
+        client?: string;
+        location?: string;
+        size?: string;
+        completion?: string;
+        services?: string[];
+      };
+      setProjectClient(info.client || "");
+      setProjectLocation(info.location || "");
+      setProjectSize(info.size || "");
+      setProjectCompletion(info.completion || "");
+      setProjectServices(info.services || []);
+    } else {
+      setProjectClient("");
+      setProjectLocation("");
+      setProjectSize("");
+      setProjectCompletion("");
+      setProjectServices([]);
+    }
+
+    // Load quote fields
+    setQuote(project.quote || "");
+    setQuoteAuthor(project.quote_author || "");
+
+    // Fetch gallery images for this project
+    const { data: galleryData, error } = await supabase
+      .from("project_gallery_images")
+      .select("*")
+      .eq("project_id", project.id)
+      .order("display_order", { ascending: true });
+
+    if (error) {
+      console.error("Error fetching gallery images:", error);
+      setGalleryImages([]);
+    } else {
+      setGalleryImages(
+        galleryData?.map((img) => ({
+          id: img.id,
+          image_url: img.image_url,
+          display_order: img.display_order,
+        })) || []
+      );
+    }
   };
 
   const handleClose = () => {
@@ -317,6 +394,27 @@ export default function ProjectsPage() {
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
+
+  const handleAddService = () => {
+    const trimmedService = serviceInput.trim();
+    if (trimmedService && !projectServices.includes(trimmedService)) {
+      setProjectServices([...projectServices, trimmedService]);
+      setServiceInput("");
+    }
+  };
+
+  const handleRemoveService = (serviceToRemove: string) => {
+    setProjectServices(
+      projectServices.filter((service) => service !== serviceToRemove)
+    );
+  };
+
+  const handleServiceKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddService();
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -375,10 +473,53 @@ export default function ProjectsPage() {
       return;
     }
 
+    // Check if slug already exists
+    let slugCheckQuery = supabase
+      .from("projects")
+      .select("id, slug")
+      .eq("slug", finalSlug)
+      .limit(1);
+
+    // If editing, exclude current project from the check
+    if (isEditing && selectedProject) {
+      slugCheckQuery = slugCheckQuery.neq("id", selectedProject.id);
+    }
+
+    const { data: existingProject, error: slugCheckError } = await slugCheckQuery;
+
+    if (slugCheckError) {
+      setIsSaving(false);
+      toast.error("Failed to check slug availability");
+      return;
+    }
+
+    if (existingProject && existingProject.length > 0) {
+      setIsSaving(false);
+      setErrors({ slug: "Slug already exists" });
+      toast.error("Slug already exists");
+      return;
+    }
+
     setIsSaving(true);
 
     try {
+      let projectId: string;
+
       if (isEditing && selectedProject) {
+        projectId = selectedProject.id;
+        const projectInfo: {
+          client?: string;
+          location?: string;
+          size?: string;
+          completion?: string;
+          services?: string[];
+        } = {};
+        if (projectClient) projectInfo.client = projectClient;
+        if (projectLocation) projectInfo.location = projectLocation;
+        if (projectSize) projectInfo.size = projectSize;
+        if (projectCompletion) projectInfo.completion = projectCompletion;
+        if (projectServices.length > 0) projectInfo.services = projectServices;
+
         const updateData: ProjectUpdate = {
           title,
           slug: finalSlug,
@@ -390,17 +531,34 @@ export default function ProjectsPage() {
           tags: tags.length > 0 ? tags : null,
           is_new: isNew,
           updated_at: new Date().toISOString(),
+          project_info:
+            Object.keys(projectInfo).length > 0 ? projectInfo : null,
+          quote: quote || null,
+          quote_author: quoteAuthor || null,
         };
 
         const { error } = await supabase
           .from("projects")
           .update(updateData)
-          .eq("id", selectedProject.id);
+          .eq("id", projectId);
 
         if (error) throw error;
 
         toast.success("Project updated successfully");
       } else {
+        const projectInfo: {
+          client?: string;
+          location?: string;
+          size?: string;
+          completion?: string;
+          services?: string[];
+        } = {};
+        if (projectClient) projectInfo.client = projectClient;
+        if (projectLocation) projectInfo.location = projectLocation;
+        if (projectSize) projectInfo.size = projectSize;
+        if (projectCompletion) projectInfo.completion = projectCompletion;
+        if (projectServices.length > 0) projectInfo.services = projectServices;
+
         const insertData: ProjectInsert = {
           title,
           slug: finalSlug,
@@ -411,13 +569,81 @@ export default function ProjectsPage() {
           status,
           tags: tags.length > 0 ? tags : null,
           is_new: isNew,
+          project_info:
+            Object.keys(projectInfo).length > 0 ? projectInfo : null,
+          quote: quote || null,
+          quote_author: quoteAuthor || null,
         };
 
-        const { error } = await supabase.from("projects").insert(insertData);
+        const { data, error } = await supabase
+          .from("projects")
+          .insert(insertData)
+          .select()
+          .single();
 
         if (error) throw error;
+        if (!data) throw new Error("Failed to create project");
 
+        projectId = data.id;
         toast.success("Project created successfully");
+      }
+
+      // Save gallery images
+      if (projectId) {
+        // Get existing gallery images IDs
+        const existingImageIds = galleryImages
+          .map((img) => img.id)
+          .filter((id): id is string => !!id);
+
+        // Delete gallery images that are no longer in the list
+        if (existingImageIds.length > 0) {
+          const { data: existingImages } = await supabase
+            .from("project_gallery_images")
+            .select("id")
+            .eq("project_id", projectId);
+
+          const existingIds = existingImages?.map((img) => img.id) || [];
+          const idsToDelete = existingIds.filter(
+            (id) => !existingImageIds.includes(id)
+          );
+
+          if (idsToDelete.length > 0) {
+            await supabase
+              .from("project_gallery_images")
+              .delete()
+              .in("id", idsToDelete);
+          }
+        } else {
+          // Delete all existing images if no images are present
+          await supabase
+            .from("project_gallery_images")
+            .delete()
+            .eq("project_id", projectId);
+        }
+
+        // Insert or update gallery images
+        const imagesToInsert: ProjectGalleryImageInsert[] = galleryImages.map(
+          (img) => ({
+            project_id: projectId,
+            image_url: img.image_url,
+            display_order: img.display_order,
+          })
+        );
+
+        // Delete all existing and re-insert for simplicity
+        // (Alternative: could do upsert with more complex logic)
+        if (galleryImages.length > 0) {
+          await supabase
+            .from("project_gallery_images")
+            .delete()
+            .eq("project_id", projectId);
+
+          const { error: galleryError } = await supabase
+            .from("project_gallery_images")
+            .insert(imagesToInsert);
+
+          if (galleryError) throw galleryError;
+        }
       }
 
       handleClose();
@@ -825,6 +1051,139 @@ export default function ProjectsPage() {
           </p>
         </div>
         <Switch checked={isNew} onCheckedChange={setIsNew} />
+      </div>
+
+      <div className="space-y-2">
+        <GalleryImagesManager
+          images={galleryImages}
+          onChange={setGalleryImages}
+          bucket="project-images"
+          folder="uploads"
+          onUploadingChange={setIsGalleryUploading}
+        />
+      </div>
+
+      {/* Project Info Section */}
+      <div className="border-t pt-6 space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Project Information</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Additional project details displayed on the project detail page
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="projectClient">Client</Label>
+            <Input
+              id="projectClient"
+              value={projectClient}
+              onChange={(e) => setProjectClient(e.target.value)}
+              placeholder="e.g., Private Residential"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="projectLocation">Location</Label>
+            <Input
+              id="projectLocation"
+              value={projectLocation}
+              onChange={(e) => setProjectLocation(e.target.value)}
+              placeholder="e.g., Seattle, WA"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="projectSize">Size</Label>
+            <Input
+              id="projectSize"
+              value={projectSize}
+              onChange={(e) => setProjectSize(e.target.value)}
+              placeholder="e.g., 2,500 sqft"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="projectCompletion">Completion Date</Label>
+            <Input
+              id="projectCompletion"
+              value={projectCompletion}
+              onChange={(e) => setProjectCompletion(e.target.value)}
+              placeholder="e.g., October 2023"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Services</Label>
+          <div className="flex gap-2">
+            <Input
+              value={serviceInput}
+              onChange={(e) => setServiceInput(e.target.value)}
+              onKeyDown={handleServiceKeyDown}
+              placeholder="Add a service"
+              className="flex-1"
+            />
+            <Button
+              type="button"
+              onClick={handleAddService}
+              variant="secondary"
+            >
+              Add
+            </Button>
+          </div>
+          {projectServices.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {projectServices.map((service) => (
+                <Badge
+                  key={service}
+                  variant="secondary"
+                  className="gap-1 pl-2 pr-1"
+                >
+                  {service}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveService(service)}
+                    className="hover:bg-gray-300 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Quote Section */}
+      <div className="border-t pt-6 space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Testimonial Quote</h3>
+          <p className="text-sm text-gray-500 mb-4">
+            Display a quote/testimonial on the project detail page
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="quote">Quote Text</Label>
+          <Textarea
+            id="quote"
+            value={quote}
+            onChange={(e) => setQuote(e.target.value)}
+            placeholder='e.g., "ConsMart transformed a cold warehouse into a sanctuary. The attention to detail in the joinery is absolutely world-class."'
+            rows={4}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="quoteAuthor">Quote Author</Label>
+          <Input
+            id="quoteAuthor"
+            value={quoteAuthor}
+            onChange={(e) => setQuoteAuthor(e.target.value)}
+            placeholder="e.g., Homeowner"
+          />
+        </div>
       </div>
     </div>
   );

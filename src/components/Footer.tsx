@@ -1,31 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import {
-  Instagram,
-  Facebook,
-  Twitter,
-  Linkedin,
-  ArrowRight,
-} from "lucide-react";
-import { FOOTER_LINKS, CONTACT_CONTENT } from "@/lib/constants";
+import { Instagram, Facebook, Twitter, Linkedin } from "lucide-react";
+import { FOOTER_LINKS } from "@/lib/constants";
 
 export default function Footer() {
-  const [email, setEmail] = useState("");
-  const appEmail = CONTACT_CONTENT.details.email;
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      const subject = encodeURIComponent("Newsletter Subscription");
-      const body = encodeURIComponent(
-        `Email: ${email}\n\nI would like to subscribe to your newsletter.`
-      );
-      window.location.href = `mailto:${appEmail}?subject=${subject}&body=${body}`;
-    }
-  };
-
   return (
     <footer className="bg-[#111111] text-white pt-20 pb-10 rounded-t-[3rem] mt-8 relative overflow-hidden w-full">
       {/* Background Glow */}
@@ -46,31 +25,14 @@ export default function Footer() {
             </h2>
           </div>
 
-          {/* Newsletter */}
-          <div className="flex flex-col items-start lg:items-end w-full lg:w-auto">
-            <p className="text-sm text-gray-400 mb-6 max-w-xs lg:text-right">
-              Let&apos;s stay connected — get the latest updates, insights, and
-              stories from the field delivered to your inbox.
+          {/* Text Section */}
+          <div className="flex flex-col items-start lg:items-end w-full lg:w-auto max-w-md">
+            <p className="text-sm text-gray-400 leading-relaxed lg:text-right">
+              We are committed to creating exceptional spaces that blend
+              functionality with aesthetic excellence. Our team brings years of
+              expertise in design, construction, and project management to
+              deliver results that exceed expectations.
             </p>
-            <form
-              onSubmit={handleEmailSubmit}
-              className="flex w-full lg:w-96 border-b border-gray-700 pb-3 items-center group focus-within:border-white transition-colors"
-            >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                className="bg-transparent border-none text-white placeholder-gray-600 text-sm w-full focus:ring-0 focus:outline-none px-0"
-                required
-              />
-              <button
-                type="submit"
-                className="text-white w-8 h-8 flex items-center justify-center rounded-full transition-all"
-              >
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </form>
           </div>
         </div>
 

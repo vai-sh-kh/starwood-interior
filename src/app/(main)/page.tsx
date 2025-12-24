@@ -166,7 +166,7 @@ export default function HomePage() {
       </section>
 
       <PageContainer>
-        <main className="w-full max-w-8xl mx-auto space-y-16 sm:space-y-20 md:space-y-24 lg:space-y-32 py-8 sm:py-12 md:py-16 lg:py-10">
+        <main className="w-full max-w-8xl mx-auto space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 py-8 sm:py-12 md:py-16 lg:py-10">
           {/* Stats Section */}
           {/* <section
             ref={statsRef}

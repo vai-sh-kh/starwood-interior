@@ -16,6 +16,7 @@ export default function Blogs() {
   const [blogs, setBlogs] = useState<BlogWithCategory[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -96,6 +97,7 @@ export default function Blogs() {
   }, [supabase, debouncedSearchQuery, selectedCategory]);
 
   const fetchCategories = useCallback(async () => {
+    setIsLoadingCategories(true);
     try {
       const { data, error } = await supabase
         .from("blog_categories")
@@ -111,6 +113,8 @@ export default function Blogs() {
     } catch (error) {
       console.error("Error:", error);
       setCategories([]);
+    } finally {
+      setIsLoadingCategories(false);
     }
   }, [supabase]);
 
@@ -237,52 +241,68 @@ export default function Blogs() {
       {/* Category Filter Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 mb-12">
         <div className="flex items-center space-x-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-          <button
-            onClick={() => scrollCategories("left")}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-            disabled={!canScrollLeft}
-          >
-            <span className="material-symbols-outlined text-xl">
-              arrow_back
-            </span>
-          </button>
-          <div
-            ref={categoryScrollRef}
-            className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1"
-          >
-            <button
-              onClick={() => setSelectedCategory("all")}
-              className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition ${
-                selectedCategory === "all"
-                  ? "bg-primary text-white shadow-md"
-                  : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 border border-transparent hover:border-gray-200"
-              }`}
-            >
-              All Posts
-            </button>
-            {categories.map((category) => (
+          {isLoadingCategories ? (
+            <>
+              <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+              <div className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1">
+                <Skeleton className="h-10 w-24 rounded-full" />
+                <Skeleton className="h-10 w-28 rounded-full" />
+                <Skeleton className="h-10 w-32 rounded-full" />
+                <Skeleton className="h-10 w-26 rounded-full" />
+                <Skeleton className="h-10 w-30 rounded-full" />
+              </div>
+              <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+            </>
+          ) : (
+            <>
               <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition border border-transparent ${
-                  selectedCategory === category.id
-                    ? "bg-primary text-white shadow-md"
-                    : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 hover:border-gray-200"
-                }`}
+                onClick={() => scrollCategories("left")}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                disabled={!canScrollLeft}
               >
-                {category.name}
+                <span className="material-symbols-outlined text-xl">
+                  arrow_back
+                </span>
               </button>
-            ))}
-          </div>
-          <button
-            onClick={() => scrollCategories("right")}
-            className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-            disabled={!canScrollRight}
-          >
-            <span className="material-symbols-outlined text-xl">
-              arrow_forward
-            </span>
-          </button>
+              <div
+                ref={categoryScrollRef}
+                className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1"
+              >
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition ${
+                    selectedCategory === "all"
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 border border-transparent hover:border-gray-200"
+                  }`}
+                >
+                  All Posts
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition border border-transparent ${
+                      selectedCategory === category.id
+                        ? "bg-primary text-white shadow-md"
+                        : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 hover:border-gray-200"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => scrollCategories("right")}
+                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                disabled={!canScrollRight}
+              >
+                <span className="material-symbols-outlined text-xl">
+                  arrow_forward
+                </span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
@@ -290,49 +310,42 @@ export default function Blogs() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
               <article
-                key={i}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100"
+                key={index}
+                className="flex flex-col bg-white rounded-2xl w-[360px] overflow-hidden shadow-sm border border-gray-100"
               >
-                <div className="flex flex-col flex-1">
-                  {/* Image skeleton - matches h-64 (256px) */}
-                  <div className="relative h-64 overflow-hidden bg-gray-100">
-                    <Skeleton className="w-full h-full rounded-none" />
-                    {/* Category badge skeleton - matches absolute top-4 left-4, text-xs font-bold uppercase py-1.5 px-3 rounded shadow-sm */}
-                    {/* text-xs = 12px font, py-1.5 = 12px vertical padding, line-height ~16px, total height ~28px */}
-                    <Skeleton className="absolute top-4 left-4 h-7 w-28 rounded shadow-sm" />
+                {/* Image skeleton */}
+                <div className="relative h-64 overflow-hidden bg-gray-100">
+                  <Skeleton className="w-full h-full rounded-none" />
+                  {/* Category badge skeleton */}
+                  <Skeleton className="absolute top-4 left-4 h-6 w-24 rounded" />
+                </div>
+
+                {/* Content skeleton */}
+                <div className="flex flex-col flex-1 p-6">
+                  {/* Date and author skeleton */}
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-1 w-1 rounded-full" />
+                    <Skeleton className="h-4 w-20" />
                   </div>
-                  {/* Content skeleton - matches p-6 (24px padding) */}
-                  <div className="flex flex-col flex-1 p-6">
-                    {/* Date/Author skeleton - matches text-xs (12px font, 16px line-height), mb-3, space-x-2 */}
-                    <div className="flex items-center mb-3 space-x-2">
-                      {/* Date - typically "Jan 15, 2024" format, ~100px width */}
-                      <Skeleton className="h-4 w-28" />
-                      {/* Dot separator - matches w-1 h-1 rounded-full bg-gray-300 */}
-                      <Skeleton className="w-1 h-1 rounded-full bg-gray-300" />
-                      {/* Author name - typically 60-80px width */}
-                      <Skeleton className="h-4 w-20" />
-                    </div>
-                    {/* Title skeleton - matches text-xl font-display-serif font-bold (20px font, 28px line-height), mb-3 */}
-                    {/* Titles can be 1-2 lines, so showing 2 lines with varying widths */}
-                    <div className="mb-3 space-y-2">
-                      <Skeleton className="h-7 w-full" />
-                      <Skeleton className="h-7 w-4/5" />
-                    </div>
-                    {/* Excerpt skeleton - matches text-sm leading-relaxed (14px font, ~23px line-height with leading-relaxed), mb-6, flex-1 */}
-                    {/* Excerpts typically 3-4 lines, using h-6 (24px) to better match leading-relaxed line-height */}
-                    <div className="mb-6 space-y-2 flex-1">
-                      <Skeleton className="h-6 w-full" />
-                      <Skeleton className="h-6 w-full" />
-                      <Skeleton className="h-6 w-5/6" />
-                    </div>
-                    {/* Read More skeleton - matches text-sm font-bold (14px font, 20px line-height), inline-flex items-center */}
-                    {/* "Read More" text + icon, typically ~80-100px width */}
-                    <div className="inline-flex items-center">
-                      <Skeleton className="h-5 w-24" />
-                    </div>
+
+                  {/* Title skeleton */}
+                  <div className="mb-3 space-y-2">
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-4/5" />
                   </div>
+
+                  {/* Excerpt skeleton */}
+                  <div className="mb-6 space-y-2 flex-1">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+
+                  {/* Read More skeleton */}
+                  <Skeleton className="h-5 w-28" />
                 </div>
               </article>
             ))}

@@ -95,6 +95,13 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
+  // Fetch gallery images for this project
+  const { data: galleryImages } = await supabase
+    .from("project_gallery_images")
+    .select("*")
+    .eq("project_id", project.id)
+    .order("display_order", { ascending: true });
+
   // Fetch related projects (same category, excluding current project)
   let relatedProjectsQuery = supabase
     .from("projects")
@@ -128,6 +135,22 @@ export default async function ProjectDetailPage({
       : null,
     tags: project!.tags,
     is_new: project!.is_new,
+    project_info: project!.project_info as
+      | {
+          client?: string;
+          location?: string;
+          size?: string;
+          completion?: string;
+          services?: string[];
+        }
+      | null,
+    quote: project!.quote,
+    quote_author: project!.quote_author,
+    galleryImages: galleryImages?.map((img) => ({
+      id: img.id,
+      image_url: img.image_url,
+      display_order: img.display_order,
+    })) || [],
   };
 
   const relatedProjectsData =

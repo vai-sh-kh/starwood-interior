@@ -163,7 +163,7 @@ export default function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      className="max-w-7xl mx-auto  lg:px-8"
     >
       {/* Header */}
       <div
@@ -204,7 +204,7 @@ export default function Projects() {
       {/* Projects Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+          {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
               className="relative rounded-2xl overflow-hidden h-[420px] shadow-md"
@@ -294,15 +294,15 @@ export default function Projects() {
                   <h3 className="text-white text-xl font-bold mb-2 leading-snug">
                     {project.title}
                   </h3>
-                  <p className="text-gray-300 text-xs leading-relaxed line-clamp-2 mb-5 opacity-80">
+                  <p className="text-white text-xs leading-relaxed line-clamp-2 mb-5 font-bold">
                     {project.description || "No description available"}
                   </p>
                   {project.tags && project.tags.length > 0 && (
                     <div className="flex gap-2 flex-wrap">
-                      {project.tags.slice(0, 3).map((tag, tagIndex) => (
+                      {project.tags.slice(0, 4).map((tag, tagIndex) => (
                         <span
                           key={tagIndex}
-                          className="bg-white/10 backdrop-blur-md text-white/90 text-[10px] px-3 py-1.5 rounded-full font-medium tracking-wide"
+                          className="bg-white/20 backdrop-blur-lg border border-white/30 text-white/95 text-[10px] px-3 py-1.5 rounded-full font-medium tracking-wide shadow-lg shadow-black/20"
                         >
                           {tag}
                         </span>

@@ -11,16 +11,15 @@ export default function MainLayout({
     <SmoothScroll>
       <Header />
       <div className="mt-[60px]">{children}</div>
-      <Toaster 
-        position="top-right" 
+      <Toaster
+        position="top-right"
         toastOptions={{
-          className: "!z-[9999]",
+          className: "!z-[99999]",
           style: {
-            zIndex: 9999,
+            zIndex: 99999,
           },
         }}
       />
     </SmoothScroll>
   );
 }
-

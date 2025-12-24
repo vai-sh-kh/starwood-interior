@@ -36,7 +36,7 @@ export default function FAQ() {
   return (
     <section
       ref={sectionRef}
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Left Side */}

@@ -14,7 +14,7 @@ export default function ProjectsPage() {
   return (
     <>
       <PageContainer>
-        <main className="py-8 sm:py-12 md:py-16 lg:py-24">
+        <main className="py-12 md:py-24">
           <Projects />
           <BottomNav />
         </main>

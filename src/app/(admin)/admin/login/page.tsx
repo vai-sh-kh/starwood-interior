@@ -118,7 +118,7 @@ export default function LoginPage() {
               value={email}
               onChange={handleEmailChange}
               onBlur={() => validateEmail(email)}
-              placeholder="vaishakhpat2003@gmail.com"
+              placeholder="Enter your email address"
               required
               disabled={isLoading}
               className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 ${

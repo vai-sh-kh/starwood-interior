@@ -90,7 +90,7 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="bg-[#111111] text-white py-24 rounded-[3rem] mb-6 lg:rounded-t-[4rem] relative overflow-hidden mx-2 lg:mx-4 lg:mb-16"
+      className="bg-[#111111] text-white py-12 md:py-24 rounded-[2rem] lg:rounded-t-[4rem] relative overflow-hidden "
     >
       {/* Background Pattern */}
       <div
@@ -104,7 +104,7 @@ export default function Services() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+          className={`text-center mb-8 md:mb-16 transition-all duration-1000 ease-out ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
@@ -114,15 +114,15 @@ export default function Services() {
         </div>
 
         {/* Services List */}
-        <div className="relative min-h-[500px] flex items-center justify-center py-10">
+        <div className="relative  flex items-center justify-center py-6 md:py-10">
           <div
             ref={servicesRef}
-            className="flex flex-col items-center space-y-4 text-center z-20 w-full transition-transform duration-300 ease-out"
+            className="flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 text-center z-20 w-full transition-transform duration-300 ease-out"
           >
             {SERVICES_LIST.map((service, index) => (
               <div
                 key={service.title}
-                className={`group w-full text-center relative transition-all duration-1000 ease-out ${
+                className={`group w-full text-center relative transition-all duration-1000 ease-out px-4 ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-12"
@@ -130,7 +130,7 @@ export default function Services() {
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <h3
-                  className={`text-4xl lg:text-[4.5rem] font-display transition-all duration-300 cursor-pointer font-light tracking-tight leading-tight ${
+                  className={`text-2xl md:text-4xl lg:text-[4.5rem] font-display transition-all duration-300 cursor-pointer font-light tracking-tight leading-[1.2] md:leading-[1.3] lg:leading-[1.2] ${
                     service.active
                       ? "text-white relative inline-block"
                       : "text-white/30 group-hover:text-white"

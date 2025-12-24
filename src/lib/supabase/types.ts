@@ -136,6 +136,9 @@ export type Database = {
           title: string
           slug: string | null
           updated_at: string | null
+          project_info: Json | null
+          quote: string | null
+          quote_author: string | null
         }
         Insert: {
           category_id?: string | null
@@ -150,6 +153,9 @@ export type Database = {
           title: string
           slug?: string | null
           updated_at?: string | null
+          project_info?: Json | null
+          quote?: string | null
+          quote_author?: string | null
         }
         Update: {
           category_id?: string | null
@@ -164,6 +170,9 @@ export type Database = {
           title?: string
           slug?: string | null
           updated_at?: string | null
+          project_info?: Json | null
+          quote?: string | null
+          quote_author?: string | null
         }
         Relationships: [
           {
@@ -171,6 +180,41 @@ export type Database = {
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_gallery_images: {
+        Row: {
+          id: string
+          project_id: string
+          image_url: string
+          display_order: number
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          image_url: string
+          display_order?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          image_url?: string
+          display_order?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_gallery_images_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -208,6 +252,10 @@ export type Lead = Database["public"]["Tables"]["leads"]["Row"]
 export type LeadInsert = Database["public"]["Tables"]["leads"]["Insert"]
 export type LeadUpdate = Database["public"]["Tables"]["leads"]["Update"]
 
+export type ProjectGalleryImage = Database["public"]["Tables"]["project_gallery_images"]["Row"]
+export type ProjectGalleryImageInsert = Database["public"]["Tables"]["project_gallery_images"]["Insert"]
+export type ProjectGalleryImageUpdate = Database["public"]["Tables"]["project_gallery_images"]["Update"]
+
 // Blog with category relation
 export type BlogWithCategory = Blog & {
   blog_categories: BlogCategory | null
@@ -216,5 +264,10 @@ export type BlogWithCategory = Blog & {
 // Project with category relation
 export type ProjectWithCategory = Project & {
   blog_categories: BlogCategory | null
+}
+
+// Project with gallery images
+export type ProjectWithGallery = Project & {
+  project_gallery_images: ProjectGalleryImage[] | null
 }
 

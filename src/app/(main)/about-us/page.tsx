@@ -50,7 +50,7 @@ export default function AboutUsPage() {
             <p className="text-stone-600 mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
               {ABOUT_US.mission.description}
             </p>
-            <div className="flex flex-wrap gap-6 sm:gap-8 text-center">
+            <div className="flex flex-wrap gap-6 sm:gap-8 text-center mt-8">
               {ABOUT_US.mission.stats.map((stat, index) => (
                 <div key={index}>
                   <p className="text-2xl sm:text-3xl font-bold text-stone-900">
@@ -66,7 +66,7 @@ export default function AboutUsPage() {
         </section>
 
         {/* Team Section */}
-        <section className="mb-12 sm:mb-16 md:mb-24 lg:mb-32">
+        <section className="mb-12 sm:mb-16 md:mb-24 lg:mb-32 ">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 sm:mb-8 gap-4">
             <div>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-stone-900 leading-tight">
@@ -76,12 +76,7 @@ export default function AboutUsPage() {
                 {ABOUT_US.team.subtitle}
               </p>
             </div>
-            <button className="hidden md:inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg text-sm font-medium min-h-[44px] hover:opacity-90 transition-opacity touch-target">
-              <span>Join Our Team</span>
-              <span className="material-symbols-outlined text-base ml-2">
-                arrow_forward
-              </span>
-            </button>
+
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             {TEAM_MEMBERS.map((member, index) => (

@@ -459,6 +459,9 @@ export default function CategoriesPage() {
           <Table>
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
+                <TableHead className="w-[60px] px-4">
+                  No
+                </TableHead>
                 <TableHead className="w-[35%] px-4">
                   <button
                     onClick={() => handleSort("name")}
@@ -496,6 +499,9 @@ export default function CategoriesPage() {
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
                     <TableCell className="px-4">
+                      <Skeleton className="h-5 w-8" />
+                    </TableCell>
+                    <TableCell className="px-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
                     <TableCell className="px-4">
@@ -511,7 +517,7 @@ export default function CategoriesPage() {
                 ))
               ) : paginatedCategories.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={4} className="h-[400px] px-4">
+                  <TableCell colSpan={5} className="h-[400px] px-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <Tags className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -532,8 +538,11 @@ export default function CategoriesPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                paginatedCategories.map((category) => (
+                paginatedCategories.map((category, index) => (
                   <TableRow key={category.id} className="hover:bg-transparent">
+                    <TableCell className="px-4 text-gray-600">
+                      {startIndex + index + 1}
+                    </TableCell>
                     <TableCell className="px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">

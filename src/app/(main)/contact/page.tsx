@@ -4,7 +4,7 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import PageContainer from "@/components/PageContainer";
-import { CONTACT_CONTENT, IMAGES } from "@/lib/constants";
+import { CONTACT_CONTENT, IMAGES, STATS } from "@/lib/constants";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -25,8 +25,46 @@ const contactFormSchema = z.object({
   email: z
     .string()
     .min(1, "Email address is required")
+    .trim()
+    .toLowerCase()
     .email("Please enter a valid email address")
-    .max(255, "Email address must be less than 255 characters"),
+    .min(5, "Email address is too short")
+    .max(255, "Email address must be less than 255 characters")
+    .refine(
+      (email: string) => {
+        // Check for consecutive dots
+        if (email.includes("..")) return false;
+
+        // Check for dot at start or end of local part
+        const [localPart] = email.split("@");
+        if (!localPart || localPart.length === 0) return false;
+        if (localPart.startsWith(".") || localPart.endsWith(".")) return false;
+
+        // Check for valid domain
+        const domain = email.split("@")[1];
+        if (!domain || domain.length < 3) return false;
+        if (!domain.includes(".")) return false;
+
+        // Check domain doesn't start or end with dot or hyphen
+        if (domain.startsWith(".") || domain.endsWith(".")) return false;
+        if (domain.startsWith("-") || domain.endsWith("-")) return false;
+
+        // Check for valid TLD (top-level domain should be at least 2 characters)
+        const domainParts = domain.split(".");
+        const tld = domainParts[domainParts.length - 1];
+        if (!tld || tld.length < 2) return false;
+
+        // Check that domain parts don't start or end with hyphen
+        for (const part of domainParts) {
+          if (part.startsWith("-") || part.endsWith("-")) return false;
+        }
+
+        return true;
+      },
+      {
+        message: "Please enter a valid email address",
+      }
+    ),
   phone: z
     .string()
     .min(1, "Phone number is required")
@@ -88,7 +126,14 @@ export default function ContactPage() {
 
       // Show first error in toast
       const firstError = validationResult.error.issues[0];
-      toast.error(firstError.message);
+      toast.error(firstError.message, {
+        style: {
+          backgroundColor: "white",
+          color: "#111827",
+          border: "1px solid #e5e7eb",
+          zIndex: 99999,
+        },
+      });
       return;
     }
 
@@ -99,9 +144,11 @@ export default function ContactPage() {
 
     // Show loading toast
     const loadingToast = toast.loading("Sending your message...", {
-      className: "bg-white text-gray-900 border border-gray-200 !z-[9999]",
       style: {
-        zIndex: 9999,
+        backgroundColor: "white",
+        color: "#111827",
+        border: "1px solid #e5e7eb",
+        zIndex: 99999,
       },
     });
 
@@ -138,9 +185,11 @@ export default function ContactPage() {
       toast.success(
         "Thank you for contacting us! We'll get back to you soon.",
         {
-          className: "bg-white text-gray-900 border border-gray-200 !z-[9999]",
           style: {
-            zIndex: 9999,
+            backgroundColor: "white",
+            color: "#111827",
+            border: "1px solid #e5e7eb",
+            zIndex: 99999,
           },
           duration: 5000,
         }
@@ -163,7 +212,14 @@ export default function ContactPage() {
         error instanceof Error
           ? error.message
           : "Failed to submit form. Please try again.";
-      toast.error(errorMessage);
+      toast.error(errorMessage, {
+        style: {
+          backgroundColor: "white",
+          color: "#111827",
+          border: "1px solid #e5e7eb",
+          zIndex: 99999,
+        },
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -183,6 +239,48 @@ export default function ContactPage() {
         ...errors,
         [name]: undefined,
       });
+    }
+  };
+
+  const handleBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    const fieldName = name as keyof ContactFormData;
+
+    // Validate individual field on blur by validating the entire form
+    // but only showing error for the blurred field
+    const testData = {
+      ...formData,
+      [fieldName]: value,
+    };
+
+    const validationResult = contactFormSchema.safeParse({
+      fullName: testData.fullName.trim(),
+      email: testData.email.trim(),
+      phone: testData.phone.trim(),
+      message: testData.message.trim(),
+    });
+
+    if (!validationResult.success) {
+      // Find error for this specific field
+      const fieldError = validationResult.error.issues.find(
+        (issue) => issue.path[0] === fieldName
+      );
+      if (fieldError) {
+        setErrors({
+          ...errors,
+          [fieldName]: fieldError.message,
+        });
+      }
+    } else {
+      // Clear error if validation passes for this field
+      if (errors[fieldName]) {
+        setErrors({
+          ...errors,
+          [fieldName]: undefined,
+        });
+      }
     }
   };
 
@@ -266,6 +364,7 @@ export default function ContactPage() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       className={`w-full rounded-md border ${
                         errors.email
                           ? "border-red-500 focus-visible:ring-red-500"
@@ -331,15 +430,7 @@ export default function ContactPage() {
                 <div>
                   <button
                     type="submit"
-                    disabled={
-                      isSubmitting ||
-                      !contactFormSchema.safeParse({
-                        fullName: formData.fullName.trim(),
-                        email: formData.email.trim(),
-                        phone: formData.phone.trim(),
-                        message: formData.message.trim(),
-                      }).success
-                    }
+                    disabled={isSubmitting}
                     className="bg-black text-white text-sm font-medium h-[44px] py-3 px-6 sm:px-8 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 touch-target disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto min-w-[160px]"
                   >
                     {isSubmitting ? (
@@ -440,6 +531,30 @@ export default function ContactPage() {
                   />
                 </div>
               </div>
+            </div>
+          </section>
+
+          {/* Metrics Section */}
+          <section className="mt-12 sm:mt-16 md:mt-24 lg:mt-32">
+            <div className="w-full max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 text-center">
+              {STATS.map((stat, index) => (
+                <div
+                  key={index}
+                  className="bg-[#33333324] rounded-xl p-4 sm:p-6"
+                >
+                  <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#333333]">
+                    {stat.value}
+                    {stat.value === "1st" && (
+                      <sup className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                        st
+                      </sup>
+                    )}
+                  </p>
+                  <p className="text-xs sm:text-sm md:text-base text-gray-500 mt-1 sm:mt-2">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </section>
         </main>
