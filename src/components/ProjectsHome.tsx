@@ -77,7 +77,7 @@ export default function ProjectsHome() {
     <section
       ref={sectionRef}
       id="projects"
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      className="max-w-7xl mx-auto  sm:px-6 lg:px-8"
     >
       {/* Header */}
       <div
@@ -137,7 +137,7 @@ export default function ProjectsHome() {
 
             {/* New Badge */}
             {project.isNew && (
-              <div className="absolute top-4 left-4 bg-primary text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+              <div className="absolute top-4 left-4 bg-white text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                 New
               </div>
             )}

@@ -144,10 +144,10 @@ export default function Testimonials() {
   return (
     <section
       ref={sectionRef}
-      className="bg-[#111111] text-white py-4 rounded-[3rem] lg:rounded-t-[4rem] relative overflow-hidden mx-2 lg:mx-4"
+      className="bg-transparent md:bg-[#111111] text-white  md:py-4 rounded-[3rem] lg:rounded-t-[4rem] relative overflow-hidden lg:mx-4"
     >
       {/* Mobile View - Below md */}
-      <div className="md:hidden w-full max-w-[360px] mx-auto relative overflow-hidden bg-[#111111] rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] border border-gray-800">
+      <div className="md:hidden w-full max-w-[360px] mx-auto relative overflow-hidden bg-[#111111] rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] border border-gray-800 py-4">
         <div className="px-5 pt-5 pb-6 flex flex-col">
           {/* Header */}
           <div className="flex items-center gap-1.5 mb-2 opacity-60">
@@ -232,9 +232,6 @@ export default function Testimonials() {
             </div>
           </div>
         </div>
-
-        {/* Bottom Indicator */}
-        <div className="absolute bottom-1 left-1/2 -translate-x-1/2 h-1 bg-gray-800 w-1/3 rounded-full"></div>
       </div>
 
       {/* Desktop View - md and above */}
