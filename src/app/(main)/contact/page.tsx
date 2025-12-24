@@ -534,29 +534,6 @@ export default function ContactPage() {
             </div>
           </section>
 
-          {/* Metrics Section */}
-          <section className="mt-12 sm:mt-16 md:mt-24 lg:mt-32">
-            <div className="w-full max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8 text-center">
-              {STATS.map((stat, index) => (
-                <div
-                  key={index}
-                  className="bg-[#33333324] rounded-xl p-4 sm:p-6"
-                >
-                  <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#333333]">
-                    {stat.value}
-                    {stat.value === "1st" && (
-                      <sup className="text-lg sm:text-xl md:text-2xl lg:text-3xl">
-                        st
-                      </sup>
-                    )}
-                  </p>
-                  <p className="text-xs sm:text-sm md:text-base text-gray-500 mt-1 sm:mt-2">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </section>
         </main>
 
         <BottomNav />
