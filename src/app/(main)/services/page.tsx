@@ -7,7 +7,7 @@ import { SERVICES, SERVICES_CONTENT, IMAGES } from "@/lib/constants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Services - Poliform",
+  title: "Services - Starwood Interiors",
   description:
     "Crafting spaces that harmonize modern elegance with timeless design, our contemporary services bring creativity, comfort, and refined functionality to the home.",
 };

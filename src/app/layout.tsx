@@ -23,7 +23,7 @@ const playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Poliform - Contemporary Interior Design",
+  title: "Starwood Interiors - Contemporary Interior Design",
   description:
     "Defining spaces that encompass modern aesthetics with timeless elegance, our contemporary interior designs create a harmonious blend, satisfying the essence of fine living.",
   viewport: {

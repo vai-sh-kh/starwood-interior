@@ -1,4 +1,4 @@
-// All image URLs used in the ConsMart Construction website
+// All image URLs used in the Starwood Interiors website
 
 export const IMAGES = {
   // Hero Section

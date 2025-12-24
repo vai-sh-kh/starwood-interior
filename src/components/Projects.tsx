@@ -26,6 +26,9 @@ export default function Projects() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   // Fetch projects from API
   const fetchProjects = useCallback(
@@ -262,16 +265,27 @@ export default function Projects() {
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                {project.image ? (
+                {project.image && !imageErrors[project.id] ? (
                   <Image
                     src={project.image}
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized={project.image.includes("supabase.co")}
+                    onError={() =>
+                      setImageErrors((prev) => ({
+                        ...prev,
+                        [project.id]: true,
+                      }))
+                    }
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-gray-300"></div>
+                  <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-400 text-4xl">
+                      image_not_supported
+                    </span>
+                  </div>
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90"></div>
 

@@ -1170,7 +1170,7 @@ export default function ProjectsPage() {
             id="quote"
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
-            placeholder='e.g., "ConsMart transformed a cold warehouse into a sanctuary. The attention to detail in the joinery is absolutely world-class."'
+            placeholder='e.g., "Starwood Interiors transformed a cold warehouse into a sanctuary. The attention to detail in the joinery is absolutely world-class."'
             rows={4}
           />
         </div>

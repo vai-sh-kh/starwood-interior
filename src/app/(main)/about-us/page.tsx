@@ -6,9 +6,9 @@ import { ABOUT_US, TEAM_MEMBERS, IMAGES } from "@/lib/constants";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About Us - Poliform",
+  title: "About Us - Starwood Interiors",
   description:
-    "At Luxuria, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality.",
+    "At Starwood Interiors, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality.",
 };
 
 export default function AboutUsPage() {

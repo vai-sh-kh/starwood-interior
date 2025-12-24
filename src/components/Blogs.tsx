@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import { createClient } from "@/lib/supabase/client";
@@ -206,10 +207,13 @@ export default function Blogs() {
       {/* Hero Section */}
       <div className="relative pt-20">
         <div className="absolute inset-0 z-0 h-[600px] w-full">
-          <img
+          <Image
             alt="Warm, inviting residential interior with personalized touches"
-            className="w-full h-full object-cover object-center"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtu-wJ6HPvNKkz1jSev6tZSZWEmpxZ5UbpGK9ZcPHWMgQP9y4SO9gJZVXeYvZFoEsFtgvFo1ZU49agm-WjChJ_3d5j2WcGUMpZYcpVegEsFNQYx7eokqw-ZXXIom35dkU-fslYycy59flZz8DBQ3tpOxF010bmnMoiUCyVYSYiTZcPlZi7oGGA_hoMhU37Xij4st7b5FDGH2AP2WLd5pP0WVAUe-YvY9ROhhU9u8A7e0D22Mkpb_DeVyfs9veR2NMX1TmKGI-uX98"
+            src="/images/blog-main.png"
+            fill
+            className="object-cover object-center"
+            priority
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background-light"></div>
         </div>

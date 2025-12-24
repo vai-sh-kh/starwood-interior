@@ -47,7 +47,7 @@ export const IMAGES = {
   contact: {
     hero: "https://lh3.googleusercontent.com/aida-public/AB6AXuBg5ihetzchPB7z2gdObfkhIJJDwtIEsR1yeTI7DmQMOmsjQzxHKAI0KODF6ENqHHTU80UFEPCMTwIjRylcLIQ1pXeKS8lKQZeJhPHpqLGVdbcncHC_LqAF5S5pPEX9RYjURJT0VtXAc_EFu0_tJWlyYF70gQ5pWAhqE4Swf7BVDtKkFuxtlQTgG5jdERqj63TOftMcKw2WzoETq0IQeVTKSc7_oOC9DVrw3ApwGqdY8J9oRf9Sv3r45W2qpCZN6AM3NP5NKKsUV34",
     map: "https://lh3.googleusercontent.com/aida-public/AB6AXuDyB5EJsYgvU0yVFSrAts9J5qHIvM2Md-3LbyqjGgl_zVL1L64hoAyF8N8rB6b2n6W52mLh7wSGljwsjhjdnERw19Zive_F1xuXVCbGxkuf-CuczRlRIHdf2RPcFOgir1VZaJAWq5LjIPhie8ILUo-5Xs7PjrZWqDFY1q3KZBiehC2l20Yrt2hkXeFGI-Gur-l_gWKKuUDlqH_GTtPPQ4SV_BKHin61KUtoectQ4XuJN9HkxoOVPGanQi4eEbJB5VIEOtNHlow1PaY",
-  },
+  },  
   
   // Collection images (for home page)
   collection: {
@@ -96,25 +96,25 @@ export const TEAM_MEMBERS = [
     name: "Eleonora Vance",
     role: "Founder & Lead Designer",
     image: IMAGES.aboutUs.team.eleonora,
-    alt: "Portrait of an elegant woman with a confident smile, Luxuria's lead designer.",
+    alt: "Portrait of an elegant woman with a confident smile, Starwood Interiors' lead designer.",
   },
   {
     name: "Julian Croft",
     role: "Head Architect",
     image: IMAGES.aboutUs.team.julian,
-    alt: "Portrait of a sophisticated man in a modern office, Luxuria's head architect.",
+    alt: "Portrait of a sophisticated man in a modern office, Starwood Interiors' head architect.",
   },
   {
     name: "Sofia Marin",
     role: "Material Specialist",
     image: IMAGES.aboutUs.team.sofia,
-    alt: "Portrait of a creative woman smiling in an art studio, Luxuria's material specialist.",
+    alt: "Portrait of a creative woman smiling in an art studio, Starwood Interiors' material specialist.",
   },
   {
     name: "Leo Chen",
     role: "Project Manager",
     image: IMAGES.aboutUs.team.leo,
-    alt: "Portrait of a focused man reviewing architectural blueprints, Luxuria's project manager.",
+    alt: "Portrait of a focused man reviewing architectural blueprints, Starwood Interiors' project manager.",
   },
 ] as const;
 
@@ -336,7 +336,7 @@ export const FOOTER_LINKS = {
     { label: "Cookie Policy", href: "#" },
   ],
   contact: [
-    { label: "contact@poliform.com", href: "mailto:contact@poliform.com" },
+    { label: "contact@starwoodinteriors.com", href: "mailto:contact@starwoodinteriors.com" },
     { label: "+1 (234) 567-890", href: "tel:+1234567890" },
     { label: "123 Design Avenue, Suite 100", href: "#" },
   ],
@@ -369,7 +369,7 @@ export const ABOUT_US = {
     subtitle: "Our Philosophy",
     title: "Crafting Spaces, Inspiring Lives",
     description:
-      "At Luxuria, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality, creating environments that are not just beautiful, but deeply personal.",
+      "At Starwood Interiors, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality, creating environments that are not just beautiful, but deeply personal.",
   },
   mission: {
     title: "Our Mission",
@@ -383,7 +383,7 @@ export const ABOUT_US = {
   },
   team: {
     title: "Meet Our Expert Team",
-    subtitle: "The visionary minds behind Luxuria's celebrated designs.",
+    subtitle: "The visionary minds behind Starwood Interiors' celebrated designs.",
   },
 } as const;
 
@@ -397,7 +397,7 @@ export const SERVICES_CONTENT = {
   section: {
     title: "Explore Our Proudly Services",
     description:
-      "Poliform offers a comprehensive vision of architectural, interior design, and styling, from singular pieces to turnkey projects.",
+      "Starwood Interiors offers a comprehensive vision of architectural, interior design, and styling, from singular pieces to turnkey projects.",
   },
 } as const;
 
@@ -405,7 +405,7 @@ export const SERVICES_CONTENT = {
 export const WORKS_CONTENT = {
   title: "Our Proudly Collection",
   description:
-    "Poliform showcases its vision of contemporary architecture, interior design trends, and an exclusive preview from the Salone del Mobile.Milano 2024.",
+    "Starwood Interiors showcases its vision of contemporary architecture, interior design trends, and an exclusive preview from the Salone del Mobile.Milano 2024.",
 } as const;
 
 // Contact page content
@@ -414,7 +414,7 @@ export const CONTACT_CONTENT = {
   description:
     "We would love to hear from you. Fill out the form below or use our contact details to get in touch. Our team is ready to assist you with any inquiries about our designs and services.",
   details: {
-    email: "contact@poliform.com",
+    email: "contact@starwoodinteriors.com",
     phone: "+1 (234) 567-890",
     address: "123 Design Avenue, Suite 100\nMetropolis, NY 10001",
   },
@@ -423,27 +423,27 @@ export const CONTACT_CONTENT = {
 // Page metadata
 export const PAGE_METADATA = {
   home: {
-    title: "Poliform - Contemporary Interior Design",
+    title: "Starwood Interiors - Contemporary Interior Design",
     description:
       "Defining spaces that encompass modern aesthetics with timeless elegance, our contemporary interior designs create a harmonious blend, satisfying the essence of fine living.",
   },
   aboutUs: {
-    title: "About Us - Poliform",
+    title: "About Us - Starwood Interiors",
     description:
-      "At Luxuria, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality.",
+      "At Starwood Interiors, we believe that a well-designed space has the power to transform daily life. Our philosophy is rooted in the pursuit of timeless elegance, functional harmony, and unparalleled quality.",
   },
   services: {
-    title: "Services - Poliform",
+    title: "Services - Starwood Interiors",
     description:
       "Crafting spaces that harmonize modern elegance with timeless design, our contemporary services bring creativity, comfort, and refined functionality to the home.",
   },
   works: {
-    title: "Portfolio - Poliform",
+    title: "Portfolio - Starwood Interiors",
     description:
-      "Poliform showcases its vision of contemporary architecture, interior design trends, and an exclusive preview from the Salone del Mobile.Milano 2024.",
+      "Starwood Interiors showcases its vision of contemporary architecture, interior design trends, and an exclusive preview from the Salone del Mobile.Milano 2024.",
   },
   contact: {
-    title: "Contact Us - Poliform",
+    title: "Contact Us - Starwood Interiors",
     description:
       "We would love to hear from you. Fill out the form below or use our contact details to get in touch. Our team is ready to assist you with any inquiries about our designs and services.",
   },

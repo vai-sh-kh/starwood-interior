@@ -19,11 +19,11 @@ export async function generateMetadata({
 
   if (!service) {
     return {
-      title: "Service Not Found - ConsMart",
+      title: "Service Not Found - Starwood Interiors",
     };
   }
 
-  const title = `${service.name} - ConsMart`;
+  const title = `${service.name} - Starwood Interiors`;
   const description = `Discover our ${service.name.toLowerCase()} service. Premium design solutions tailored to your unique vision.`;
   const url = `/services/${service.slug}`;
 
@@ -40,7 +40,7 @@ export async function generateMetadata({
       title,
       description: ogDescription,
       url,
-      siteName: "ConsMart",
+      siteName: "Starwood Interiors",
       images: [
         {
           url: service.image,

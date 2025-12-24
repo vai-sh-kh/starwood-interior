@@ -5,7 +5,7 @@ import PageContainer from "@/components/PageContainer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Projects - ConsMart",
+  title: "Projects - Starwood Interiors",
   description:
     "Explore our portfolio of exceptional design and construction projects. Premium design solutions tailored to your unique vision.",
 };

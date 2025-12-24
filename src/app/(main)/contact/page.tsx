@@ -4,7 +4,7 @@ import Image from "next/image";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import PageContainer from "@/components/PageContainer";
-import { CONTACT_CONTENT, IMAGES, STATS } from "@/lib/constants";
+import { CONTACT_CONTENT } from "@/lib/constants";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
@@ -292,7 +292,7 @@ export default function ContactPage() {
           <section className="relative w-full h-[40vh] sm:h-[50vh] md:h-[65vh] rounded-xl sm:rounded-2xl overflow-hidden mb-8 sm:mb-12 md:mb-16 lg:mb-24">
             <Image
               alt="A luxurious and minimalist living room interior with modern furniture and neutral tones."
-              src={IMAGES.contact.hero}
+              src="/images/contact-banner.png"
               className="object-cover object-[60%_50%]"
               priority
               sizes="100vw"
@@ -509,17 +509,27 @@ export default function ContactPage() {
                       <p className="font-semibold text-primary-dark mb-1 text-sm sm:text-base">
                         Address
                       </p>
-                      <p className="text-gray-600 whitespace-pre-line text-sm leading-relaxed">
+                      <a
+                        href="https://www.google.com/maps?ll=9.243157,76.547306&z=16&t=m&hl=en-US&gl=US&mapclient=embed&cid=7361100428614850641"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-600 hover:text-primary-dark transition-colors text-sm sm:text-base whitespace-pre-line leading-relaxed touch-target block py-1"
+                      >
                         {CONTACT_CONTENT.details.address}
-                      </p>
+                      </a>
                     </div>
                   </div>
                 </div>
               </div>
               <div className="mt-2 sm:mt-4">
-                <div className="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-200 relative">
+                <a
+                  href="https://www.google.com/maps?ll=9.243157,76.547306&z=16&t=m&hl=en-US&gl=US&mapclient=embed&cid=7361100428614850641"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden bg-gray-200 relative block group border border-gray-200"
+                >
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15778.123456789!2d76.9366!3d8.5244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b05bbb805bbcd47%3A0x15439fab5c5c81cb!2sThiruvananthapuram%2C%20Kerala!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15778.123456789!2d76.547306!3d9.243157!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwMTQnMzUuNCJOIDc2wrAzMic1MC4zIkU!5e0!3m2!1sen!2sin!4v1234567890123!5m2!1sen!2sin"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -527,13 +537,17 @@ export default function ContactPage() {
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
                     className="absolute inset-0"
-                    title="Location map - Trivandrum"
+                    title="Location map - Click to open in Google Maps"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center pointer-events-none">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 text-sm font-medium text-gray-900">
+                      Click to open in Google Maps
+                    </div>
+                  </div>
+                </a>
               </div>
             </div>
           </section>
-
         </main>
 
         <BottomNav />

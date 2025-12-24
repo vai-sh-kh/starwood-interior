@@ -20,11 +20,11 @@ export async function generateMetadata({
 
   if (!project) {
     return {
-      title: "Project Not Found - ConsMart",
+      title: "Project Not Found - Starwood Interiors",
     };
   }
 
-  const title = `${project.title} - ConsMart`;
+  const title = `${project.title} - Starwood Interiors`;
   const description =
     project.description ||
     `Discover our ${project.title.toLowerCase()} project. Premium design solutions tailored to your unique vision.`;
@@ -52,7 +52,7 @@ export async function generateMetadata({
       title,
       description: ogDescription,
       url,
-      siteName: "ConsMart",
+      siteName: "Starwood Interiors",
       images: [
         {
           url: imageUrl,

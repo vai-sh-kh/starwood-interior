@@ -127,7 +127,7 @@ export default function HomePage() {
         >
           <Image
             alt="Spacious modern living room with a large grey sofa and expansive windows"
-            src={IMAGES.hero}
+            src="/images/home-banner.png"
             fill
             className="object-cover "
             priority
@@ -212,7 +212,7 @@ export default function HomePage() {
             >
               <Image
                 alt="Elegant modern living room with a cream-colored sofa and large windows"
-                src={IMAGES.modernStyle}
+                src="/images/home-section-1.png"
                 width={800}
                 height={600}
                 className="w-full h-auto object-cover"
@@ -237,7 +237,7 @@ export default function HomePage() {
                 Timeless Charm
               </h3>
               <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
-                Discover Poliform&apos;s 2024 preview, featuring sofas, chairs,
+                Discover Starwood Interiors&apos;s 2024 preview, featuring sofas, chairs,
                 and armchairs embodying diverse lifestyles-concept, alongside
                 dining tables, coffee tables, and sideboards.
               </p>
@@ -286,7 +286,7 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <p className="text-xs sm:text-sm md:text-base text-gray-500 mt-3 sm:mt-4 max-w-xs sm:max-w-md leading-relaxed">
-                  Poliform will demonstrate its vision of contemporary living at
+                  Starwood Interiors will demonstrate its vision of contemporary living at
                   Salone del Mobile.Milano 2024, in its space at Salone de
                   Mobile.Milano 2024.
                 </p>

@@ -151,24 +151,26 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
       <header className="relative pt-24 min-h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 w-full h-full">
           <Image
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcENDP2w6i8b0OvG5_ZaeBxeX3eqGGY-P9nvn7qxkUQHlbhNQNfZlntBdw8Vk9k5peYUdgWnTTBoMYbntApUzL6G-QkUfCHsQZ11ZwWwqimPebCMEkBPO48lDlqaHPW3oUwUNFpJ61zXBtvExHAcJ5pABYkPNyb_RoJ_nyR_MrmkaEMIsql5uncB1R2jl6J2NT5BworFrBvc0t4_oaXZKtnbT1dN4e_iKfNf1AL1WU6XyfO6YSVRfmOop-RSK2Qyc29-hTwatb8gM"
+            src="/images/service-detail.png"
             alt={service.alt}
             fill
             className="w-full h-full object-cover object-center scale-105"
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60"></div>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
         </div>
 
         <div
           className="relative z-10 max-w-5xl mx-auto px-6 text-center"
           style={{ textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
         >
-          <h1 className="text-4xl md:text-5xl font-display font-medium text-white mb-6 leading-tight tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-display font-medium text-white mb-6 leading-tight tracking-tight">
             {service.name}
           </h1>
-          <p className="text-lg md:text-xl text-gray-100 max-w-2xl mx-auto font-light tracking-wide leading-relaxed opacity-90">
+          <p className="text-base md:text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto font-serif italic tracking-wide leading-relaxed opacity-95">
             Premium design solutions tailored to your unique vision, creating
             spaces that breathe life into your home.
           </p>
@@ -223,7 +225,7 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               <section>
                 <div className="bg-surface-light p-8 rounded-2xl border border-gray-100">
                   <h3 className="font-display text-2xl font-medium mb-4">
-                    Why Choose ConsMart?
+                    Why Choose Starwood Interiors?
                   </h3>
                   <ul className="space-y-3">
                     <li className="flex items-center text-gray-600">
@@ -326,8 +328,8 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                     ))}
                   </div>
                   <p className="font-display text-xl italic mb-6">
-                    &quot;ConsMart completely transformed our home. The
-                    attention to detail was impeccable, and the team truly
+                    &quot;Starwood Interiors completely transformed our home.
+                    The attention to detail was impeccable, and the team truly
                     understood our style.&quot;
                   </p>
                   <div className="flex items-center">

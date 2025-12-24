@@ -53,8 +53,7 @@ interface ProjectDetailProps {
   }>;
 }
 
-const BANNER_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuATGz4sbAR4sPtL5DkdP0xZVJEjrvBTlEs59X6K9SaLh9TwuYsibKDs4y7SuAfeU0LQSf2C_xEQRHWnke_M8rGXdhZeOoaC4wyhXvhBhLlALLbK9go521wtqiALwWRSlrO64ztlx-3KMuzNSCbsDR0vzVzmozO67o3TgNtJWd-CsFEacCnawAPt7aimQqrwRX8kmfNJyJ0HycXKI3E_6-nPYG_praIO-xiEE7kjnsOGZ3UeJJNtL27V7KV9VFwWWT8tY3BCLNBRJNQ";
+const BANNER_IMAGE = "/images/project-detail.png";
 
 export default function ProjectDetail({
   project,
@@ -63,12 +62,31 @@ export default function ProjectDetail({
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
   const projectInfo = project.project_info || {};
   const categoryName =
     project.category?.name ||
     (projectInfo as ProjectInfo)?.location?.split(",")[0] ||
     "Residential Design";
+
+  // Validate image URL
+  const isValidImageUrl = (url: string | null | undefined): boolean => {
+    if (!url) return false;
+    try {
+      const parsedUrl = new URL(url);
+      return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
+
+  // Handle image error
+  const handleImageError = (imageKey: string) => {
+    setImageErrors((prev) => ({ ...prev, [imageKey]: true }));
+  };
 
   // Extract content sections
   const contentHtml = project.content || "";
@@ -138,14 +156,17 @@ export default function ProjectDetail({
       {/* Hero Section */}
       <header className="relative pt-24 min-h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 w-full h-full">
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url("${BANNER_IMAGE}")`,
-            }}
+          <Image
+            src={BANNER_IMAGE}
+            alt="Project banner"
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
           />
-          <div className="absolute inset-0 bg-black/40 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent"></div>
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
         </div>
 
         <div
@@ -155,10 +176,10 @@ export default function ProjectDetail({
           <span className="inline-block px-4 py-1.5 mb-6 w-fit text-xs font-bold tracking-[0.15em] text-white uppercase border border-white/30 bg-white/10 backdrop-blur-sm rounded-full">
             {categoryName}
           </span>
-          <h1 className="font-serif text-white text-5xl md:text-7xl lg:text-8xl font-medium leading-tight tracking-tight mb-4 max-w-4xl drop-shadow-sm">
+          <h1 className="font-display text-white text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-medium leading-tight tracking-tight mb-4 max-w-4xl drop-shadow-sm">
             {project.title}
           </h1>
-          <p className="text-gray-200 text-lg md:text-xl font-normal max-w-2xl leading-relaxed drop-shadow-sm">
+          <p className="text-gray-200 text-base md:text-lg lg:text-xl font-serif italic max-w-2xl leading-relaxed drop-shadow-sm opacity-95">
             {project.description ||
               "A modern approach to design, blending heritage with contemporary comfort."}
           </p>
@@ -169,19 +190,28 @@ export default function ProjectDetail({
       <main className="relative z-20 bg-background-light -mt-10 rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8 md:py-16 lg:py-24">
           {/* Featured Image */}
-          {featuredImage && (
+          {featuredImage && isValidImageUrl(featuredImage) && (
             <div className="w-full mb-12 md:mb-24 flex flex-col items-center">
-              <div className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-video">
-                <Image
-                  alt={`${project.title} - Main living area`}
-                  src={featuredImage}
-                  fill
-                  className="w-full h-full object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
-                />
-                <div className="absolute bottom-6 right-6 bg-white/90 backdrop-blur text-xs font-bold px-4 py-2 rounded-lg uppercase tracking-wider shadow-sm">
-                  Main Living Area
-                </div>
+              <div className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-video bg-gray-100">
+                {!imageErrors["featured"] ? (
+                  <>
+                    <Image
+                      alt={`${project.title} - Main living area`}
+                      src={featuredImage}
+                      fill
+                      className="w-full h-full object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
+                      onError={() => handleImageError("featured")}
+                      unoptimized={featuredImage.includes("supabase.co")}
+                    />
+                  </>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                    <span className="material-symbols-outlined text-gray-400 text-6xl">
+                      image_not_supported
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -288,41 +318,57 @@ export default function ProjectDetail({
                 )}
 
                 {/* Second Image - After Project Overview */}
-                {allGalleryImages.length > 0 && allGalleryImages[0] && (
-                  <div className="w-full mb-12 md:mb-16 flex flex-col items-center">
-                    <div
-                      className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-[16/9] cursor-pointer group"
-                      onClick={() => setSelectedImageIndex(0)}
-                    >
-                      <Image
-                        alt={`${project.title} - Project detail`}
-                        src={allGalleryImages[0].image_url}
-                        fill
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                            <svg
-                              className="w-6 h-6 text-[#111618]"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
-                              />
-                            </svg>
+                {allGalleryImages.length > 0 &&
+                  allGalleryImages[0] &&
+                  isValidImageUrl(allGalleryImages[0].image_url) && (
+                    <div className="w-full mb-12 md:mb-16 flex flex-col items-center">
+                      <div
+                        className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-[16/9] cursor-pointer group bg-gray-100"
+                        onClick={() => setSelectedImageIndex(0)}
+                      >
+                        {!imageErrors[`gallery-0`] ? (
+                          <>
+                            <Image
+                              alt={`${project.title} - Project detail`}
+                              src={allGalleryImages[0].image_url}
+                              fill
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1280px"
+                              onError={() => handleImageError(`gallery-0`)}
+                              unoptimized={allGalleryImages[0].image_url.includes(
+                                "supabase.co"
+                              )}
+                            />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                                  <svg
+                                    className="w-6 h-6 text-[#111618]"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                            <span className="material-symbols-outlined text-gray-400 text-6xl">
+                              image_not_supported
+                            </span>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 <h3 className="font-serif text-3xl md:text-4xl text-[#111618] mb-8">
                   Design Approach
@@ -372,40 +418,62 @@ export default function ProjectDetail({
                 Gallery
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {allGalleryImages.slice(1).map((img, index) => (
-                  <div
-                    key={img.id || index}
-                    className="relative group overflow-hidden rounded-xl cursor-pointer aspect-square bg-gray-100"
-                    onClick={() => setSelectedImageIndex(index + 1)}
-                  >
-                    <Image
-                      alt={`${project.title} - Gallery image ${index + 1}`}
-                      src={img.image_url}
-                      fill
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
-                          <svg
-                            className="w-6 h-6 text-[#111618]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
-                            />
-                          </svg>
+                {allGalleryImages.slice(1).map((img, index) => {
+                  const imageKey = `gallery-${index + 1}`;
+                  const isValid = isValidImageUrl(img.image_url);
+                  return (
+                    <div
+                      key={img.id || index}
+                      className="relative group overflow-hidden rounded-xl cursor-pointer aspect-square bg-gray-100"
+                      onClick={() =>
+                        isValid &&
+                        !imageErrors[imageKey] &&
+                        setSelectedImageIndex(index + 1)
+                      }
+                    >
+                      {isValid && !imageErrors[imageKey] ? (
+                        <>
+                          <Image
+                            alt={`${project.title} - Gallery image ${
+                              index + 1
+                            }`}
+                            src={img.image_url}
+                            fill
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            onError={() => handleImageError(imageKey)}
+                            unoptimized={img.image_url.includes("supabase.co")}
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="bg-white/90 backdrop-blur-sm rounded-full p-3">
+                                <svg
+                                  className="w-6 h-6 text-[#111618]"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+                                  />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                          <span className="material-symbols-outlined text-gray-400 text-4xl">
+                            image_not_supported
+                          </span>
                         </div>
-                      </div>
+                      )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           )}
@@ -441,13 +509,35 @@ export default function ProjectDetail({
 
                     {/* Image */}
                     <div className="w-full h-full flex items-center justify-center p-4 md:p-8">
-                      <img
-                        src={allGalleryImages[selectedImageIndex].image_url}
-                        alt={`${project.title} - Gallery image ${
-                          selectedImageIndex + 1
-                        }`}
-                        className="max-w-full max-h-full object-contain"
-                      />
+                      {isValidImageUrl(
+                        allGalleryImages[selectedImageIndex].image_url
+                      ) ? (
+                        <img
+                          src={allGalleryImages[selectedImageIndex].image_url}
+                          alt={`${project.title} - Gallery image ${
+                            selectedImageIndex + 1
+                          }`}
+                          className="max-w-full max-h-full object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                            const errorDiv = document.createElement("div");
+                            errorDiv.className = "text-white text-center";
+                            errorDiv.innerHTML = `
+                              <span class="material-symbols-outlined text-6xl mb-4 block">image_not_supported</span>
+                              <p>Image failed to load</p>
+                            `;
+                            target.parentElement?.appendChild(errorDiv);
+                          }}
+                        />
+                      ) : (
+                        <div className="text-white text-center">
+                          <span className="material-symbols-outlined text-6xl mb-4 block">
+                            image_not_supported
+                          </span>
+                          <p>Invalid image URL</p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Next Button */}

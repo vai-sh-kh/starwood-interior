@@ -17,31 +17,43 @@ export default function Header() {
         <div className="flex justify-between items-center h-full">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold font-display tracking-tight text-black">
-              ConsMart
+            <span className="text-2xl font-semibold font-display tracking-wide text-black italic">
+              Starwood Interiors
             </span>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8 text-[13px] font-medium text-gray-600">
             {NAV_LINKS.map((link) => {
-              // For projects and services, check if pathname starts with the href
+              // For projects, services, and blogs, check if pathname starts with the href
               const isActive =
-                link.href === "/projects" || link.href === "/services"
+                link.href === "/projects" ||
+                link.href === "/services" ||
+                link.href === "/blogs"
                   ? pathname === link.href ||
                     pathname.startsWith(`${link.href}/`)
                   : pathname === link.href;
+              const isDetailPage =
+                (link.href === "/projects" && pathname.startsWith("/projects/")) ||
+                (link.href === "/services" &&
+                  pathname.startsWith("/services/")) ||
+                (link.href === "/blogs" && pathname.startsWith("/blogs/"));
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative pb-1 group transition-all duration-300 ease-in-out ${
+                  className={`relative pb-1 group transition-all duration-300 ease-in-out flex items-center gap-1.5 ${
                     isActive
                       ? "text-black font-bold"
                       : "text-gray-600 hover:text-primary"
                   }`}
                 >
                   <span className="relative z-10">{link.label}</span>
+                  {isDetailPage && (
+                    <span className="material-symbols-outlined text-base transition-transform group-hover:translate-y-0.5">
+                      keyboard_arrow_down
+                    </span>
+                  )}
                   <span
                     className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
                       isActive
@@ -91,19 +103,26 @@ export default function Header() {
             {/* Navigation Links */}
             <nav className="flex flex-col w-full items-center gap-6">
               {NAV_LINKS.map((link) => {
-                // For projects and services, check if pathname starts with the href
-                // For other links, check for exact match
+                // For projects, services, and blogs, check if pathname starts with the href
                 const isActive =
-                  link.href === "/projects" || link.href === "/services"
+                  link.href === "/projects" ||
+                  link.href === "/services" ||
+                  link.href === "/blogs"
                     ? pathname === link.href ||
                       pathname.startsWith(`${link.href}/`)
                     : pathname === link.href;
+                const isDetailPage =
+                  (link.href === "/projects" &&
+                    pathname.startsWith("/projects/")) ||
+                  (link.href === "/services" &&
+                    pathname.startsWith("/services/")) ||
+                  (link.href === "/blogs" && pathname.startsWith("/blogs/"));
                 return (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-lg font-medium transition-colors w-full text-center ${
+                    className={`text-lg font-medium transition-colors w-full text-center flex items-center justify-center gap-2 ${
                       isActive
                         ? "text-black font-bold"
                         : "text-gray-600 hover:text-black"
@@ -117,6 +136,11 @@ export default function Header() {
                         }`}
                       />
                     </span>
+                    {isDetailPage && (
+                      <span className="material-symbols-outlined text-lg">
+                        keyboard_arrow_down
+                      </span>
+                    )}
                   </Link>
                 );
               })}
