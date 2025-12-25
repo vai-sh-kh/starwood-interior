@@ -72,6 +72,17 @@ declare module "next" {
       viewportFit?: "auto" | "contain" | "cover";
     };
   }
+
+  export interface Viewport {
+    width?: string | number;
+    height?: string | number;
+    initialScale?: number;
+    maximumScale?: number;
+    minimumScale?: number;
+    userScalable?: boolean;
+    viewportFit?: "auto" | "contain" | "cover";
+    themeColor?: string | Array<{ media: string; color: string }>;
+  }
 }
 
 declare module "next/navigation" {

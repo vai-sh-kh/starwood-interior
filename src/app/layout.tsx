@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/google-font-display */
 /* eslint-disable @next/next/no-page-custom-font */
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
 
@@ -26,11 +26,12 @@ export const metadata: Metadata = {
   title: "Starwood Interiors - Contemporary Interior Design",
   description:
     "Defining spaces that encompass modern aesthetics with timeless elegance, our contemporary interior designs create a harmonious blend, satisfying the essence of fine living.",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
