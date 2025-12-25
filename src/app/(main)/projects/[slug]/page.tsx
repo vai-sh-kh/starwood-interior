@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import ProjectDetail from "@/components/ProjectDetail";
 import { createClient } from "@/lib/supabase/server";
+import { getBooleanSetting } from "@/lib/settings";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -82,6 +83,13 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }> | { slug: string };
 }) {
   const resolvedParams = await params;
+  
+  // Check if projects are enabled
+  const projectsEnabled = await getBooleanSetting("projects_enabled", true);
+  if (!projectsEnabled) {
+    redirect("/");
+  }
+
   const supabase = await createClient();
 
   const { data: project, error } = await supabase

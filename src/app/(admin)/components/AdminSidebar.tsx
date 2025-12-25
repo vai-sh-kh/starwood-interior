@@ -12,6 +12,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,15 +32,16 @@ const navItems = [
     href: "/admin",
     icon: LayoutDashboard,
   },
-  {
-    title: "Blogs",
-    href: "/admin/blogs",
-    icon: FileText,
-  },
+ 
   {
     title: "Projects",
     href: "/admin/projects",
     icon: FolderKanban,
+  },
+  {
+    title: "Services",
+    href: "/admin/services",
+    icon: Briefcase,
   },
   {
     title: "Categories",
@@ -47,9 +49,19 @@ const navItems = [
     icon: Tags,
   },
   {
+    title: "Blogs",
+    href: "/admin/blogs",
+    icon: FileText,
+  },
+  {
     title: "Leads",
     href: "/admin/leads",
     icon: Users,
+  },
+  {
+    title: "Settings",
+    href: "/admin/settings",
+    icon: Settings,
   },
 ];
 
@@ -115,7 +127,7 @@ export default function AdminSidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 py-4 px-2 space-y-2 overflow-y-auto">
+        <nav className="flex-1 py-4 px-2 space-y-3 overflow-y-auto">
           {navItems.map((item) => {
             const isActive =
               pathname === item.href ||

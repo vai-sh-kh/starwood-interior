@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -10,7 +10,6 @@ import {
   ProjectUpdate,
   BlogCategory,
   ProjectWithCategory,
-  ProjectGalleryImage,
   ProjectGalleryImageInsert,
 } from "@/lib/supabase/types";
 import { Button } from "@/components/ui/button";
@@ -88,6 +87,7 @@ import TipTapEditor from "@/app/(admin)/components/TipTapEditor";
 import ImageDropzone from "@/app/(admin)/components/ImageDropzone";
 import GalleryImagesManager from "@/app/(admin)/components/GalleryImagesManager";
 import { useIsMobile } from "@/hooks/use-mobile";
+import AdminImage from "../AdminImage";
 
 type SortField = "title" | "created_at" | "category" | "status";
 type SortDirection = "asc" | "desc";
@@ -98,7 +98,7 @@ type ProjectWithSeo = Project & {
   meta_description?: string | null;
 };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 7;
 
 // Zod validation schema
 const projectSchema = z.object({
@@ -144,6 +144,8 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 
 export default function ProjectsPage() {
   const isMobile = useIsMobile();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [projects, setProjects] = useState<ProjectWithCategory[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -200,7 +202,8 @@ export default function ProjectsPage() {
 
   // Image uploading state
   const [isImageUploading, setIsImageUploading] = useState(false);
-  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isGalleryUploading, setIsGalleryUploading] = useState(false);
 
   // Gallery images state
   const [galleryImages, setGalleryImages] = useState<
@@ -247,6 +250,8 @@ export default function ProjectsPage() {
     const orderField =
       sortField === "category" ? "blog_categories.name" : sortField;
     query = query.order(orderField, { ascending: sortDirection === "asc" });
+    // Add secondary sort by id for deterministic ordering (especially important when sorting by created_at)
+    query = query.order("id", { ascending: sortDirection === "asc" });
 
     const { data, error } = await query;
 
@@ -299,7 +304,7 @@ export default function ProjectsPage() {
     setErrors({});
     setCategorySearchQuery("");
     setIsImageUploading(false);
-    setIsGalleryUploading(false);
+    setIsGalleryUploading(false); // Setter is used by GalleryImagesManager
     setGalleryImages([]);
     setProjectClient("");
     setProjectLocation("");
@@ -315,6 +320,17 @@ export default function ProjectsPage() {
     resetForm();
     setIsOpen(true);
   };
+
+  // Check for action=add query parameter and open modal
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "add") {
+      openCreate();
+      // Remove query parameter from URL
+      router.replace("/admin/projects");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const openEdit = async (project: Project) => {
     setSelectedProject(project);
@@ -485,7 +501,8 @@ export default function ProjectsPage() {
       slugCheckQuery = slugCheckQuery.neq("id", selectedProject.id);
     }
 
-    const { data: existingProject, error: slugCheckError } = await slugCheckQuery;
+    const { data: existingProject, error: slugCheckError } =
+      await slugCheckQuery;
 
     if (slugCheckError) {
       setIsSaving(false);
@@ -718,6 +735,39 @@ export default function ProjectsPage() {
       toast.error(errorMessage);
     } finally {
       setIsSavingSeo(false);
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSelectedCategory("all");
+    setSelectedStatus("all");
+  };
+
+  const handleStatusChange = async (
+    projectId: string,
+    newStatus: "draft" | "published"
+  ) => {
+    try {
+      const { error } = await supabase
+        .from("projects")
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", projectId);
+
+      if (error) throw error;
+
+      toast.success(
+        `Project status changed to ${
+          newStatus === "published" ? "Published" : "Draft"
+        }`
+      );
+      fetchProjects();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update status";
+      toast.error(errorMessage);
     }
   };
 
@@ -1189,7 +1239,7 @@ export default function ProjectsPage() {
   );
 
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] gap-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)] gap-4">
       {/* Single Block Container */}
       <div className="flex-1 flex flex-col bg-white border rounded-lg shadow-sm overflow-hidden">
         {/* Header Section */}
@@ -1253,6 +1303,18 @@ export default function ProjectsPage() {
                   <SelectItem value="published">Published</SelectItem>
                 </SelectContent>
               </Select>
+
+              {/* Clear Filters Button */}
+              {(selectedCategory !== "all" || selectedStatus !== "all") && (
+                <Button
+                  variant="outline"
+                  onClick={handleClearFilters}
+                  className="gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Clear
+                </Button>
+              )}
             </div>
           </div>
 
@@ -1269,11 +1331,13 @@ export default function ProjectsPage() {
 
         {/* Table Section */}
         <div className="flex-1 overflow-auto">
-          <Table>
+          <Table className="w-full">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] px-4">No</TableHead>
-                <TableHead className="w-[35%] px-4">
+                <TableHead className="w-[60px] max-w-[60px] px-4 py-4">
+                  No
+                </TableHead>
+                <TableHead className="max-w-[300px] px-4 py-4">
                   <button
                     onClick={() => handleSort("title")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1282,7 +1346,7 @@ export default function ProjectsPage() {
                     {getSortIcon("title")}
                   </button>
                 </TableHead>
-                <TableHead className="px-4">
+                <TableHead className="max-w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("category")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1291,7 +1355,7 @@ export default function ProjectsPage() {
                     {getSortIcon("category")}
                   </button>
                 </TableHead>
-                <TableHead className="px-4">
+                <TableHead className="max-w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("status")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1300,7 +1364,7 @@ export default function ProjectsPage() {
                     {getSortIcon("status")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell px-4">
+                <TableHead className="hidden lg:table-cell max-w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1309,7 +1373,7 @@ export default function ProjectsPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[80px] px-4">
+                <TableHead className="text-right w-[80px] max-w-[80px] px-4 py-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -1318,29 +1382,29 @@ export default function ProjectsPage() {
               {isLoading ? (
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-8" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-20" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-16" />
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4">
+                    <TableCell className="hidden lg:table-cell px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-8 w-8 ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : paginatedProjects.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={6} className="h-[400px] px-4">
+                  <TableCell colSpan={6} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <FolderKanban className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -1367,60 +1431,83 @@ export default function ProjectsPage() {
               ) : (
                 paginatedProjects.map((project, index) => (
                   <TableRow key={project.id} className="hover:bg-transparent">
-                    <TableCell className="px-4 text-gray-600">
+                    <TableCell className="px-4 py-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4">
-                      <div className="flex items-center gap-3">
-                        {project.image && (
-                          <div className="w-12 h-12 rounded-lg overflow-hidden hidden sm:block shrink-0 relative">
-                            <Image
-                              src={project.image}
-                              alt={project.title}
-                              fill
-                              className="object-cover"
-                              onError={() => {}}
-                            />
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900 line-clamp-1">
+                    <TableCell className="px-4 py-4 max-w-[300px]">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <AdminImage
+                          src={project.image}
+                          alt={project.title}
+                          type="project"
+                        />
+                        <div className="min-w-0 flex-1 overflow-hidden">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
                               {project.title}
                             </p>
                             {project.is_new && (
-                              <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs">
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-100 text-xs shrink-0">
                                 New
                               </Badge>
                             )}
                           </div>
                           {project.description && (
-                            <p className="text-xs text-gray-500 truncate">
+                            <p className="text-xs text-gray-500 truncate mt-1">
                               {project.description}
                             </p>
                           )}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4">
-                      {project.blog_categories ? (
-                        <Badge variant="secondary">
-                          {project.blog_categories.name}
-                        </Badge>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
+                    <TableCell className="px-4 py-4 max-w-[150px]">
+                      <div className="truncate">
+                        {project.blog_categories ? (
+                          <Badge
+                            variant="secondary"
+                            className="truncate max-w-full"
+                          >
+                            <span className="truncate">
+                              {project.blog_categories.name}
+                            </span>
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell className="px-4">
-                      {project.status === "published" ? (
-                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100">
-                          Published
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary">Draft</Badge>
-                      )}
+                    <TableCell className="px-4 py-4 max-w-[120px]">
+                      <Select
+                        value={project.status}
+                        onValueChange={(value) =>
+                          handleStatusChange(
+                            project.id,
+                            value as "draft" | "published"
+                          )
+                        }
+                      >
+                        <SelectTrigger
+                          className={`w-[120px] h-8 text-xs border-0 ${
+                            project.status === "published"
+                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          <SelectValue>
+                            {project.status === "published" ? (
+                              <span className="font-medium">Published</span>
+                            ) : (
+                              <span className="font-medium">Draft</span>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 text-gray-600">
+                    <TableCell className="hidden lg:table-cell px-4 py-4 text-gray-600 max-w-[120px] truncate">
                       {project.created_at
                         ? new Date(project.created_at).toLocaleDateString(
                             "en-US",
@@ -1432,7 +1519,7 @@ export default function ProjectsPage() {
                           )
                         : "—"}
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <div className="flex items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

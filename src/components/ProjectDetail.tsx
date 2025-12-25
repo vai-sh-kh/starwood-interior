@@ -165,8 +165,8 @@ export default function ProjectDetail({
             sizes="100vw"
           />
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30"></div>
         </div>
 
         <div
@@ -323,7 +323,7 @@ export default function ProjectDetail({
                   isValidImageUrl(allGalleryImages[0].image_url) && (
                     <div className="w-full mb-12 md:mb-16 flex flex-col items-center">
                       <div
-                        className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-[16/9] cursor-pointer group bg-gray-100"
+                        className="w-full max-w-5xl rounded-2xl overflow-hidden border-black relative aspect-video cursor-pointer group bg-gray-100"
                         onClick={() => setSelectedImageIndex(0)}
                       >
                         {!imageErrors[`gallery-0`] ? (

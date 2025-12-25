@@ -42,7 +42,7 @@ async function getRecentBlogs() {
     .from("blogs")
     .select("id, title, slug, image, created_at, author")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(7);
   return data ?? [];
 }
 
@@ -52,7 +52,7 @@ async function getRecentLeads() {
     .from("leads")
     .select("id, name, email, phone, created_at, status, avatar_color")
     .order("created_at", { ascending: false })
-    .limit(5);
+    .limit(4);
   return data ?? [];
 }
 
@@ -117,7 +117,7 @@ export default async function DashboardPage() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className=" flex flex-col gap-7">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -170,7 +170,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="pt-3 flex-1 overflow-hidden flex flex-col">
+          <CardContent className=" flex-1 overflow-hidden flex flex-col">
             {recentBlogs.length > 0 ? (
               <div className="overflow-y-auto max-h-[600px] pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 space-y-2">
                 {recentBlogs.map((blog, index) => (
@@ -246,7 +246,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="pt-3 flex-1 overflow-hidden flex flex-col">
+          <CardContent className=" flex-1 overflow-hidden flex flex-col">
             {recentLeads.length > 0 ? (
               <div className="overflow-y-auto max-h-[600px] pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
                 {recentLeads.map((lead, index) => (
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 flex-1 flex flex-col items-center justify-center">
+              <div className="text-center py-6 flex-1 flex flex-col items-center justify-center">
                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-2">
                   <Users className="h-6 w-6 text-gray-400" />
                 </div>

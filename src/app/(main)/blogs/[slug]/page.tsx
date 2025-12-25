@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import BlogDetail from "@/components/BlogDetail";
 import { createClient } from "@/lib/supabase/server";
+import { getBooleanSetting } from "@/lib/settings";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -82,6 +83,13 @@ export default async function BlogDetailPage({
   params: Promise<{ slug: string }> | { slug: string };
 }) {
   const resolvedParams = await params;
+  
+  // Check if blogs are enabled
+  const blogsEnabled = await getBooleanSetting("blogs_enabled", true);
+  if (!blogsEnabled) {
+    redirect("/");
+  }
+
   const supabase = await createClient();
 
   const { data: blog, error } = await supabase

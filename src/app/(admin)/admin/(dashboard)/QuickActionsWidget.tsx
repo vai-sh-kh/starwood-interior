@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { FileText, FolderKanban, Tags, Plus, X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { FileText, FolderKanban, Tags, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const quickActions = [
@@ -25,13 +25,16 @@ const quickActions = [
 
 export default function QuickActionsWidget() {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   const toggleOpen = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleActionClick = () => {
+  const handleActionClick = (href: string) => {
     setIsOpen(false);
+    // Navigate with action=add query parameter
+    router.push(`${href}?action=add`);
   };
 
   // Close menu when clicking outside
@@ -64,18 +67,19 @@ export default function QuickActionsWidget() {
           {quickActions.map((action, index) => {
             const Icon = action.icon;
             return (
-              <Link
+              <button
                 key={action.href}
-                href={action.href}
-                onClick={handleActionClick}
+                onClick={() => handleActionClick(action.href)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-all group",
+                  "flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 transition-all group w-full text-left",
                   isOpen
                     ? "opacity-100 translate-x-0"
                     : "opacity-0 translate-x-2"
                 )}
                 style={{
-                  transitionDelay: isOpen ? `${index * 50}ms` : `${(quickActions.length - index - 1) * 30}ms`,
+                  transitionDelay: isOpen
+                    ? `${index * 50}ms`
+                    : `${(quickActions.length - index - 1) * 30}ms`,
                 }}
               >
                 <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-gray-200 transition-colors">
@@ -84,7 +88,7 @@ export default function QuickActionsWidget() {
                 <span className="text-sm font-medium text-gray-900">
                   {action.label}
                 </span>
-              </Link>
+              </button>
             );
           })}
         </div>
@@ -106,4 +110,3 @@ export default function QuickActionsWidget() {
     </div>
   );
 }
-

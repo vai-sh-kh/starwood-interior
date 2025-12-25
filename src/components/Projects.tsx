@@ -287,7 +287,7 @@ export default function Projects() {
                     </span>
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90"></div>
+                <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent opacity-90"></div>
 
                 {/* New Badge */}
                 {project.is_new && (

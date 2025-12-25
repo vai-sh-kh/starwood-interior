@@ -6,12 +6,12 @@ import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import PageContainer from "@/components/PageContainer";
 import { Button } from "@/components/ui/button";
-import { IMAGES, STATS, COLLECTIONS } from "@/lib/constants";
-import Services from "@/components/Services";
+import { COLLECTIONS } from "@/lib/constants";
 import Testimonials from "@/components/Testimonials";
 import ProjectsHome from "@/components/ProjectsHome";
 import FAQ from "@/components/FAQ";
 import { useEffect, useRef, useState } from "react";
+import ServiceHome from "@/components/serviceHome";
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -237,9 +237,10 @@ export default function HomePage() {
                 Timeless Charm
               </h3>
               <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
-                Discover Starwood Interiors&apos;s 2024 preview, featuring sofas, chairs,
-                and armchairs embodying diverse lifestyles-concept, alongside
-                dining tables, coffee tables, and sideboards.
+                Discover Starwood Interiors&apos;s 2024 preview, featuring
+                sofas, chairs, and armchairs embodying diverse
+                lifestyles-concept, alongside dining tables, coffee tables, and
+                sideboards.
               </p>
               <Link href="/about-us">
                 <Button
@@ -255,7 +256,7 @@ export default function HomePage() {
             </div>
           </section>
 
-          <Services />
+          <ServiceHome />
 
           {/* Collection Section */}
           <section ref={collectionRef} className="w-full max-w-7xl mx-auto">
@@ -286,9 +287,9 @@ export default function HomePage() {
                   </Button>
                 </Link>
                 <p className="text-xs sm:text-sm md:text-base text-gray-500 mt-3 sm:mt-4 max-w-xs sm:max-w-md leading-relaxed">
-                  Starwood Interiors will demonstrate its vision of contemporary living at
-                  Salone del Mobile.Milano 2024, in its space at Salone de
-                  Mobile.Milano 2024.
+                  Starwood Interiors will demonstrate its vision of contemporary
+                  living at Salone del Mobile.Milano 2024, in its space at
+                  Salone de Mobile.Milano 2024.
                 </p>
               </div>
             </div>
@@ -296,7 +297,7 @@ export default function HomePage() {
               {COLLECTIONS.map((item, index) => (
                 <div
                   key={index}
-                  className={`relative rounded-xl sm:rounded-2xl overflow-hidden group aspect-[4/5] transition-all duration-1000 ease-out ${
+                  className={`relative rounded-xl sm:rounded-2xl overflow-hidden group aspect-4/5 transition-all duration-1000 ease-out ${
                     isVisible.collection
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-12"
@@ -311,7 +312,7 @@ export default function HomePage() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-center text-white z-10">
                     <span className="text-base sm:text-lg md:text-xl font-bold">
                       {item.name}

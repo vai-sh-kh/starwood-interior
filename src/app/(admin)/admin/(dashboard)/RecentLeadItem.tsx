@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Mail, Phone, ExternalLink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { getAvatarColorClass } from "@/lib/utils";
+import LeadAvatar from "@/components/LeadAvatar";
 
 interface RecentLeadItemProps {
   id: string;
@@ -86,20 +86,7 @@ export default function RecentLeadItem({
       href={`/admin/leads`}
       className="group flex items-start gap-2.5 p-2.5 hover:bg-gray-50 transition-colors"
     >
-      <div
-        className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${
-          avatar_color || getAvatarColorClass(name)
-        }`}
-      >
-        <span className="text-xs font-semibold">
-          {name
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase()
-            .slice(0, 2)}
-        </span>
-      </div>
+      <LeadAvatar name={name} avatarColor={avatar_color} size="sm" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
           <p className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors truncate">
@@ -117,24 +104,28 @@ export default function RecentLeadItem({
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5 min-w-0">
             <Mail className="h-3 w-3 text-gray-400 shrink-0" />
-            <a
-              href={`mailto:${email}`}
-              onClick={(e) => e.stopPropagation()}
-              className="text-xs text-gray-600 hover:text-blue-600 transition-colors truncate"
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                window.location.href = `mailto:${email}`;
+              }}
+              className="text-xs text-gray-600 hover:text-blue-600 transition-colors truncate text-left"
             >
               {email}
-            </a>
+            </button>
           </div>
           {phone && (
             <div className="flex items-center gap-1.5">
               <Phone className="h-3 w-3 text-gray-400 shrink-0" />
-              <a
-                href={`tel:${phone}`}
-                onClick={(e) => e.stopPropagation()}
-                className="text-xs text-gray-600 hover:text-blue-600 transition-colors truncate"
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  window.location.href = `tel:${phone}`;
+                }}
+                className="text-xs text-gray-600 hover:text-blue-600 transition-colors truncate text-left"
               >
                 {phone}
-              </a>
+              </button>
             </div>
           )}
           <span className="text-xs text-gray-400 mt-0.5">

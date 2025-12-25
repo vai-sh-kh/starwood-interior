@@ -4,11 +4,13 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Lead, LeadInsert, LeadUpdate } from "@/lib/supabase/types";
 import { LEAD_STATUSES } from "@/lib/constants";
-import { getAvatarColorClass } from "@/lib/utils";
+import { getAvatarHexColor } from "@/lib/utils";
+import LeadAvatar from "@/components/LeadAvatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
 import {
   Table,
   TableBody,
@@ -24,6 +26,13 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -72,6 +81,79 @@ import {
 
 const ITEMS_PER_PAGE = 10;
 
+// Zod validation schema for lead form
+const leadFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+  email: z
+    .string()
+    .min(1, "Email address is required")
+    .trim()
+    .toLowerCase()
+    .email("Please enter a valid email address")
+    .min(5, "Email address is too short")
+    .max(255, "Email address must be less than 255 characters")
+    .refine(
+      (email: string) => {
+        // Check for consecutive dots
+        if (email.includes("..")) return false;
+
+        // Check for dot at start or end of local part
+        const [localPart] = email.split("@");
+        if (!localPart || localPart.length === 0) return false;
+        if (localPart.startsWith(".") || localPart.endsWith(".")) return false;
+
+        // Check for valid domain
+        const domain = email.split("@")[1];
+        if (!domain || domain.length < 3) return false;
+        if (!domain.includes(".")) return false;
+
+        // Check domain doesn't start or end with dot or hyphen
+        if (domain.startsWith(".") || domain.endsWith(".")) return false;
+        if (domain.startsWith("-") || domain.endsWith("-")) return false;
+
+        // Check for valid TLD (top-level domain should be at least 2 characters)
+        const domainParts = domain.split(".");
+        const tld = domainParts[domainParts.length - 1];
+        if (!tld || tld.length < 2) return false;
+
+        // Check that domain parts don't start or end with hyphen
+        for (const part of domainParts) {
+          if (part.startsWith("-") || part.endsWith("-")) return false;
+        }
+
+        return true;
+      },
+      {
+        message: "Please enter a valid email address",
+      }
+    ),
+  phone: z
+    .string()
+    .optional()
+    .refine(
+      (val) => {
+        if (!val || val.trim() === "") return true; // Optional field
+        const digitsOnly = val.replace(/\D/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      },
+      {
+        message: "Phone number must contain between 10 and 15 digits",
+      }
+    ),
+  message: z
+    .string()
+    .max(2000, "Message must be less than 2000 characters")
+    .optional(),
+  status: z.string().min(1, "Status is required"),
+  source: z.string().min(1, "Source is required"),
+});
+
+type LeadFormData = z.infer<typeof leadFormSchema>;
+
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -96,6 +178,9 @@ export default function LeadsPage() {
     status: "new" as string,
     source: "manual" as string,
   });
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof LeadFormData, string>>
+  >({});
 
   // Delete dialog
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -109,7 +194,8 @@ export default function LeadsPage() {
     const { data, error } = await supabase
       .from("leads")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false });
 
     if (error) {
       toast.error("Failed to fetch leads");
@@ -145,6 +231,7 @@ export default function LeadsPage() {
       status: "new",
       source: "manual",
     });
+    setFormErrors({});
     setIsFormOpen(true);
   };
 
@@ -158,36 +245,53 @@ export default function LeadsPage() {
       status: lead.status || "new",
       source: lead.source || "manual",
     });
+    setFormErrors({});
     setSelectedLead(lead);
     setIsFormOpen(true);
   };
 
   const handleSave = async () => {
-    // Validate required fields
-    if (!formData.name.trim() || !formData.email.trim()) {
-      toast.error("Name and email are required");
+    // Validate form using Zod
+    const validationResult = leadFormSchema.safeParse({
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone?.trim() || "",
+      message: formData.message?.trim() || "",
+      status: formData.status,
+      source: formData.source,
+    });
+
+    if (!validationResult.success) {
+      const fieldErrors: Partial<Record<keyof LeadFormData, string>> = {};
+      validationResult.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LeadFormData;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      setFormErrors(fieldErrors);
+
+      // Show first error in toast
+      const firstError = validationResult.error.issues[0];
+      toast.error(firstError.message);
       return;
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email.trim())) {
-      toast.error("Please enter a valid email address");
-      return;
-    }
+    // Clear errors if validation passes
+    setFormErrors({});
 
     setIsSaving(true);
 
     try {
       if (isEditing && selectedLead) {
         const updateData: LeadUpdate = {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone?.trim() || null,
-          message: formData.message?.trim() || null,
-          status: formData.status,
-          source: formData.source,
-          avatar_color: getAvatarColorClass(formData.name.trim()),
+          name: validationResult.data.name,
+          email: validationResult.data.email,
+          phone: validationResult.data.phone?.trim() || null,
+          message: validationResult.data.message?.trim() || null,
+          status: validationResult.data.status,
+          source: validationResult.data.source,
+          avatar_color: getAvatarHexColor(validationResult.data.name),
           updated_at: new Date().toISOString(),
         };
 
@@ -210,13 +314,13 @@ export default function LeadsPage() {
         toast.success("Lead updated successfully");
       } else {
         const insertData: LeadInsert = {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone?.trim() || null,
-          message: formData.message?.trim() || null,
-          status: formData.status,
-          source: formData.source,
-          avatar_color: getAvatarColorClass(formData.name.trim()),
+          name: validationResult.data.name,
+          email: validationResult.data.email,
+          phone: validationResult.data.phone?.trim() || null,
+          message: validationResult.data.message?.trim() || null,
+          status: validationResult.data.status,
+          source: validationResult.data.source,
+          avatar_color: getAvatarHexColor(validationResult.data.name),
         };
 
         const { data, error } = await supabase
@@ -388,18 +492,22 @@ export default function LeadsPage() {
 
         {/* Table Section */}
         <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto min-h-0">
-            <Table>
+          <div className="flex-1 overflow-auto overflow-x-hidden min-h-0">
+            <Table className="w-full">
               <TableHeader className="sticky top-0 bg-white z-10">
                 <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                  <TableHead className="w-[60px] px-4">No</TableHead>
-                  <TableHead className="w-[20%] px-4">Contact</TableHead>
-                  <TableHead className="px-4">Email</TableHead>
-                  <TableHead className="px-4">Phone</TableHead>
-                  <TableHead className="px-4">Status</TableHead>
-                  <TableHead className="px-4">Source</TableHead>
-                  <TableHead className="px-4">Date</TableHead>
-                  <TableHead className="text-right w-[80px] px-4">
+                  <TableHead className="w-[60px] max-w-[60px] px-4">
+                    No
+                  </TableHead>
+                  <TableHead className="w-[20%] max-w-[20%] px-4">
+                    Contact
+                  </TableHead>
+                  <TableHead className="max-w-[200px] px-4">Email</TableHead>
+                  <TableHead className="max-w-[150px] px-4">Phone</TableHead>
+                  <TableHead className="max-w-[140px] px-4">Status</TableHead>
+                  <TableHead className="max-w-[120px] px-4">Source</TableHead>
+                  <TableHead className="max-w-[120px] px-4">Date</TableHead>
+                  <TableHead className="text-right w-[80px] max-w-[80px] px-4">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -459,41 +567,33 @@ export default function LeadsPage() {
                         <TableCell className="text-gray-600 px-4">
                           {startIndex + index + 1}
                         </TableCell>
-                        <TableCell className="px-4">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                lead.avatar_color ||
-                                getAvatarColorClass(lead.name)
-                              }`}
-                            >
-                              <span className="text-sm font-medium">
-                                {lead.name
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()
-                                  .slice(0, 2)}
-                              </span>
-                            </div>
-                            <span className="font-medium text-gray-900">
+                        <TableCell className="px-4 max-w-[20%]">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <LeadAvatar
+                              name={lead.name}
+                              avatarColor={lead.avatar_color}
+                              size="md"
+                            />
+                            <span className="font-medium text-gray-900 truncate max-w-[500px]">
                               {lead.name}
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="px-4">
+                        <TableCell className="px-4 max-w-[200px]">
                           <a
                             href={`mailto:${lead.email}`}
-                            className="text-blue-600 hover:text-blue-700 hover:underline"
+                            className="text-blue-600 hover:text-blue-700 hover:underline truncate block"
+                            title={lead.email}
                           >
                             {lead.email}
                           </a>
                         </TableCell>
-                        <TableCell className="text-gray-600 px-4">
+                        <TableCell className="text-gray-600 px-4 max-w-[150px] truncate">
                           {lead.phone ? (
                             <a
                               href={`tel:${lead.phone}`}
-                              className="hover:text-gray-900"
+                              className="hover:text-gray-900 truncate block"
+                              title={lead.phone}
                             >
                               {lead.phone}
                             </a>
@@ -501,7 +601,7 @@ export default function LeadsPage() {
                             <span className="text-gray-400">—</span>
                           )}
                         </TableCell>
-                        <TableCell className="px-4">
+                        <TableCell className="px-4 max-w-[140px]">
                           <Select
                             value={lead.status || "new"}
                             onValueChange={(value) =>
@@ -529,15 +629,19 @@ export default function LeadsPage() {
                             </SelectContent>
                           </Select>
                         </TableCell>
-                        <TableCell className="px-4">
+                        <TableCell className="px-4 max-w-[120px]">
                           <Badge
                             variant="secondary"
-                            className={getSourceBadgeColor(lead.source)}
+                            className={`${getSourceBadgeColor(
+                              lead.source
+                            )} truncate max-w-full`}
                           >
-                            {formatSource(lead.source)}
+                            <span className="truncate">
+                              {formatSource(lead.source)}
+                            </span>
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-600 px-4">
+                        <TableCell className="text-gray-600 px-4 max-w-[120px] truncate">
                           {lead.created_at
                             ? new Date(lead.created_at).toLocaleDateString()
                             : "—"}
@@ -701,9 +805,12 @@ export default function LeadsPage() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, name: e.target.value });
+                    if (formErrors.name) {
+                      setFormErrors({ ...formErrors, name: undefined });
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -713,7 +820,13 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter full name"
+                  className={formErrors.name ? "border-red-500" : ""}
                 />
+                {formErrors.name && (
+                  <span className="text-red-500 text-sm">
+                    {formErrors.name}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -724,9 +837,40 @@ export default function LeadsPage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    if (formErrors.email) {
+                      setFormErrors({ ...formErrors, email: undefined });
+                    }
+                  }}
+                  onBlur={() => {
+                    // Validate email on blur
+                    const testData = {
+                      ...formData,
+                      email: formData.email.trim(),
+                    };
+                    const validationResult = leadFormSchema.safeParse({
+                      name: testData.name.trim(),
+                      email: testData.email.trim(),
+                      phone: testData.phone?.trim() || "",
+                      message: testData.message?.trim() || "",
+                      status: testData.status,
+                      source: testData.source,
+                    });
+                    if (!validationResult.success) {
+                      const emailError = validationResult.error.issues.find(
+                        (issue) => issue.path[0] === "email"
+                      );
+                      if (emailError) {
+                        setFormErrors({
+                          ...formErrors,
+                          email: emailError.message,
+                        });
+                      }
+                    } else if (formErrors.email) {
+                      setFormErrors({ ...formErrors, email: undefined });
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -736,7 +880,13 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter email address"
+                  className={formErrors.email ? "border-red-500" : ""}
                 />
+                {formErrors.email && (
+                  <span className="text-red-500 text-sm">
+                    {formErrors.email}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -745,9 +895,12 @@ export default function LeadsPage() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, phone: e.target.value });
+                    if (formErrors.phone) {
+                      setFormErrors({ ...formErrors, phone: undefined });
+                    }
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -757,7 +910,13 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter phone number"
+                  className={formErrors.phone ? "border-red-500" : ""}
                 />
+                {formErrors.phone && (
+                  <span className="text-red-500 text-sm">
+                    {formErrors.phone}
+                  </span>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -806,12 +965,21 @@ export default function LeadsPage() {
                 <Textarea
                   id="message"
                   value={formData.message}
-                  onChange={(e) =>
-                    setFormData({ ...formData, message: e.target.value })
-                  }
+                  onChange={(e) => {
+                    setFormData({ ...formData, message: e.target.value });
+                    if (formErrors.message) {
+                      setFormErrors({ ...formErrors, message: undefined });
+                    }
+                  }}
                   placeholder="Enter message or notes"
                   rows={4}
+                  className={formErrors.message ? "border-red-500" : ""}
                 />
+                {formErrors.message && (
+                  <span className="text-red-500 text-sm">
+                    {formErrors.message}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -828,40 +996,30 @@ export default function LeadsPage() {
         </SheetContent>
       </Sheet>
 
-      {/* Detail Sheet */}
-      <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <SheetContent className="w-full sm:max-w-md">
-          <SheetHeader>
-            <SheetTitle>Lead Details</SheetTitle>
-            <SheetDescription>
+      {/* Detail Dialog Modal */}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
+          <DialogHeader>
+            <DialogTitle>Lead Details</DialogTitle>
+            <DialogDescription>
               Contact information and message from this lead
-            </SheetDescription>
-          </SheetHeader>
+            </DialogDescription>
+          </DialogHeader>
 
           {selectedLead && (
-            <div className="mt-6 space-y-6">
+            <div className="space-y-6 py-4">
               {/* Contact Info */}
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                    selectedLead.avatar_color ||
-                    getAvatarColorClass(selectedLead.name)
-                  }`}
-                >
-                  <span className="text-xl font-semibold">
-                    {selectedLead.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                      .slice(0, 2)}
-                  </span>
-                </div>
+              <div className="flex items-center gap-4 pb-4 border-b">
+                <LeadAvatar
+                  name={selectedLead.name}
+                  avatarColor={selectedLead.avatar_color}
+                  size="lg"
+                />
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-xl font-semibold text-gray-900">
                     {selectedLead.name}
                   </h3>
-                  <div className="flex gap-2 mt-1">
+                  <div className="flex gap-2 mt-2">
                     <Badge
                       variant="secondary"
                       className={
@@ -882,33 +1040,39 @@ export default function LeadsPage() {
 
               {/* Details */}
               <div className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="shrink-0">
+                    <Mail className="h-5 w-5 text-gray-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                       Email
                     </p>
                     <a
                       href={`mailto:${selectedLead.email}`}
-                      className="text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-blue-600 hover:text-blue-700 font-medium break-all"
                     >
                       {selectedLead.email}
                     </a>
                   </div>
-                  <a
-                    href={`mailto:${selectedLead.email}`}
-                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                    title="Send email"
-                  >
-                    <ExternalLink className="h-4 w-4 text-gray-500" />
-                  </a>
+                  <div className="shrink-0">
+                    <a
+                      href={`mailto:${selectedLead.email}`}
+                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                      title="Send email"
+                    >
+                      <ExternalLink className="h-4 w-4 text-gray-500" />
+                    </a>
+                  </div>
                 </div>
 
                 {selectedLead.phone && (
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                    <Phone className="h-5 w-5 text-gray-400" />
-                    <div className="flex-1">
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="shrink-0">
+                      <Phone className="h-5 w-5 text-gray-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                         Phone
                       </p>
                       <a
@@ -918,20 +1082,24 @@ export default function LeadsPage() {
                         {selectedLead.phone}
                       </a>
                     </div>
-                    <a
-                      href={`tel:${selectedLead.phone}`}
-                      className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                      title="Call"
-                    >
-                      <ExternalLink className="h-4 w-4 text-gray-500" />
-                    </a>
+                    <div className="shrink-0">
+                      <a
+                        href={`tel:${selectedLead.phone}`}
+                        className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
+                        title="Call"
+                      >
+                        <ExternalLink className="h-4 w-4 text-gray-500" />
+                      </a>
+                    </div>
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <Calendar className="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-xs text-gray-500 uppercase tracking-wide">
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="shrink-0">
+                    <Calendar className="h-5 w-5 text-gray-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
                       Submitted
                     </p>
                     <p className="text-gray-900 font-medium">
@@ -943,14 +1111,14 @@ export default function LeadsPage() {
                 </div>
 
                 {selectedLead.message && (
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      <MessageSquare className="h-5 w-5 text-gray-400" />
+                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MessageSquare className="h-5 w-5 text-gray-500" />
                       <p className="text-xs text-gray-500 uppercase tracking-wide">
                         Message
                       </p>
                     </div>
-                    <p className="text-gray-700 whitespace-pre-wrap">
+                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
                       {selectedLead.message}
                     </p>
                   </div>
@@ -990,8 +1158,8 @@ export default function LeadsPage() {
               </div>
             </div>
           )}
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete Dialog */}
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>

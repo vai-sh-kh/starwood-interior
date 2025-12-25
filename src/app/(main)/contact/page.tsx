@@ -8,7 +8,7 @@ import { CONTACT_CONTENT } from "@/lib/constants";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { getAvatarColorClass } from "@/lib/utils";
+import { getAvatarHexColor } from "@/lib/utils";
 import { z } from "zod";
 
 // Zod validation schema
@@ -164,7 +164,7 @@ export default function ContactPage() {
           message: validationResult.data.message,
           source: "contact_form",
           status: "new",
-          avatar_color: getAvatarColorClass(validationResult.data.fullName),
+          avatar_color: getAvatarHexColor(validationResult.data.fullName),
         })
         .select()
         .single();

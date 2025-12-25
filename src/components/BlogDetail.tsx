@@ -127,8 +127,8 @@ export default function BlogDetail({
               sizes="100vw"
             />
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30"></div>
+            <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70"></div>
+            <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30"></div>
           </div>
 
           <div

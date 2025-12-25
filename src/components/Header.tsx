@@ -1,15 +1,15 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Phone, X } from "lucide-react";
-import { NAV_LINKS, CONTACT_CONTENT } from "@/lib/constants";
-import { useState } from "react";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Suspense } from "react";
+import { Phone } from "lucide-react";
+import { CONTACT_CONTENT } from "@/lib/constants";
+import { getBooleanSetting } from "@/lib/settings";
+import NavLinks from "./NavLinks";
+import NavLinksSkeleton from "./NavLinksSkeleton";
+import MobileMenu from "./MobileMenu";
 
-export default function Header() {
-  const pathname = usePathname();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+export default async function Header() {
+  const projectsEnabled = await getBooleanSetting("projects_enabled", true);
+  const blogsEnabled = await getBooleanSetting("blogs_enabled", true);
 
   return (
     <nav className="fixed top-0 z-100 w-full bg-background-light/98 backdrop-blur-md transition-colors duration-300 h-[60px] border-b border-gray-200">
@@ -22,49 +22,10 @@ export default function Header() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8 text-[13px] font-medium text-gray-600">
-            {NAV_LINKS.map((link) => {
-              // For projects, services, and blogs, check if pathname starts with the href
-              const isActive =
-                link.href === "/projects" ||
-                link.href === "/services" ||
-                link.href === "/blogs"
-                  ? pathname === link.href ||
-                    pathname.startsWith(`${link.href}/`)
-                  : pathname === link.href;
-              const isDetailPage =
-                (link.href === "/projects" && pathname.startsWith("/projects/")) ||
-                (link.href === "/services" &&
-                  pathname.startsWith("/services/")) ||
-                (link.href === "/blogs" && pathname.startsWith("/blogs/"));
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative pb-1 group transition-all duration-300 ease-in-out flex items-center gap-1.5 ${
-                    isActive
-                      ? "text-black font-bold"
-                      : "text-gray-600 hover:text-primary"
-                  }`}
-                >
-                  <span className="relative z-10">{link.label}</span>
-                  {isDetailPage && (
-                    <span className="material-symbols-outlined text-base transition-transform group-hover:translate-y-0.5">
-                      keyboard_arrow_down
-                    </span>
-                  )}
-                  <span
-                    className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
-                      isActive
-                        ? "w-full opacity-100"
-                        : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"
-                    }`}
-                  />
-                </Link>
-              );
-            })}
-          </div>
+          {/* Desktop Navigation with Suspense */}
+          <Suspense fallback={<NavLinksSkeleton />}>
+            <NavLinks projectsEnabled={projectsEnabled} blogsEnabled={blogsEnabled} />
+          </Suspense>
 
           {/* Contact Button */}
           <div className="hidden md:flex items-center">
@@ -79,75 +40,10 @@ export default function Header() {
             </a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-black focus:outline-none"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            >
-              {isMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
+          {/* Mobile Menu */}
+          <MobileMenu projectsEnabled={projectsEnabled} blogsEnabled={blogsEnabled} />
         </div>
       </div>
-
-      {/* Mobile Menu Sheet */}
-      <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-        <SheetContent side="right" className="w-full sm:w-full max-w-none">
-          <div className="flex flex-col h-full pt-32 px-4">
-            {/* Navigation Links */}
-            <nav className="flex flex-col w-full items-center gap-6">
-              {NAV_LINKS.map((link) => {
-                // For projects, services, and blogs, check if pathname starts with the href
-                const isActive =
-                  link.href === "/projects" ||
-                  link.href === "/services" ||
-                  link.href === "/blogs"
-                    ? pathname === link.href ||
-                      pathname.startsWith(`${link.href}/`)
-                    : pathname === link.href;
-                const isDetailPage =
-                  (link.href === "/projects" &&
-                    pathname.startsWith("/projects/")) ||
-                  (link.href === "/services" &&
-                    pathname.startsWith("/services/")) ||
-                  (link.href === "/blogs" && pathname.startsWith("/blogs/"));
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsMenuOpen(false)}
-                    className={`text-lg font-medium transition-colors w-full text-center flex items-center justify-center gap-2 ${
-                      isActive
-                        ? "text-black font-bold"
-                        : "text-gray-600 hover:text-black"
-                    }`}
-                  >
-                    <span className="relative inline-block pb-1">
-                      {link.label}
-                      <span
-                        className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
-                          isActive ? "w-full opacity-100" : "w-0 opacity-0"
-                        }`}
-                      />
-                    </span>
-                    {isDetailPage && (
-                      <span className="material-symbols-outlined text-lg">
-                        keyboard_arrow_down
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
-        </SheetContent>
-      </Sheet>
     </nav>
   );
 }

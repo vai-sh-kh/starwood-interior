@@ -1,8 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getBooleanSetting } from "@/lib/settings";
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if projects are enabled
+    const projectsEnabled = await getBooleanSetting("projects_enabled", true);
+    if (!projectsEnabled) {
+      return NextResponse.json(
+        { error: "Projects section is disabled" },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "9", 10);

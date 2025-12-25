@@ -794,3 +794,28 @@ export const LEAD_STATUSES = [
 ] as const;
 
 export type LeadStatus = typeof LEAD_STATUSES[number]["value"];
+
+// Avatar color palette (hex colors for lead avatars)
+// First color #BB8FCE is the default/initial color
+export const AVATAR_COLORS = [
+  "#BB8FCE", // Default purple/lavender
+  "#A8D5BA", // Soft green
+  "#FFB6C1", // Light pink
+  "#87CEEB", // Sky blue
+  "#DDA0DD", // Plum
+  "#F0E68C", // Khaki
+  "#98D8C8", // Mint green
+  "#FFA07A", // Light salmon
+  "#B0C4DE", // Light steel blue
+  "#FFD700", // Gold
+  "#CD5C5C", // Indian red
+  "#20B2AA", // Light sea green
+  "#9370DB", // Medium purple
+  "#FF69B4", // Hot pink
+  "#00CED1", // Dark turquoise
+  "#FF6347", // Tomato
+  "#7B68EE", // Medium slate blue
+  "#32CD32", // Lime green
+  "#FF1493", // Deep pink
+  "#1E90FF", // Dodger blue
+] as const;

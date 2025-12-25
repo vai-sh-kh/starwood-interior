@@ -215,7 +215,7 @@ export default function Blogs() {
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background-light"></div>
+          <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/50 to-background-light"></div>
         </div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-32 pb-24">
           <h1 className="text-4xl md:text-6xl font-display-serif font-bold text-white mb-6 leading-tight">
@@ -225,9 +225,9 @@ export default function Blogs() {
             Find inspiration and practical advice for creating spaces that
             reflect your unique style and enhance everyday living.
           </p>
-          <div className="max-w-xl mx-auto relative group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <span className="material-symbols-outlined text-gray-400">
+          <div className="max-w-xl mx-auto relative">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+              <span className="material-symbols-outlined text-gray-500 text-xl">
                 search
               </span>
             </div>
@@ -236,79 +236,81 @@ export default function Blogs() {
               placeholder="Search blogs..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full pl-12 pr-4 py-4 rounded-xl border-none shadow-xl bg-white/95 backdrop-blur text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-primary transition-all transform group-hover:scale-[1.01]"
+              className="block w-full pl-12 pr-4 py-4 rounded-xl border-none shadow-xl bg-white/95 backdrop-blur text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-gray-400 transition-all"
             />
           </div>
         </div>
       </div>
 
-      {/* Category Filter Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 mb-12">
-        <div className="flex items-center space-x-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-          {isLoadingCategories ? (
-            <>
-              <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-              <div className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1">
-                <Skeleton className="h-10 w-24 rounded-full" />
-                <Skeleton className="h-10 w-28 rounded-full" />
-                <Skeleton className="h-10 w-32 rounded-full" />
-                <Skeleton className="h-10 w-26 rounded-full" />
-                <Skeleton className="h-10 w-30 rounded-full" />
-              </div>
-              <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => scrollCategories("left")}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                disabled={!canScrollLeft}
-              >
-                <span className="material-symbols-outlined text-xl">
-                  arrow_back
-                </span>
-              </button>
-              <div
-                ref={categoryScrollRef}
-                className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1"
-              >
+      {/* Category Filter Section - Only show if there are blogs or loading */}
+      {(!isLoading && blogs.length > 0) || isLoading ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20 mb-12">
+          <div className="flex items-center space-x-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+            {isLoadingCategories ? (
+              <>
+                <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                <div className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1">
+                  <Skeleton className="h-10 w-24 rounded-full" />
+                  <Skeleton className="h-10 w-28 rounded-full" />
+                  <Skeleton className="h-10 w-32 rounded-full" />
+                  <Skeleton className="h-10 w-26 rounded-full" />
+                  <Skeleton className="h-10 w-30 rounded-full" />
+                </div>
+                <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+              </>
+            ) : (
+              <>
                 <button
-                  onClick={() => setSelectedCategory("all")}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition ${
-                    selectedCategory === "all"
-                      ? "bg-primary text-white shadow-md"
-                      : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 border border-transparent hover:border-gray-200"
-                  }`}
+                  onClick={() => scrollCategories("left")}
+                  className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                  disabled={!canScrollLeft}
                 >
-                  All Posts
+                  <span className="material-symbols-outlined text-xl">
+                    arrow_back
+                  </span>
                 </button>
-                {categories.map((category) => (
+                <div
+                  ref={categoryScrollRef}
+                  className="flex-1 overflow-x-auto hide-scrollbar flex items-center space-x-2 py-1"
+                >
                   <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition border border-transparent ${
-                      selectedCategory === category.id
+                    onClick={() => setSelectedCategory("all")}
+                    className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition ${
+                      selectedCategory === "all"
                         ? "bg-primary text-white shadow-md"
-                        : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 hover:border-gray-200"
+                        : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 border border-transparent hover:border-gray-200"
                     }`}
                   >
-                    {category.name}
+                    All Posts
                   </button>
-                ))}
-              </div>
-              <button
-                onClick={() => scrollCategories("right")}
-                className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
-                disabled={!canScrollRight}
-              >
-                <span className="material-symbols-outlined text-xl">
-                  arrow_forward
-                </span>
-              </button>
-            </>
-          )}
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className={`px-5 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition border border-transparent ${
+                        selectedCategory === category.id
+                          ? "bg-primary text-white shadow-md"
+                          : "bg-transparent hover:bg-gray-100 rounded-full text-gray-600 hover:border-gray-200"
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={() => scrollCategories("right")}
+                  className="p-2 rounded-full hover:bg-gray-100 text-gray-600 transition shrink-0 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center"
+                  disabled={!canScrollRight}
+                >
+                  <span className="material-symbols-outlined text-xl">
+                    arrow_forward
+                  </span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Blog Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
@@ -355,23 +357,33 @@ export default function Blogs() {
             ))}
           </div>
         ) : paginatedBlogs.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-600 text-lg mb-2">
-              {debouncedSearchQuery || selectedCategory !== "all"
-                ? "No blogs found matching your criteria"
-                : "No blogs available yet"}
-            </p>
-            {(debouncedSearchQuery || selectedCategory !== "all") && (
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("all");
-                }}
-                className="text-primary hover:opacity-70 text-sm font-medium transition-opacity"
-              >
-                Clear filters
-              </button>
-            )}
+          <div className="text-center py-20">
+            <div className="flex flex-col items-center justify-center">
+              <h3 className="text-2xl  font-bold text-gray-900 mb-3">
+                {debouncedSearchQuery || selectedCategory !== "all"
+                  ? "No blogs found"
+                  : "No blogs available yet"}
+              </h3>
+              <p className="text-gray-600 text-lg mb-6 max-w-md mx-auto">
+                {debouncedSearchQuery || selectedCategory !== "all"
+                  ? "We couldn't find any blogs matching your search criteria. Try adjusting your filters or search terms."
+                  : "Check back soon for new blog posts and design inspiration."}
+              </p>
+              {(debouncedSearchQuery || selectedCategory !== "all") && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedCategory("all");
+                  }}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity font-medium shadow-sm"
+                >
+                  <span className="material-symbols-outlined text-lg">
+                    filter_alt_off
+                  </span>
+                  Clear filters
+                </button>
+              )}
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -386,10 +398,12 @@ export default function Blogs() {
                 >
                   <div className="relative h-64 overflow-hidden bg-gray-100">
                     {blog.image ? (
-                      <img
+                      <Image
                         src={blog.image}
                         alt={blog.title || "Blog post"}
-                        className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     ) : (
                       <div className="h-full w-full bg-gray-200 flex items-center justify-center">
@@ -401,7 +415,7 @@ export default function Blogs() {
                     <span className="absolute top-4 left-4 bg-white backdrop-blur text-xs font-bold uppercase tracking-wider py-1.5 px-3 rounded shadow-sm">
                       {blog.blog_categories?.name || "Uncategorized"}
                     </span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                   </div>
                   <div className="flex flex-col flex-1 p-6">
                     <div className="flex items-center text-xs text-gray-500 mb-3 space-x-2">

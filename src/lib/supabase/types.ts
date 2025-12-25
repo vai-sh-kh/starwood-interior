@@ -219,6 +219,124 @@ export type Database = {
           },
         ]
       }
+      services: {
+        Row: {
+          id: string
+          title: string
+          slug: string
+          description: string | null
+          content: string | null
+          image: string | null
+          status: string
+          category_id: string | null
+          tags: string[] | null
+          is_new: boolean | null
+          meta_title: string | null
+          meta_description: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          slug: string
+          description?: string | null
+          content?: string | null
+          image?: string | null
+          status?: string
+          category_id?: string | null
+          tags?: string[] | null
+          is_new?: boolean | null
+          meta_title?: string | null
+          meta_description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          slug?: string
+          description?: string | null
+          content?: string | null
+          image?: string | null
+          status?: string
+          category_id?: string | null
+          tags?: string[] | null
+          is_new?: boolean | null
+          meta_title?: string | null
+          meta_description?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_gallery_images: {
+        Row: {
+          id: string
+          service_id: string
+          image_url: string
+          display_order: number
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          service_id: string
+          image_url: string
+          display_order?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          service_id?: string
+          image_url?: string
+          display_order?: number
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_gallery_images_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          id: string
+          key: string
+          value: Json
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          key: string
+          value: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          key?: string
+          value?: Json
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -256,6 +374,18 @@ export type ProjectGalleryImage = Database["public"]["Tables"]["project_gallery_
 export type ProjectGalleryImageInsert = Database["public"]["Tables"]["project_gallery_images"]["Insert"]
 export type ProjectGalleryImageUpdate = Database["public"]["Tables"]["project_gallery_images"]["Update"]
 
+export type Service = Database["public"]["Tables"]["services"]["Row"]
+export type ServiceInsert = Database["public"]["Tables"]["services"]["Insert"]
+export type ServiceUpdate = Database["public"]["Tables"]["services"]["Update"]
+
+export type ServiceGalleryImage = Database["public"]["Tables"]["service_gallery_images"]["Row"]
+export type ServiceGalleryImageInsert = Database["public"]["Tables"]["service_gallery_images"]["Insert"]
+export type ServiceGalleryImageUpdate = Database["public"]["Tables"]["service_gallery_images"]["Update"]
+
+export type Setting = Database["public"]["Tables"]["settings"]["Row"]
+export type SettingInsert = Database["public"]["Tables"]["settings"]["Insert"]
+export type SettingUpdate = Database["public"]["Tables"]["settings"]["Update"]
+
 // Blog with category relation
 export type BlogWithCategory = Blog & {
   blog_categories: BlogCategory | null
@@ -269,5 +399,16 @@ export type ProjectWithCategory = Project & {
 // Project with gallery images
 export type ProjectWithGallery = Project & {
   project_gallery_images: ProjectGalleryImage[] | null
+}
+
+// Service with category relation
+export type ServiceWithCategory = Service & {
+  blog_categories: BlogCategory | null
+}
+
+// Service with gallery images
+export type ServiceWithGallery = Service & {
+  service_gallery_images: ServiceGalleryImage[] | null
+  blog_categories?: BlogCategory | null
 }
 

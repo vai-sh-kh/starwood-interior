@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -82,6 +83,8 @@ type CategoryFormData = z.infer<typeof categorySchema>;
 
 export default function CategoriesPage() {
   const isMobile = useIsMobile();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -125,6 +128,8 @@ export default function CategoriesPage() {
 
     // Apply sorting
     query = query.order(sortField, { ascending: sortDirection === "asc" });
+    // Add secondary sort by id for deterministic ordering (especially important when sorting by created_at)
+    query = query.order("id", { ascending: sortDirection === "asc" });
 
     const { data, error } = await query;
 
@@ -168,6 +173,17 @@ export default function CategoriesPage() {
     resetForm();
     setIsOpen(true);
   };
+
+  // Check for action=add query parameter and open modal
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "add") {
+      openCreate();
+      // Remove query parameter from URL
+      router.replace("/admin/categories");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const openEdit = (category: BlogCategory) => {
     setSelectedCategory(category);
@@ -414,11 +430,9 @@ export default function CategoriesPage() {
         <div className="border-b bg-gray-50/50 p-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Blog Categories
-              </h1>
+              <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
               <p className="text-sm text-gray-500 mt-1">
-                Manage your blog categories for organizing content
+                Manage your categories for organizing content
               </p>
             </div>
             <Button onClick={openCreate} className="gap-2 shrink-0">
@@ -455,14 +469,12 @@ export default function CategoriesPage() {
         </div>
 
         {/* Table Section */}
-        <div className="flex-1 overflow-auto">
-          <Table>
+        <div className="flex-1 overflow-auto overflow-x-hidden">
+          <Table className="w-full">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] px-4">
-                  No
-                </TableHead>
-                <TableHead className="w-[35%] px-4">
+                <TableHead className="w-[60px] max-w-[60px] px-4">No</TableHead>
+                <TableHead className="w-[35%] max-w-[35%] px-4">
                   <button
                     onClick={() => handleSort("name")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -471,7 +483,7 @@ export default function CategoriesPage() {
                     {getSortIcon("name")}
                   </button>
                 </TableHead>
-                <TableHead className="px-4">
+                <TableHead className="max-w-[200px] px-4">
                   <button
                     onClick={() => handleSort("slug")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -480,7 +492,7 @@ export default function CategoriesPage() {
                     {getSortIcon("slug")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell px-4">
+                <TableHead className="hidden lg:table-cell max-w-[120px] px-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -489,7 +501,7 @@ export default function CategoriesPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[140px] px-4">
+                <TableHead className="text-right w-[140px] max-w-[140px] px-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -543,24 +555,27 @@ export default function CategoriesPage() {
                     <TableCell className="px-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4">
-                      <div className="flex items-center gap-3">
+                    <TableCell className="px-4 max-w-[35%]">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
                           <Tags className="h-4 w-4 text-gray-500" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-gray-900 line-clamp-1">
+                        <div className="min-w-0 flex-1 overflow-hidden">
+                          <p className="font-medium text-gray-900 truncate max-w-[500px]">
                             {category.name}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4">
-                      <Badge variant="secondary" className="font-mono text-xs">
-                        /{category.slug}
+                    <TableCell className="px-4 max-w-[200px]">
+                      <Badge
+                        variant="secondary"
+                        className="font-mono text-xs truncate max-w-full"
+                      >
+                        <span className="truncate">/{category.slug}</span>
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell text-gray-600 px-4">
+                    <TableCell className="hidden lg:table-cell text-gray-600 px-4 max-w-[120px] truncate">
                       {category.created_at
                         ? new Date(category.created_at).toLocaleDateString(
                             "en-US",

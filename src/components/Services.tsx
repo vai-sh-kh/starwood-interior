@@ -1,17 +1,78 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { SERVICES_LIST } from "@/lib/constants";
-import { IMAGES } from "@/lib/images";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ServiceWithCategory } from "@/lib/supabase/types";
+
+const ITEMS_PER_PAGE = 9;
+
+interface ServicesResponse {
+  services: ServiceWithCategory[];
+  hasMore: boolean;
+  total: number;
+  page: number;
+  limit: number;
+}
 
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
-  const leftImageRef = useRef<HTMLDivElement>(null);
-  const rightImageRef = useRef<HTMLDivElement>(null);
-  const servicesRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [services, setServices] = useState<ServiceWithCategory[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
 
+  // Fetch services from API
+  const fetchServices = useCallback(
+    async (page: number, append: boolean = false) => {
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoading(true);
+      }
+
+      try {
+        const response = await fetch(
+          `/api/services?page=${page}&limit=${ITEMS_PER_PAGE}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch services");
+        }
+
+        const data: ServicesResponse = await response.json();
+
+        if (append) {
+          setServices((prev) => [...prev, ...data.services]);
+        } else {
+          setServices(data.services);
+        }
+
+        setHasMore(data.hasMore);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error("Error fetching services:", error);
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    []
+  );
+
+  // Initial load
+  useEffect(() => {
+    fetchServices(1, false);
+  }, [fetchServices]);
+
+  // Intersection Observer for header animation
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -25,8 +86,8 @@ export default function Services() {
         });
       },
       {
-        threshold: 0.2,
-        rootMargin: "0px 0px -100px 0px",
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
       }
     );
 
@@ -37,44 +98,59 @@ export default function Services() {
     };
   }, []);
 
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore || isLoading || isLoadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && hasMore && !isLoadingMore) {
+            fetchServices(currentPage + 1, true);
+          }
+        });
+      },
+      {
+        rootMargin: "100px",
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isLoading, isLoadingMore, currentPage, fetchServices]);
+
+  // Parallax effect with Lenis
   useEffect(() => {
     interface LenisInstance {
       scroll: number;
-      on: (event: string, callback: (e: { scroll: number }) => void) => void;
-      off: (event: string, callback: (e: { scroll: number }) => void) => void;
+      on: (event: string, handler: () => void) => void;
+      off: (event: string, handler: () => void) => void;
     }
+
     const lenis = (window as unknown as { lenis?: LenisInstance }).lenis;
     if (!lenis) return;
 
     const handleScroll = () => {
-      const rect = sectionRef.current?.getBoundingClientRect();
-      if (!rect) return;
+      if (headerRef.current) {
+        const rect = sectionRef.current?.getBoundingClientRect();
+        if (!rect) return;
 
-      const windowHeight = window.innerHeight;
-      const elementTop = rect.top;
-      const scrollProgress = Math.max(
-        0,
-        Math.min(1, (windowHeight - elementTop) / (windowHeight + rect.height))
-      );
+        const windowHeight = window.innerHeight;
+        const elementTop = rect.top;
+        const scrollProgress = Math.max(
+          0,
+          Math.min(
+            1,
+            (windowHeight - elementTop) / (windowHeight + rect.height)
+          )
+        );
 
-      // Parallax for left image
-      if (leftImageRef.current) {
-        const translateY = (scrollProgress - 0.5) * 60;
-        const translateX = (scrollProgress - 0.5) * -30;
-        leftImageRef.current.style.transform = `translateY(${translateY}px) translateX(${translateX}px) rotate(-6deg)`;
-      }
-
-      // Parallax for right image (opposite direction)
-      if (rightImageRef.current) {
-        const translateY = (scrollProgress - 0.5) * -50;
-        const translateX = (scrollProgress - 0.5) * 25;
-        rightImageRef.current.style.transform = `translateY(${translateY}px) translateX(${translateX}px) rotate(3deg)`;
-      }
-
-      // Parallax for services list
-      if (servicesRef.current) {
-        const translateY = (scrollProgress - 0.5) * 30;
-        servicesRef.current.style.transform = `translateY(${translateY}px)`;
+        const translateY = (scrollProgress - 0.5) * 20;
+        headerRef.current.style.transform = `translateY(${translateY}px)`;
       }
     };
 
@@ -90,90 +166,155 @@ export default function Services() {
     <section
       ref={sectionRef}
       id="services"
-      className="bg-[#111111] text-white py-12 md:py-24 rounded-[2rem] lg:rounded-t-[4rem] relative overflow-hidden "
+      className="max-w-7xl mx-auto lg:px-8"
     >
-      {/* Background Pattern */}
+      {/* Header */}
       <div
-        className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none"
-        style={{
-          backgroundImage:
-            "url('https://www.transparenttextures.com/patterns/cubes.png')",
-        }}
-      ></div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Section Header */}
-        <div
-          className={`text-center mb-8 md:mb-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
-        >
-          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">
-            — What We Do —
+        ref={headerRef}
+        className={`flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8 transition-all duration-1000 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="max-w-2xl">
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500 block mb-4">
+            — Our Services
           </span>
+          <h2 className="text-3xl lg:text-[2.5rem] leading-[1.2] font-display font-medium mb-4 text-black">
+            Crafting spaces that harmonize <br /> modern elegance with timeless
+            design
+          </h2>
+          <p className="text-gray-600 text-sm lg:text-[15px] font-light max-w-lg mt-4">
+            Our contemporary services bring creativity, comfort, and refined
+            functionality to the home.
+          </p>
         </div>
 
-        {/* Services List */}
-        <div className="relative  flex items-center justify-center py-6 md:py-10">
-          <div
-            ref={servicesRef}
-            className="flex flex-col items-center space-y-4 md:space-y-6 lg:space-y-8 text-center z-20 w-full transition-transform duration-300 ease-out"
-          >
-            {SERVICES_LIST.map((service, index) => (
-              <div
-                key={service.title}
-                className={`group w-full text-center relative transition-all duration-1000 ease-out px-4 ${
+        {/* Navigation Arrows */}
+        <div className="flex gap-3">
+          <button className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center hover:bg-black hover:text-white transition-colors group">
+            <span className="material-symbols-outlined text-lg group-hover:-translate-x-0.5 transition-transform">
+              arrow_back
+            </span>
+          </button>
+          <button className="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:opacity-80 transition-opacity group shadow-lg">
+            <span className="material-symbols-outlined text-lg group-hover:translate-x-0.5 transition-transform">
+              arrow_forward
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Services Grid */}
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div
+              key={index}
+              className="relative rounded-lg overflow-hidden aspect-4/5"
+            >
+              {/* Image skeleton */}
+              <Skeleton className="w-full h-full rounded-none" />
+
+              {/* Arrow icon skeleton */}
+              <Skeleton className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 rounded-full" />
+
+              {/* Content skeleton */}
+              <div className="absolute bottom-0 left-0 p-4 sm:p-6 w-full">
+                {/* Title skeleton */}
+                <div className="mb-2">
+                  <Skeleton className="h-6 w-3/4" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : services.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-gray-600 text-lg">
+            No services available yet. Check back soon!
+          </p>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+            {services.map((service, index) => (
+              <Link
+                key={service.id}
+                href={`/services/${service.slug || service.id}`}
+                className={`group relative overflow-hidden rounded-lg aspect-4/5 block transition-all duration-1000 ease-out ${
                   isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-12"
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                <h3
-                  className={`text-2xl md:text-4xl lg:text-[4.5rem] font-display transition-all duration-300 cursor-pointer font-light tracking-tight leading-[1.2] md:leading-[1.3] lg:leading-[1.2] ${
-                    service.active
-                      ? "text-white relative inline-block"
-                      : "text-white/30 group-hover:text-white"
-                  }`}
-                >
-                  {service.title}
-                  {service.count && (
-                    <span className="absolute -right-8 -top-2 lg:-right-12 lg:top-2 text-xs lg:text-sm text-primary font-sans font-medium tracking-widest">
-                      ({service.count})
+                {service.image && !imageErrors[service.id] ? (
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized={service.image.includes("supabase.co")}
+                    onError={() =>
+                      setImageErrors((prev) => ({
+                        ...prev,
+                        [service.id]: true,
+                      }))
+                    }
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-gray-400 text-4xl">
+                      image_not_supported
                     </span>
-                  )}
-                </h3>
-              </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 flex justify-between items-end">
+                  <h4 className="text-white text-lg sm:text-xl font-semibold">
+                    {service.title}
+                  </h4>
+                  <div className="bg-white/90 backdrop-blur-sm text-black rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center group-hover:scale-110 transition-transform touch-target">
+                    <span className="material-symbols-outlined text-xl">
+                      arrow_outward
+                    </span>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
 
-          {/* Left Image */}
-          <div
-            ref={leftImageRef}
-            className="absolute left-4 lg:left-10 top-1/4 w-48 lg:w-64 h-32 lg:h-44 rounded-xl overflow-hidden shadow-2xl transform -rotate-6 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
-          >
-            <Image
-              src={IMAGES.services.left}
-              alt="Construction work"
-              fill
-              className="object-cover"
-            />
-          </div>
+          {/* Loading more skeleton */}
+          {isLoadingMore && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 mt-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={`loading-${index}`}
+                  className="relative rounded-lg overflow-hidden aspect-4/5"
+                >
+                  {/* Image skeleton */}
+                  <Skeleton className="w-full h-full rounded-none" />
 
-          {/* Right Image */}
-          <div
-            ref={rightImageRef}
-            className="absolute right-4 lg:right-10 bottom-1/4 w-56 lg:w-72 h-36 lg:h-48 rounded-xl overflow-hidden shadow-2xl transform rotate-3 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
-          >
-            <Image
-              src={IMAGES.services.right}
-              alt="Construction site"
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </div>
+                  {/* Arrow icon skeleton */}
+                  <Skeleton className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 w-11 h-11 rounded-full" />
+
+                  {/* Content skeleton */}
+                  <div className="absolute bottom-0 left-0 p-4 sm:p-6 w-full">
+                    {/* Title skeleton */}
+                    <div className="mb-2">
+                      <Skeleton className="h-6 w-3/4" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Sentinel element for infinite scroll */}
+          <div ref={sentinelRef} className="h-10 w-full" />
+        </>
+      )}
     </section>
   );
 }

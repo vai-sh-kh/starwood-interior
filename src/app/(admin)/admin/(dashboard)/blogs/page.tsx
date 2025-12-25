@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import Image from "next/image";
+import { useSearchParams, useRouter } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -83,13 +83,14 @@ import {
 import TipTapEditor from "@/app/(admin)/components/TipTapEditor";
 import ImageDropzone from "@/app/(admin)/components/ImageDropzone";
 import { useIsMobile } from "@/hooks/use-mobile";
+import AdminImage from "../AdminImage";
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
 type SortField = "title" | "created_at" | "author" | "category";
 type SortDirection = "asc" | "desc";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 6;
 
 // Zod validation schema
 const blogSchema = z.object({
@@ -136,6 +137,8 @@ type BlogFormData = z.infer<typeof blogSchema>;
 
 export default function BlogsPage() {
   const isMobile = useIsMobile();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [blogs, setBlogs] = useState<BlogWithCategory[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -204,6 +207,8 @@ export default function BlogsPage() {
     const orderField =
       sortField === "category" ? "blog_categories.name" : sortField;
     query = query.order(orderField, { ascending: sortDirection === "asc" });
+    // Add secondary sort by id for deterministic ordering (especially important when sorting by created_at)
+    query = query.order("id", { ascending: sortDirection === "asc" });
 
     const { data, error } = await query;
 
@@ -268,6 +273,17 @@ export default function BlogsPage() {
     resetForm();
     setIsOpen(true);
   };
+
+  // Check for action=add query parameter and open modal
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action === "add") {
+      openCreate();
+      // Remove query parameter from URL
+      router.replace("/admin/blogs");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const openEdit = (blog: Blog) => {
     setSelectedBlog(blog);
@@ -813,12 +829,14 @@ export default function BlogsPage() {
         </div>
 
         {/* Table Section */}
-        <div className="flex-1 overflow-auto">
-          <Table>
+        <div className="flex-1 overflow-auto overflow-x-hidden">
+          <Table className="w-full">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] px-4">No</TableHead>
-                <TableHead className="w-[35%] px-4">
+                <TableHead className="w-[60px] max-w-[60px] px-4 py-4">
+                  No
+                </TableHead>
+                <TableHead className="max-w-[300px] px-4 py-4">
                   <button
                     onClick={() => handleSort("title")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -827,7 +845,7 @@ export default function BlogsPage() {
                     {getSortIcon("title")}
                   </button>
                 </TableHead>
-                <TableHead className="px-4">
+                <TableHead className="max-w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("category")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -836,7 +854,7 @@ export default function BlogsPage() {
                     {getSortIcon("category")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden md:table-cell px-4">
+                <TableHead className="hidden md:table-cell max-w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("author")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -845,7 +863,7 @@ export default function BlogsPage() {
                     {getSortIcon("author")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell px-4">
+                <TableHead className="hidden lg:table-cell max-w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -854,7 +872,7 @@ export default function BlogsPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[80px] px-4">
+                <TableHead className="text-right w-[80px] max-w-[80px] px-4 py-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -863,29 +881,29 @@ export default function BlogsPage() {
               {isLoading ? (
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-8" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-5 w-20" />
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4">
+                    <TableCell className="hidden md:table-cell px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4">
+                    <TableCell className="hidden lg:table-cell px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <Skeleton className="h-8 w-8 ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : paginatedBlogs.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={6} className="h-[400px] px-4">
+                  <TableCell colSpan={6} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <FileText className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -908,25 +926,19 @@ export default function BlogsPage() {
               ) : (
                 paginatedBlogs.map((blog, index) => (
                   <TableRow key={blog.id} className="hover:bg-transparent">
-                    <TableCell className="px-4 text-gray-600">
+                    <TableCell className="px-4 py-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4">
-                      <div className="flex items-center gap-3">
-                        {blog.image && (
-                          <div className="w-12 h-12 rounded-lg overflow-hidden hidden sm:block shrink-0 relative">
-                            <Image
-                              src={blog.image}
-                              alt={blog.title}
-                              fill
-                              className="object-cover"
-                              onError={() => {}}
-                            />
-                          </div>
-                        )}
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-gray-900 line-clamp-1">
+                    <TableCell className="px-4 py-4 max-w-[300px]">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <AdminImage
+                          src={blog.image}
+                          alt={blog.title}
+                          type="blog"
+                        />
+                        <div className="min-w-0 flex-1 overflow-hidden">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
                               {blog.title}
                             </p>
                           </div>
@@ -936,19 +948,26 @@ export default function BlogsPage() {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4">
-                      {blog.blog_categories ? (
-                        <Badge variant="secondary">
-                          {blog.blog_categories.name}
-                        </Badge>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
+                    <TableCell className="px-4 py-4 max-w-[150px]">
+                      <div className="truncate">
+                        {blog.blog_categories ? (
+                          <Badge
+                            variant="secondary"
+                            className="truncate max-w-full"
+                          >
+                            <span className="truncate">
+                              {blog.blog_categories.name}
+                            </span>
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 text-gray-600">
+                    <TableCell className="hidden md:table-cell px-4 py-4 text-gray-600 max-w-[150px] truncate">
                       {blog.author || "—"}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 text-gray-600">
+                    <TableCell className="hidden lg:table-cell px-4 py-4 text-gray-600 max-w-[120px] truncate">
                       {blog.created_at
                         ? new Date(blog.created_at).toLocaleDateString(
                             "en-US",
@@ -960,7 +979,7 @@ export default function BlogsPage() {
                           )
                         : "—"}
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="px-4 py-4">
                       <div className="flex items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1011,10 +1030,10 @@ export default function BlogsPage() {
         </div>
 
         {/* Pagination Section */}
-        {!isLoading && filteredBlogs.length > 0 && totalPages > 1 && (
-          <div className="border-t p-4 bg-gray-50/50">
+        {!isLoading && filteredBlogs.length > 0 && (
+          <div className="border-t p-4 bg-gray-50/50 shrink-0">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-600 order-2 sm:order-1">
                 Showing{" "}
                 <span className="font-medium text-gray-900">
                   {startIndex + 1}
@@ -1027,73 +1046,76 @@ export default function BlogsPage() {
                 <span className="font-medium text-gray-900">
                   {filteredBlogs.length}
                 </span>{" "}
-                blogs
+                {filteredBlogs.length === 1 ? "blog" : "blogs"}
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="gap-1"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Previous</span>
-                </Button>
-
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first page, last page, current page, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1) ||
-                        totalPages <= 7
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(page)}
-                            className="w-9 h-9 p-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="px-2 text-gray-400">
-                            ...
-                          </span>
-                        );
-                      }
-                      return null;
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2 order-1 sm:order-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.max(1, prev - 1))
                     }
-                  )}
-                </div>
+                    disabled={currentPage === 1}
+                    className="gap-1"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    <span className="hidden sm:inline">Previous</span>
+                  </Button>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="gap-1"
-                >
-                  <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
+                  <div className="flex items-center gap-1 flex-wrap justify-center">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 &&
+                            page <= currentPage + 1) ||
+                          totalPages <= 7
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                currentPage === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="w-9 h-9 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
+                      }
+                    )}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="gap-1"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
