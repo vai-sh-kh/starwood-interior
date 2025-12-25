@@ -60,7 +60,7 @@ export default function AdminImage({
         fill
         className="object-cover"
         onError={() => setHasError(true)}
-        unoptimized={src.includes("supabase.co")}
+        unoptimized={src?.includes("supabase.co") ?? false}
       />
     </div>
   );
