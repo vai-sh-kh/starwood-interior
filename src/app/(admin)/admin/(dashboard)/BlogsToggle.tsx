@@ -137,12 +137,18 @@ export default function BlogsToggle({ initialValue }: BlogsToggleProps) {
           </TooltipContent>
         </Tooltip>
       </div>
-      <Switch
-        checked={enabled}
-        onCheckedChange={handleSwitchChange}
-        disabled={isLoading}
-        aria-label={enabled ? "Disable blogs" : "Enable blogs"}
-      />
+      <div className="relative flex items-center">
+        {isLoading && (
+          <Loader2 className="h-4 w-4 animate-spin text-gray-400 mr-2" />
+        )}
+        <Switch
+          checked={enabled}
+          onCheckedChange={handleSwitchChange}
+          disabled={isLoading}
+          aria-label={enabled ? "Disable blogs" : "Enable blogs"}
+          className={isLoading ? "opacity-50" : ""}
+        />
+      </div>
       <AlertDialog
         open={showConfirmDialog}
         onOpenChange={handleDialogOpenChange}

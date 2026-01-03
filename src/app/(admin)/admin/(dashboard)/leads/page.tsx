@@ -77,6 +77,7 @@ import {
   Pencil,
   ChevronLeft,
   ChevronRight,
+  Bot,
 } from "lucide-react";
 
 const ITEMS_PER_PAGE = 10;
@@ -424,6 +425,8 @@ export default function LeadsPage() {
         return "bg-green-100 text-green-700";
       case "consultation":
         return "bg-purple-100 text-purple-700";
+      case "collect_chat":
+        return "bg-pink-100 text-pink-700";
       case "manual":
         return "bg-gray-100 text-gray-700";
       default:
@@ -574,9 +577,14 @@ export default function LeadsPage() {
                               avatarColor={lead.avatar_color}
                               size="md"
                             />
-                            <span className="font-medium text-gray-900 truncate max-w-[500px]">
-                              {lead.name}
-                            </span>
+                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                              <span className="font-medium text-gray-900 truncate max-w-[500px]">
+                                {lead.name}
+                              </span>
+                              {lead.source === "collect_chat" && (
+                                <Bot className="h-4 w-4 text-pink-600 shrink-0" title="From Chatbot" />
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="px-4 max-w-[200px]">
@@ -634,8 +642,11 @@ export default function LeadsPage() {
                             variant="secondary"
                             className={`${getSourceBadgeColor(
                               lead.source
-                            )} truncate max-w-full`}
+                            )} truncate max-w-full flex items-center gap-1`}
                           >
+                            {lead.source === "collect_chat" && (
+                              <Bot className="h-3 w-3 shrink-0" />
+                            )}
                             <span className="truncate">
                               {formatSource(lead.source)}
                             </span>
@@ -696,7 +707,7 @@ export default function LeadsPage() {
         </div>
 
         {/* Pagination Section */}
-        {!isLoading && filteredLeads.length > 0 && totalPages > 1 && (
+        {!isLoading && filteredLeads.length > 0 && (
           <div className="border-t p-4 bg-gray-50/50">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-gray-600">
@@ -728,43 +739,45 @@ export default function LeadsPage() {
                   <span className="hidden sm:inline">Previous</span>
                 </Button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first page, last page, current page, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1) ||
-                        totalPages <= 7
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(page)}
-                            className="w-9 h-9 p-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="px-2 text-gray-400">
-                            ...
-                          </span>
-                        );
+                {totalPages > 0 && (
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1) ||
+                          totalPages <= 7
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                currentPage === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="w-9 h-9 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
                       }
-                      return null;
-                    }
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
 
                 <Button
                   variant="outline"
@@ -786,20 +799,21 @@ export default function LeadsPage() {
 
       {/* Add/Edit Form Sheet */}
       <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <SheetContent className="w-full sm:max-w-md overflow-hidden flex flex-col p-0">
-          <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
-            <SheetTitle>{isEditing ? "Edit Lead" : "Add New Lead"}</SheetTitle>
-            <SheetDescription>
-              {isEditing
-                ? "Update lead information"
-                : "Create a new lead manually"}
-            </SheetDescription>
-          </SheetHeader>
+        <SheetContent className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white">
+          <div className="flex flex-col h-full overflow-hidden">
+            <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+              <SheetTitle>{isEditing ? "Edit Lead" : "Add New Lead"}</SheetTitle>
+              <SheetDescription>
+                {isEditing
+                  ? "Update lead information"
+                  : "Create a new lead manually"}
+              </SheetDescription>
+            </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-4">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">
+                <Label htmlFor="name" className="text-base">
                   Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -820,7 +834,7 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter full name"
-                  className={formErrors.name ? "border-red-500" : ""}
+                  className={`h-12 text-base ${formErrors.name ? "border-red-500" : ""}`}
                 />
                 {formErrors.name && (
                   <span className="text-red-500 text-sm">
@@ -830,7 +844,7 @@ export default function LeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">
+                <Label htmlFor="email" className="text-base">
                   Email <span className="text-red-500">*</span>
                 </Label>
                 <Input
@@ -880,7 +894,7 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter email address"
-                  className={formErrors.email ? "border-red-500" : ""}
+                  className={`h-12 text-base ${formErrors.email ? "border-red-500" : ""}`}
                 />
                 {formErrors.email && (
                   <span className="text-red-500 text-sm">
@@ -890,7 +904,7 @@ export default function LeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone" className="text-base">Phone</Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -910,7 +924,7 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter phone number"
-                  className={formErrors.phone ? "border-red-500" : ""}
+                  className={`h-12 text-base ${formErrors.phone ? "border-red-500" : ""}`}
                 />
                 {formErrors.phone && (
                   <span className="text-red-500 text-sm">
@@ -920,14 +934,14 @@ export default function LeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status" className="text-base">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) =>
                     setFormData({ ...formData, status: value })
                   }
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-12 text-base">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -941,19 +955,20 @@ export default function LeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="source">Source</Label>
+                <Label htmlFor="source" className="text-base">Source</Label>
                 <Select
                   value={formData.source}
                   onValueChange={(value) =>
                     setFormData({ ...formData, source: value })
                   }
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-12 text-base">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="manual">Manual</SelectItem>
                     <SelectItem value="contact_form">Contact Form</SelectItem>
+                    <SelectItem value="collect_chat">Chatbot</SelectItem>
                     <SelectItem value="newsletter">Newsletter</SelectItem>
                     <SelectItem value="consultation">Consultation</SelectItem>
                   </SelectContent>
@@ -961,7 +976,7 @@ export default function LeadsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message" className="text-base">Message</Label>
                 <Textarea
                   id="message"
                   value={formData.message}
@@ -972,8 +987,8 @@ export default function LeadsPage() {
                     }
                   }}
                   placeholder="Enter message or notes"
-                  rows={4}
-                  className={formErrors.message ? "border-red-500" : ""}
+                  rows={5}
+                  className={`min-h-[140px] text-base ${formErrors.message ? "border-red-500" : ""}`}
                 />
                 {formErrors.message && (
                   <span className="text-red-500 text-sm">
@@ -982,16 +997,17 @@ export default function LeadsPage() {
                 )}
               </div>
             </div>
-          </div>
+            </div>
 
-          <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
-            <Button variant="outline" onClick={() => setIsFormOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isEditing ? "Update" : "Create"}
-            </Button>
+            <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
+              <Button variant="outline" onClick={() => setIsFormOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSave} disabled={isSaving}>
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isEditing ? "Update" : "Create"}
+              </Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
@@ -1030,8 +1046,11 @@ export default function LeadsPage() {
                     </Badge>
                     <Badge
                       variant="secondary"
-                      className={getSourceBadgeColor(selectedLead.source)}
+                      className={`${getSourceBadgeColor(selectedLead.source)} flex items-center gap-1`}
                     >
+                      {selectedLead.source === "collect_chat" && (
+                        <Bot className="h-3 w-3 shrink-0" />
+                      )}
                       {formatSource(selectedLead.source)}
                     </Badge>
                   </div>
@@ -1109,6 +1128,22 @@ export default function LeadsPage() {
                     </p>
                   </div>
                 </div>
+
+                {selectedLead.chat_id && (
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="shrink-0">
+                      <Bot className="h-5 w-5 text-pink-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                        Chat ID
+                      </p>
+                      <p className="text-gray-900 font-medium font-mono text-sm">
+                        {selectedLead.chat_id}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
                 {selectedLead.message && (
                   <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">

@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Settings,
   Briefcase,
+  Layers,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,11 @@ const navItems = [
     title: "Services",
     href: "/admin/services",
     icon: Briefcase,
+  },
+  {
+    title: "Subservices",
+    href: "/admin/subservices",
+    icon: Layers,
   },
   {
     title: "Categories",

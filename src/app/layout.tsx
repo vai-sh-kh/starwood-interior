@@ -3,6 +3,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import ChatBot from "@/components/ChatBot";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -51,6 +52,7 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} antialiased font-display bg-background-light text-text-light`}
       >
         {children}
+        <ChatBot />
       </body>
     </html>
   );

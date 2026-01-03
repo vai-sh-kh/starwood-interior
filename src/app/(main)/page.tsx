@@ -9,9 +9,9 @@ import { Button } from "@/components/ui/button";
 import { COLLECTIONS } from "@/lib/constants";
 import Testimonials from "@/components/Testimonials";
 import ProjectsHome from "@/components/ProjectsHome";
-import FAQ from "@/components/FAQ";
 import { useEffect, useRef, useState } from "react";
 import ServiceHome from "@/components/serviceHome";
+import { ArrowRight } from "lucide-react";
 
 export default function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -64,7 +64,12 @@ export default function HomePage() {
 
   // Parallax effects with Lenis
   useEffect(() => {
-    const lenis = (window as any).lenis;
+    interface LenisInstance {
+      scroll: number;
+      on: (event: string, callback: (e: { scroll: number }) => void) => void;
+      off: (event: string, callback: (e: { scroll: number }) => void) => void;
+    }
+    const lenis = (window as unknown as { lenis?: LenisInstance }).lenis;
     if (!lenis) return;
 
     const handleScroll = () => {
@@ -127,7 +132,7 @@ export default function HomePage() {
         >
           <Image
             alt="Spacious modern living room with a large grey sofa and expansive windows"
-            src="/images/home-banner.png"
+            src="/images/home-banner.webp"
             fill
             className="object-cover "
             priority
@@ -136,29 +141,27 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-black/30" />
           <div
             ref={heroContentRef}
-            className={`relative text-white max-w-lg z-10 transition-all duration-1000 ease-out ${
+            className={`relative text-white max-w-3xl z-10 transition-all duration-1000 ease-out ${
               isVisible.hero
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-8"
             }`}
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight tracking-tight">
-              Contemporary
+              Interior Design Service.
             </h1>
-            <p className="hidden md:block mt-3 sm:mt-4 text-sm sm:text-base md:text-lg leading-relaxed text-white/90">
-              Defining spaces that encompass modern aesthetics with timeless
-              elegance, our contemporary interior designs create a harmonious
-              blend, satisfying the essence of fine living.
+            <p className="hidden md:block rounded-lg p-4 mt-3 font-bold sm:mt-4 text-sm sm:text-base md:text-lg leading-relaxed text-white/90">
+              Leading interior design firm in Trivandrum delivering
+              contemporary,functional, and sophisticated solutions for
+              residential and commercial spaces.
             </p>
-            <Link href="/services">
+            <Link href="/contact">
               <Button
                 variant="default"
-                className="mt-4 sm:mt-6 md:mt-8 bg-black/70 text-white text-sm font-medium min-h-[44px] py-3 px-5 sm:px-6 rounded-lg hover:bg-black touch-target transition-all duration-300"
+                className="mt-4 sm:mt-6 md:mt-8 bg-black text-white text-sm font-medium min-h-[44px] py-3 px-5 sm:px-6 rounded-lg hover:bg-black touch-target transition-all duration-300"
               >
-                View More{" "}
-                <span className="material-symbols-outlined text-base ml-2">
-                  arrow_forward
-                </span>
+                Get Your Free Consultation{" "}
+                <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
           </div>
@@ -229,28 +232,28 @@ export default function HomePage() {
               }`}
             >
               <p className="text-xs sm:text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                Elegance • Timeless
+                Since • 2015
               </p>
               <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#333333] mt-2 sm:mt-4 leading-tight">
-                Modern Style
+                Creating Premium,
                 <br />
-                Timeless Charm
+                Budget-Friendly Interiors
               </h3>
               <p className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed">
-                Discover Starwood Interiors&apos;s 2024 preview, featuring
-                sofas, chairs, and armchairs embodying diverse
-                lifestyles-concept, alongside dining tables, coffee tables, and
-                sideboards.
+                Starwood Interiors is a leading interior design firm based in
+                Trivandrum, Kerala, with a strong legacy of creating stylish,
+                functional, and beautifully coordinated value-for-money
+                interiors since 2015. Our creative team of interior designers
+                brings global design influences and local insights to every
+                project, delivering spaces that align with your personality,
+                lifestyle, and needs.
               </p>
               <Link href="/about-us">
                 <Button
                   variant="default"
                   className="mt-6 sm:mt-8 bg-[#333333] text-white text-sm font-medium min-h-[44px] py-3 px-6 rounded-lg flex items-center gap-2 hover:opacity-80 touch-target transition-all duration-300"
                 >
-                  About Us{" "}
-                  <span className="material-symbols-outlined text-base">
-                    arrow_forward
-                  </span>
+                  About Us <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
             </div>
@@ -269,27 +272,22 @@ export default function HomePage() {
             >
               <div>
                 <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#333333] leading-tight">
-                  Explore Our Proudly
-                  <br />
-                  Collection
+                  Our Interior Design Services
                 </h3>
               </div>
               <div className="text-left sm:text-right w-full sm:w-auto">
-                <Link href="/works">
+                <Link href="/services">
                   <Button
                     variant="default"
                     className="hidden md:inline-flex bg-[#333333] text-white text-sm font-medium min-h-[44px] py-3 px-5 rounded-lg hover:opacity-80 touch-target transition-all duration-300"
                   >
-                    View More{" "}
-                    <span className="material-symbols-outlined text-sm align-middle ml-2">
-                      arrow_forward
-                    </span>
+                    {" "}
+                    View More <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
                 <p className="text-xs sm:text-sm md:text-base text-gray-500 mt-3 sm:mt-4 max-w-xs sm:max-w-md leading-relaxed">
-                  Starwood Interiors will demonstrate its vision of contemporary
-                  living at Salone del Mobile.Milano 2024, in its space at
-                  Salone de Mobile.Milano 2024.
+                  We offer a wide range of interior design services for
+                  commercial and residential projects since 2015.
                 </p>
               </div>
             </div>
@@ -312,8 +310,26 @@ export default function HomePage() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-center text-white z-10">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent group-hover:from-black/80 group-hover:via-black/50 group-hover:to-black/30 transition-all duration-500" />
+
+                  {/* Description overlay - slides up from bottom to middle on hover */}
+                  {item.description && (
+                    <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 z-20 pointer-events-none">
+                      <div className="bg-white rounded-lg p-4 sm:p-6 w-full mx-4 transform translate-y-[120%] group-hover:translate-y-0 transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100 pointer-events-auto shadow-xl">
+                        <p className="text-[#333333] text-sm sm:text-base leading-relaxed text-center font-medium">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div
+                    className={`absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between items-center text-white z-10 transition-all duration-500 ${
+                      item.description
+                        ? "group-hover:opacity-30 group-hover:translate-y-2"
+                        : ""
+                    }`}
+                  >
                     <span className="text-base sm:text-lg md:text-xl font-bold">
                       {item.name}
                     </span>
@@ -331,8 +347,6 @@ export default function HomePage() {
           <Testimonials />
 
           <ProjectsHome />
-
-          <FAQ />
         </main>
 
         <BottomNav />

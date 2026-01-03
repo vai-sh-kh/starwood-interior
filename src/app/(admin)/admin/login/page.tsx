@@ -8,8 +8,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { z } from "zod";
 
 const ADMIN_EMAIL = "vaishakhpat2003@gmail.com";
+
+// Zod validation schema for login form
+const loginFormSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .trim()
+    .toLowerCase()
+    .email("Please enter a valid email address")
+    .refine(
+      (email) => email.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
+      {
+        message: "Access denied. Only authorized administrators can sign in.",
+      }
+    ),
+  password: z
+    .string()
+    .min(1, "Password is required")
+    .min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormData = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,37 +40,55 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
-
-  const validateEmail = (emailValue: string): boolean => {
-    if (emailValue.trim() === "") {
-      setEmailError("Email is required");
-      return false;
-    }
-    if (emailValue.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-      setEmailError("Access denied. Only authorized administrators can sign in.");
-      return false;
-    }
-    setEmailError("");
-    return true;
-  };
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof LoginFormData, string>>
+  >({});
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
     // Clear error when user starts typing
-    if (emailError) {
-      setEmailError("");
+    if (errors.email) {
+      setErrors((prev) => ({ ...prev, email: undefined }));
+    }
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    // Clear error when user starts typing
+    if (errors.password) {
+      setErrors((prev) => ({ ...prev, password: undefined }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Client-side email validation
-    if (!validateEmail(email)) {
+
+    // Validate form using Zod
+    const validationResult = loginFormSchema.safeParse({
+      email: email.trim(),
+      password,
+    });
+
+    if (!validationResult.success) {
+      const fieldErrors: Partial<Record<keyof LoginFormData, string>> = {};
+      validationResult.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof LoginFormData;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      setErrors(fieldErrors);
+
+      // Show first error in toast
+      const firstError = validationResult.error.issues[0];
+      toast.error(firstError.message);
       return;
     }
+
+    // Clear errors if validation passes
+    setErrors({});
 
     setIsLoading(true);
 
@@ -63,7 +104,7 @@ export default function LoginPage() {
         throw error;
       }
 
-      // Server-side email verification
+      // Server-side email verification (double check)
       if (data.user?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
         // Sign out the user if email doesn't match
         await supabase.auth.signOut();
@@ -114,19 +155,17 @@ export default function LoginPage() {
             </Label>
             <Input
               id="email"
-              type="email"
+              type="text"
               value={email}
               onChange={handleEmailChange}
-              onBlur={() => validateEmail(email)}
               placeholder="Enter your email address"
-              required
               disabled={isLoading}
               className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 ${
-                emailError ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
               }`}
             />
-            {emailError && (
-              <p className="text-sm text-red-600 mt-1">{emailError}</p>
+            {errors.email && (
+              <p className="text-sm text-red-600 mt-1">{errors.email}</p>
             )}
           </div>
 
@@ -139,12 +178,12 @@ export default function LoginPage() {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 placeholder="••••••••"
-                required
-                minLength={6}
                 disabled={isLoading}
-                className="bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 pr-10"
+                className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 pr-10 ${
+                  errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                }`}
               />
               <button
                 type="button"
@@ -158,6 +197,9 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-sm text-red-600 mt-1">{errors.password}</p>
+            )}
           </div>
 
           <Button

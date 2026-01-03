@@ -8,16 +8,20 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { createRoot } from "react-dom/client";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ServiceWithGallery } from "@/lib/supabase/types";
+import { ServiceWithGallery, Subservice } from "@/lib/supabase/types";
 import ServiceShareButton from "./ServiceShareButton";
 
 interface ServiceDetailProps {
   service: ServiceWithGallery;
+  subservices?: Subservice[];
 }
 
 const BANNER_IMAGE = "/images/service-detail.png";
 
-export default function ServiceDetail({ service }: ServiceDetailProps) {
+export default function ServiceDetail({
+  service,
+  subservices = [],
+}: ServiceDetailProps) {
   const descriptionRef = useRef<HTMLDivElement>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
@@ -39,27 +43,33 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
 
   // Get gallery images
   const galleryImages = service.service_gallery_images || [];
-  const featuredImage = service.image || galleryImages[0]?.image_url || BANNER_IMAGE;
-  
-  // All images for lightbox: featured image first, then gallery images
+  const featuredImage =
+    service.image || galleryImages[0]?.image_url || BANNER_IMAGE;
+
+  // All images for lightbox: featured image first, then all gallery images
   const allImagesForLightbox = useMemo(() => {
     const images: string[] = [];
     if (featuredImage && isValidImageUrl(featuredImage)) {
       images.push(featuredImage);
     }
-    galleryImages.forEach((img) => {
+    // Include all gallery images, sorted by display_order
+    const sortedGalleryImages = [...galleryImages].sort(
+      (a, b) => a.display_order - b.display_order
+    );
+    sortedGalleryImages.forEach((img) => {
       if (isValidImageUrl(img.image_url) && img.image_url !== featuredImage) {
         images.push(img.image_url);
       }
     });
     return images;
   }, [featuredImage, galleryImages]);
-  
+
   // Gallery images to display in grid (excluding featured if it's already in gallery)
+  // Sort by display_order to maintain the order from admin panel
   const displayGalleryImages = useMemo(() => {
-    return galleryImages.filter(
-      (img) => img.image_url !== featuredImage || !service.image
-    );
+    return galleryImages
+      .filter((img) => img.image_url !== featuredImage || !service.image)
+      .sort((a, b) => a.display_order - b.display_order);
   }, [galleryImages, featuredImage, service.image]);
 
   // Extract first paragraph from description for quote
@@ -96,7 +106,8 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
         h2.parentNode?.insertBefore(imageContainer, h2.nextSibling);
 
         // Use first gallery image
-        const galleryImageUrl = displayGalleryImages[0]?.image_url || service.image || "";
+        const galleryImageUrl =
+          displayGalleryImages[0]?.image_url || service.image || "";
 
         // Render Next.js Image component into the wrapper
         const root = createRoot(imageWrapper);
@@ -239,31 +250,35 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               )}
 
               {/* Mobile Image - Show featured image on mobile */}
-              {featuredImage && isValidImageUrl(featuredImage) && !imageErrors["mobile"] && (
-                <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl">
-                  <Image
-                    src={featuredImage}
-                    alt={service.title}
-                    fill
-                    className="w-full h-full object-cover"
-                    sizes="100vw"
-                    unoptimized={featuredImage.includes("supabase.co")}
-                    onError={() => handleImageError("mobile")}
-                  />
-                  <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent"></div>
-                </div>
-              )}
+              {featuredImage &&
+                isValidImageUrl(featuredImage) &&
+                !imageErrors["mobile"] && (
+                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl">
+                    <Image
+                      src={featuredImage}
+                      alt={service.title}
+                      fill
+                      className="w-full h-full object-cover"
+                      sizes="100vw"
+                      unoptimized={featuredImage.includes("supabase.co")}
+                      onError={() => handleImageError("mobile")}
+                    />
+                    <div className="absolute inset-0 bg-linear-to-b from-black/20 to-transparent"></div>
+                  </div>
+                )}
 
               {/* Content */}
-              {(service.content || service.description) && (
-                <div
-                  ref={descriptionRef}
-                  className="service-description text-gray-600 leading-relaxed [&>p]:mb-6 [&>p]:leading-relaxed [&>h2]:text-4xl [&>h2]:font-display [&>h2]:font-medium [&>h2]:text-primary [&>h2]:mt-12 [&>h2]:mb-6 [&>h2]:first:mt-6"
-                  dangerouslySetInnerHTML={{
-                    __html: service.content || service.description || "",
-                  }}
-                />
-              )}
+              <div className="prose prose-lg max-w-none project-content">
+                {(service.content || service.description) && (
+                  <div
+                    ref={descriptionRef}
+                    className="project-content-html"
+                    dangerouslySetInnerHTML={{
+                      __html: service.content || service.description || "",
+                    }}
+                  />
+                )}
+              </div>
 
               {/* Why Choose Section */}
               <section>
@@ -293,79 +308,155 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                   </ul>
                 </div>
               </section>
+
+              {/* Subservices Section */}
+              {subservices.length > 0 && (
+                <section>
+                  <h2 className="text-2xl md:text-3xl font-display font-bold text-primary-dark mb-6">
+                    Subservices
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {subservices.map((subservice) => {
+                      const subserviceImage = subservice.image || BANNER_IMAGE;
+                      const subserviceImageKey = `subservice-${subservice.id}`;
+                      return (
+                        <Link
+                          key={subservice.id}
+                          href={`/services/${service.slug}/${subservice.slug}`}
+                          className="group flex flex-col bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 border border-gray-100"
+                        >
+                          <div className="relative h-48 overflow-hidden bg-gray-100">
+                            {isValidImageUrl(subserviceImage) &&
+                            !imageErrors[subserviceImageKey] ? (
+                              <Image
+                                src={subserviceImage}
+                                alt={subservice.title}
+                                fill
+                                className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                onError={() => handleImageError(subserviceImageKey)}
+                                unoptimized={subserviceImage.includes("supabase.co")}
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-gray-400 text-4xl">
+                                  image
+                                </span>
+                              </div>
+                            )}
+                            {subservice.is_new && (
+                              <span className="absolute top-3 right-3 bg-primary text-white text-xs font-bold uppercase tracking-wider py-1 px-2 rounded shadow-sm">
+                                New
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-col flex-1 p-4">
+                            <h3 className="text-lg font-bold text-primary-dark mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                              {subservice.title}
+                            </h3>
+                            {subservice.description && (
+                              <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                                {subservice.description.replace(/<[^>]*>/g, "").substring(0, 100)}
+                              </p>
+                            )}
+                            <span className="text-primary text-sm font-semibold mt-auto flex items-center gap-1">
+                              Learn more
+                              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
             </div>
 
             {/* Right Column - Images & CTA */}
             <div className="lg:col-span-5 space-y-6 md:space-y-12">
               {/* Main Image */}
-              {featuredImage && isValidImageUrl(featuredImage) && !imageErrors["main"] && (
-                <div className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer"
-                  onClick={() => allImagesForLightbox.length > 0 && setSelectedImageIndex(0)}
-                >
-                  <Image
-                    src={featuredImage}
-                    alt={service.title}
-                    fill
-                    className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-                    sizes="(max-width: 1024px) 100vw, 33vw"
-                    unoptimized={featuredImage.includes("supabase.co")}
-                    onError={() => handleImageError("main")}
-                  />
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
-                </div>
-              )}
+              {featuredImage &&
+                isValidImageUrl(featuredImage) &&
+                !imageErrors["main"] && (
+                  <div
+                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer"
+                    onClick={() =>
+                      allImagesForLightbox.length > 0 &&
+                      setSelectedImageIndex(0)
+                    }
+                  >
+                    <Image
+                      src={featuredImage}
+                      alt={service.title}
+                      fill
+                      className="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+                      sizes="(max-width: 1024px) 100vw, 33vw"
+                      unoptimized={featuredImage.includes("supabase.co")}
+                      onError={() => handleImageError("main")}
+                    />
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                  </div>
+                )}
 
               {/* Grid Images */}
               {displayGalleryImages.length > 0 && (
                 <div className="grid grid-cols-2 gap-4">
-                  {displayGalleryImages.slice(0, 4).map((galleryImg, index) => {
+                  {displayGalleryImages.map((galleryImg, index) => {
                     // Find index in allImagesForLightbox
                     const lightboxIndex = allImagesForLightbox.findIndex(
                       (url) => url === galleryImg.image_url
                     );
                     const imageKey = galleryImg.id || `gallery-${index}`;
                     return (
-                    <div
-                      key={imageKey}
-                      className="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative group cursor-pointer"
-                      onClick={() => lightboxIndex >= 0 && setSelectedImageIndex(lightboxIndex)}
-                    >
-                      {isValidImageUrl(galleryImg.image_url) && !imageErrors[imageKey] ? (
-                        <>
-                          <Image
-                            src={galleryImg.image_url}
-                            alt={`${service.title} gallery ${index + 1}`}
-                            fill
-                            className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
-                            sizes="(max-width: 1024px) 50vw, 16vw"
-                            unoptimized={galleryImg.image_url.includes("supabase.co")}
-                            onError={() => handleImageError(imageKey)}
-                          />
-                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
-                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <span className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white">
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
-                                />
-                              </svg>
+                      <div
+                        key={imageKey}
+                        className="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative group cursor-pointer"
+                        onClick={() =>
+                          lightboxIndex >= 0 &&
+                          setSelectedImageIndex(lightboxIndex)
+                        }
+                      >
+                        {isValidImageUrl(galleryImg.image_url) &&
+                        !imageErrors[imageKey] ? (
+                          <>
+                            <Image
+                              src={galleryImg.image_url}
+                              alt={`${service.title} gallery ${index + 1}`}
+                              fill
+                              className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                              sizes="(max-width: 1024px) 50vw, 16vw"
+                              unoptimized={galleryImg.image_url.includes(
+                                "supabase.co"
+                              )}
+                              onError={() => handleImageError(imageKey)}
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors"></div>
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <span className="bg-white/20 backdrop-blur-md p-3 rounded-full text-white">
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"
+                                  />
+                                </svg>
+                              </span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                            <span className="text-gray-400 text-sm">
+                              No image
                             </span>
                           </div>
-                        </>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                          <span className="text-gray-400 text-sm">No image</span>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
@@ -416,13 +507,15 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
               <div className="relative w-full h-full flex items-center justify-center">
                 <Image
                   src={allImagesForLightbox[selectedImageIndex]}
-                  alt={`${service.title} - Gallery image ${selectedImageIndex + 1}`}
+                  alt={`${service.title} - Gallery image ${
+                    selectedImageIndex + 1
+                  }`}
                   fill
                   className="object-contain p-4"
                   sizes="95vw"
-                  unoptimized={allImagesForLightbox[selectedImageIndex].includes(
-                    "supabase.co"
-                  )}
+                  unoptimized={allImagesForLightbox[
+                    selectedImageIndex
+                  ].includes("supabase.co")}
                 />
                 {allImagesForLightbox.length > 1 && (
                   <>
@@ -440,7 +533,9 @@ export default function ServiceDetail({ service }: ServiceDetailProps) {
                       size="icon"
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:bg-white/20"
                       onClick={handleNext}
-                      disabled={selectedImageIndex === allImagesForLightbox.length - 1}
+                      disabled={
+                        selectedImageIndex === allImagesForLightbox.length - 1
+                      }
                     >
                       <ChevronRight className="w-8 h-8" />
                     </Button>

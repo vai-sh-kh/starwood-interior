@@ -73,6 +73,7 @@ import {
   FileText,
   Loader2,
   ExternalLink,
+  Eye,
   ChevronUp,
   ChevronDown,
   ChevronsUpDown,
@@ -106,20 +107,28 @@ const blogSchema = z.object({
     .max(200, "Slug must be less than 200 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens"
+      "Only lowercase letters, numbers, and hyphens allowed"
     ),
   excerpt: z
     .string()
-    .max(500, "Excerpt must be less than 500 characters")
-    .optional(),
-  content: z.string().optional(),
+    .min(1, "Summary is required")
+    .max(500, "Summary must be less than 500 characters")
+    .refine((val) => val.trim().length > 0, {
+      message: "Summary cannot be empty or only whitespace",
+    }),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .refine((val) => val.trim().length > 0, {
+      message: "Content cannot be empty or only whitespace",
+    }),
   image: z
     .string()
+    .min(1, "Featured image is required")
     .refine(
-      (val) => !val || val === "" || z.string().url().safeParse(val).success,
+      (val) => z.string().url().safeParse(val).success,
       "Image must be a valid URL"
-    )
-    .optional(),
+    ),
   author: z
     .string()
     .max(100, "Author name must be less than 100 characters")
@@ -131,6 +140,10 @@ const blogSchema = z.object({
       "Invalid category"
     )
     .optional(),
+  status: z.enum(["draft", "published"], {
+    required_error: "Status is required",
+    message: "Status is required",
+  }),
 });
 
 type BlogFormData = z.infer<typeof blogSchema>;
@@ -146,6 +159,7 @@ export default function BlogsPage() {
   // Filters and search
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Sorting
   const [sortField, setSortField] = useState<SortField>("created_at");
@@ -168,6 +182,7 @@ export default function BlogsPage() {
   const [image, setImage] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
   const [author, setAuthor] = useState("");
+  const [status, setStatus] = useState<"draft" | "published">("draft");
 
   // Validation errors
   const [errors, setErrors] = useState<
@@ -242,7 +257,7 @@ export default function BlogsPage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory, sortField, sortDirection]);
+  }, [searchQuery, selectedCategory, selectedStatus, sortField, sortDirection]);
 
   const generateSlug = (text: string) => {
     if (!text || typeof text !== "string") return "";
@@ -262,6 +277,7 @@ export default function BlogsPage() {
     setImage("");
     setCategoryId("");
     setAuthor("");
+    setStatus("draft");
     setSelectedBlog(null);
     setIsEditing(false);
     setErrors({});
@@ -294,6 +310,7 @@ export default function BlogsPage() {
     setImage(blog.image || "");
     setCategoryId(blog.category_id || "");
     setAuthor(blog.author || "");
+    setStatus((blog.status as "draft" | "published") || "draft");
     setIsEditing(true);
     setIsOpen(true);
   };
@@ -305,24 +322,12 @@ export default function BlogsPage() {
     }, 300);
   };
 
-  // Check if form is valid
-  const isFormValid = useMemo(() => {
-    const sanitizedSlug = generateSlug(slug);
-    const finalSlug =
-      sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
-    const result = blogSchema.safeParse({
-      title,
-      slug: finalSlug,
-      excerpt,
-      content,
-      image,
-      author,
-      categoryId: categoryId || undefined,
-    });
-    return result.success;
-  }, [title, slug, excerpt, content, image, author, categoryId]);
-
   const handleSave = async () => {
+    // Prevent multiple submissions
+    if (isSaving) return;
+
+    setIsSaving(true);
+
     // Sanitize slug before validation
     const sanitizedSlug = generateSlug(slug);
     const finalSlug =
@@ -337,6 +342,7 @@ export default function BlogsPage() {
       image,
       author,
       categoryId: categoryId || undefined,
+      status,
     });
 
     if (!validationResult.success) {
@@ -350,11 +356,64 @@ export default function BlogsPage() {
       const firstError = validationResult.error.issues[0];
       if (firstError) {
         toast.error(firstError.message);
+
+        // Scroll to the first error field
+        const fieldName = firstError.path[0] as string;
+        setTimeout(() => {
+          let element: HTMLElement | null = null;
+
+          // Map field names to element IDs or selectors
+          const fieldMap: Record<string, string> = {
+            title: "title",
+            slug: "slug",
+            excerpt: "excerpt",
+            content: "content-editor",
+            image: "image-dropzone",
+            categoryId: "category-select",
+            author: "author",
+          };
+
+          const selector = fieldMap[fieldName];
+          if (selector) {
+            element = document.getElementById(selector);
+
+            // For select fields, try to find the select trigger
+            if (!element && fieldName === "categoryId") {
+              const label = Array.from(document.querySelectorAll("label")).find(
+                (l) => l.textContent?.includes("Category")
+              );
+              if (label) {
+                const selectTrigger = label.parentElement?.querySelector(
+                  '[role="combobox"]'
+                ) as HTMLElement;
+                element = selectTrigger || (label.parentElement as HTMLElement);
+              }
+            }
+
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+              // Focus the element if it's focusable
+              if (
+                element instanceof HTMLInputElement ||
+                element instanceof HTMLTextAreaElement
+              ) {
+                element.focus();
+              } else if (element instanceof HTMLElement) {
+                // Try to find a focusable child element
+                const focusable = element.querySelector(
+                  'input, textarea, [role="combobox"]'
+                ) as HTMLElement;
+                if (focusable) {
+                  focusable.focus();
+                }
+              }
+            }
+          }
+        }, 100);
       }
+      setIsSaving(false);
       return;
     }
-
-    setIsSaving(true);
 
     try {
       if (isEditing && selectedBlog) {
@@ -366,6 +425,7 @@ export default function BlogsPage() {
           image: image || null,
           category_id: categoryId || null,
           author: author || null,
+          status: status,
           updated_at: new Date().toISOString(),
         };
 
@@ -386,6 +446,7 @@ export default function BlogsPage() {
           image: image || null,
           category_id: categoryId || null,
           author: author || null,
+          status: status,
         };
 
         const { error } = await supabase.from("blogs").insert(insertData);
@@ -472,10 +533,55 @@ export default function BlogsPage() {
     }
   };
 
+  const handleStatusChange = async (
+    blogId: string,
+    newStatus: "draft" | "published"
+  ) => {
+    try {
+      const { error } = await supabase
+        .from("blogs")
+        .update({
+          status: newStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", blogId);
+
+      if (error) throw error;
+
+      toast.success(
+        `Blog status changed to ${
+          newStatus === "published" ? "Published" : "Draft"
+        }`
+      );
+      fetchBlogs();
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to update status";
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("all");
+    setSelectedStatus("all");
+  };
+
   // Filter and sort blogs
   const filteredBlogs = useMemo(() => {
-    const filtered = blogs.filter(
-      (blog) =>
+    const filtered = blogs.filter((blog) => {
+      // Apply status filter - drafts only show when filter is "draft", published only when "published"
+      if (selectedStatus !== "all") {
+        if (selectedStatus === "draft" && blog.status !== "draft") {
+          return false;
+        }
+        if (selectedStatus === "published" && blog.status !== "published") {
+          return false;
+        }
+      }
+
+      // Apply search filter
+      return (
         blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         blog.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (blog.excerpt &&
@@ -486,7 +592,8 @@ export default function BlogsPage() {
           blog.blog_categories.name
             .toLowerCase()
             .includes(searchQuery.toLowerCase()))
-    );
+      );
+    });
 
     // Apply client-side sorting if needed (for category sorting)
     if (sortField === "category") {
@@ -501,7 +608,7 @@ export default function BlogsPage() {
     }
 
     return filtered;
-  }, [blogs, searchQuery, sortField, sortDirection]);
+  }, [blogs, searchQuery, selectedStatus, sortField, sortDirection]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredBlogs.length / ITEMS_PER_PAGE);
@@ -537,11 +644,29 @@ export default function BlogsPage() {
     );
   }, [categories, categorySearchQuery]);
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isSaving && !isImageUploading) {
+      handleSave();
+    }
+  };
+
   const formContent = (
-    <div className="space-y-6 pb-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
+    <form
+      id="blog-form"
+      onSubmit={handleFormSubmit}
+      className="space-y-8 pb-4"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+        }
+      }}
+    >
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-3">
+          <Label htmlFor="title" className="text-base">
+            Title *
+          </Label>
           <Input
             id="title"
             value={title}
@@ -556,14 +681,16 @@ export default function BlogsPage() {
               }
             }}
             placeholder="Enter blog title"
-            className={errors.title ? "border-red-500" : ""}
+            className={`h-12 text-base ${errors.title ? "border-red-500" : ""}`}
           />
           {errors.title && (
             <p className="text-sm text-red-500">{errors.title}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="slug">Slug *</Label>
+        <div className="space-y-3">
+          <Label htmlFor="slug" className="text-base">
+            Slug *
+          </Label>
           <Input
             id="slug"
             value={slug}
@@ -593,15 +720,17 @@ export default function BlogsPage() {
               }
             }}
             placeholder="blog-post-slug"
-            className={errors.slug ? "border-red-500" : ""}
+            className={`h-12 text-base ${errors.slug ? "border-red-500" : ""}`}
           />
           {errors.slug && <p className="text-sm text-red-500">{errors.slug}</p>}
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-3" id="category-select">
+          <Label htmlFor="category" className="text-base">
+            Category
+          </Label>
           <div className="flex gap-2">
             <Select
               value={categoryId || "none"}
@@ -614,7 +743,7 @@ export default function BlogsPage() {
                 setCategorySearchQuery("");
               }}
             >
-              <SelectTrigger className="flex-1">
+              <SelectTrigger className="flex-1 h-12 text-base">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent
@@ -634,7 +763,7 @@ export default function BlogsPage() {
                         // Prevent dropdown from repositioning
                         e.stopPropagation();
                       }}
-                      className="pl-8 h-8 text-sm"
+                      className="pl-8 h-12 text-base"
                       onClick={(e) => e.stopPropagation()}
                       onKeyDown={(e) => {
                         e.stopPropagation();
@@ -679,8 +808,10 @@ export default function BlogsPage() {
             <p className="text-sm text-red-500">{errors.categoryId}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="author">Author</Label>
+        <div className="space-y-3">
+          <Label htmlFor="author" className="text-base">
+            Author
+          </Label>
           <Input
             id="author"
             value={author}
@@ -692,16 +823,44 @@ export default function BlogsPage() {
               }
             }}
             placeholder="Author name"
-            className={errors.author ? "border-red-500" : ""}
+            className={`h-12 text-base ${
+              errors.author ? "border-red-500" : ""
+            }`}
           />
           {errors.author && (
             <p className="text-sm text-red-500">{errors.author}</p>
           )}
         </div>
+        <div className="space-y-3">
+          <Label htmlFor="status" className="text-base">
+            Status *
+          </Label>
+          <Select
+            value={status}
+            onValueChange={(value) => {
+              setStatus(value as "draft" | "published");
+              // Clear error when user selects
+              if (errors.status) {
+                setErrors((prev) => ({ ...prev, status: undefined }));
+              }
+            }}
+          >
+            <SelectTrigger className="w-full h-12 text-base">
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="draft">Draft</SelectItem>
+              <SelectItem value="published">Published</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors.status && (
+            <p className="text-sm text-red-500">{errors.status}</p>
+          )}
+        </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Image</Label>
+      <div className="space-y-3" id="image-dropzone">
+        <Label className="text-base">Image</Label>
         <ImageDropzone
           value={image}
           onChange={(value) => {
@@ -714,12 +873,15 @@ export default function BlogsPage() {
           onUploadingChange={setIsImageUploading}
           bucket="blog-images"
           folder="uploads"
+          showLabel={false}
         />
         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="excerpt">Excerpt</Label>
+      <div className="space-y-3">
+        <Label htmlFor="excerpt" className="text-base">
+          Summary
+        </Label>
         <Textarea
           id="excerpt"
           value={excerpt}
@@ -730,17 +892,25 @@ export default function BlogsPage() {
               setErrors((prev) => ({ ...prev, excerpt: undefined }));
             }
           }}
+          onKeyDown={(e) => {
+            // Allow Shift+Enter for new line, but prevent Enter from submitting
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+            }
+          }}
           placeholder="Brief summary of the blog post"
-          rows={3}
-          className={errors.excerpt ? "border-red-500" : ""}
+          rows={4}
+          className={`min-h-[120px] text-base ${
+            errors.excerpt ? "border-red-500" : ""
+          }`}
         />
         {errors.excerpt && (
           <p className="text-sm text-red-500">{errors.excerpt}</p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Content</Label>
+      <div className="space-y-3" id="content-editor">
+        <Label className="text-base">Content</Label>
         <div className="border border-gray-200 rounded-lg overflow-hidden">
           <TipTapEditor
             content={content}
@@ -758,7 +928,18 @@ export default function BlogsPage() {
           <p className="text-sm text-red-500">{errors.content}</p>
         )}
       </div>
-    </div>
+
+      {/* Note: Blogs don't currently support is_new field in the database schema */}
+      {/* <div className="flex items-center justify-between py-3 px-4 rounded-lg bg-gray-200">
+        <div className="space-y-0.5">
+          <Label className="text-base">Mark as New</Label>
+          <p className="text-sm text-gray-600">
+            Display a &quot;New&quot; badge on this blog
+          </p>
+        </div>
+        <Switch checked={false} onCheckedChange={() => {}} />
+      </div> */}
+    </form>
   );
 
   return (
@@ -814,6 +995,28 @@ export default function BlogsPage() {
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* Status Filter */}
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="published">Published</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {(selectedCategory !== "all" || selectedStatus !== "all") && (
+                <Button
+                  variant="outline"
+                  onClick={handleClearFilters}
+                  className="gap-2"
+                >
+                  Clear Filters
+                </Button>
+              )}
             </div>
           </div>
 
@@ -829,14 +1032,12 @@ export default function BlogsPage() {
         </div>
 
         {/* Table Section */}
-        <div className="flex-1 overflow-auto overflow-x-hidden">
-          <Table className="w-full">
+        <div className="flex-1 overflow-auto overflow-x-auto">
+          <Table className="w-full min-w-[1000px] table-fixed">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] max-w-[60px] px-4 py-4">
-                  No
-                </TableHead>
-                <TableHead className="max-w-[300px] px-4 py-4">
+                <TableHead className="w-[60px] px-4 py-4">No</TableHead>
+                <TableHead className="w-[250px] px-4 py-4">
                   <button
                     onClick={() => handleSort("title")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -845,7 +1046,10 @@ export default function BlogsPage() {
                     {getSortIcon("title")}
                   </button>
                 </TableHead>
-                <TableHead className="max-w-[150px] px-4 py-4">
+                <TableHead className="hidden md:table-cell w-[200px] px-4 py-4">
+                  Slug
+                </TableHead>
+                <TableHead className="w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("category")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -854,7 +1058,7 @@ export default function BlogsPage() {
                     {getSortIcon("category")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden md:table-cell max-w-[150px] px-4 py-4">
+                <TableHead className="hidden md:table-cell w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("author")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -863,7 +1067,7 @@ export default function BlogsPage() {
                     {getSortIcon("author")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell max-w-[120px] px-4 py-4">
+                <TableHead className="w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -872,7 +1076,8 @@ export default function BlogsPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[80px] max-w-[80px] px-4 py-4">
+                <TableHead className="w-[120px] px-4 py-4">Status</TableHead>
+                <TableHead className="text-right w-[80px] px-4 py-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -881,56 +1086,63 @@ export default function BlogsPage() {
               {isLoading ? (
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[60px] px-4 py-4">
                       <Skeleton className="h-5 w-8" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[250px] px-4 py-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="hidden md:table-cell w-[200px] px-4 py-4">
+                      <Skeleton className="h-5 w-32" />
+                    </TableCell>
+                    <TableCell className="w-[150px] px-4 py-4">
                       <Skeleton className="h-5 w-20" />
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-4">
+                    <TableCell className="hidden md:table-cell w-[150px] px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-4">
+                    <TableCell className="hidden lg:table-cell w-[120px] px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[80px] px-4 py-4">
                       <Skeleton className="h-8 w-8 ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : paginatedBlogs.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={6} className="h-[400px] px-4 py-4">
+                  <TableCell colSpan={8} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <FileText className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
-                        {searchQuery || selectedCategory !== "all"
+                        {searchQuery ||
+                        selectedCategory !== "all" ||
+                        selectedStatus !== "all"
                           ? "No blogs found matching your filters"
                           : "No blogs yet"}
                       </p>
-                      {!searchQuery && selectedCategory === "all" && (
-                        <Button
-                          variant="link"
-                          onClick={openCreate}
-                          className="mt-2 hover:no-underline hover:text-current"
-                        >
-                          Create your first blog
-                        </Button>
-                      )}
+                      {!searchQuery &&
+                        selectedCategory === "all" &&
+                        selectedStatus === "all" && (
+                          <Button
+                            variant="link"
+                            onClick={openCreate}
+                            className="mt-2 hover:no-underline hover:text-current"
+                          >
+                            Create your first blog
+                          </Button>
+                        )}
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 paginatedBlogs.map((blog, index) => (
                   <TableRow key={blog.id} className="hover:bg-transparent">
-                    <TableCell className="px-4 py-4 text-gray-600">
+                    <TableCell className="w-[60px] px-4 py-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-4 max-w-[300px]">
-                      <div className="flex items-center gap-3 min-w-0">
+                    <TableCell className="w-[250px] px-4 py-4">
+                      <div className="flex items-center gap-2 min-w-0">
                         <AdminImage
                           src={blog.image}
                           alt={blog.title}
@@ -938,17 +1150,21 @@ export default function BlogsPage() {
                         />
                         <div className="min-w-0 flex-1 overflow-hidden">
                           <div className="flex items-center gap-2 min-w-0">
-                            <p className="font-medium text-gray-900 truncate">
+                            <p className="font-medium text-gray-900 truncate text-sm">
                               {blog.title}
                             </p>
                           </div>
-                          <p className="text-xs text-gray-500 truncate">
-                            /{blog.slug}
-                          </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-4 max-w-[150px]">
+                    <TableCell className="hidden md:table-cell w-[200px] px-4 py-4">
+                      <div className="truncate">
+                        <code className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded font-mono truncate block">
+                          {blog.slug || "—"}
+                        </code>
+                      </div>
+                    </TableCell>
+                    <TableCell className="w-[150px] px-4 py-4">
                       <div className="truncate">
                         {blog.blog_categories ? (
                           <Badge
@@ -964,10 +1180,10 @@ export default function BlogsPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell px-4 py-4 text-gray-600 max-w-[150px] truncate">
+                    <TableCell className="hidden md:table-cell w-[150px] px-4 py-4 text-gray-600 truncate">
                       {blog.author || "—"}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-4 text-gray-600 max-w-[120px] truncate">
+                    <TableCell className="w-[120px] px-4 py-4 text-gray-600 truncate">
                       {blog.created_at
                         ? new Date(blog.created_at).toLocaleDateString(
                             "en-US",
@@ -979,7 +1195,38 @@ export default function BlogsPage() {
                           )
                         : "—"}
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[120px] px-4 py-4">
+                      <Select
+                        value={blog.status || "draft"}
+                        onValueChange={(value) =>
+                          handleStatusChange(
+                            blog.id,
+                            value as "draft" | "published"
+                          )
+                        }
+                      >
+                        <SelectTrigger
+                          className={`w-[120px] h-8 text-xs border-0 ${
+                            blog.status === "published"
+                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                          }`}
+                        >
+                          <SelectValue>
+                            {blog.status === "published" ? (
+                              <span className="font-medium">Published</span>
+                            ) : (
+                              <span className="font-medium">Draft</span>
+                            )}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </TableCell>
+                    <TableCell className="w-[80px] px-4 py-4">
                       <div className="flex items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -992,20 +1239,22 @@ export default function BlogsPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                const blogUrl = `/blogs/${
+                                  blog.slug || blog.id
+                                }`;
+                                window.open(blogUrl, "_blank");
+                              }}
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              View
+                              <ExternalLink className="ml-2 h-3 w-3" />
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => openEdit(blog)}>
                               <Pencil className="mr-2 h-4 w-4" />
                               Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <a
-                                href={`/blogs/${blog.slug}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center"
-                              >
-                                <ExternalLink className="mr-2 h-4 w-4" />
-                                View
-                              </a>
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -1126,7 +1375,7 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-2xl overflow-hidden flex flex-col p-0"
+            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1139,25 +1388,12 @@ export default function BlogsPage() {
                     : "Fill in the details for your new blog post"}
                 </SheetDescription>
               </SheetHeader>
-              <div
-                className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6"
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !isSaving &&
-                    !isImageUploading &&
-                    isFormValid
-                  ) {
-                    e.preventDefault();
-                    handleSave();
-                  }
-                }}
-              >
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleClose}
                   disabled={isSaving || isImageUploading}
@@ -1165,8 +1401,9 @@ export default function BlogsPage() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !isFormValid || isImageUploading}
+                  type="submit"
+                  form="blog-form"
+                  disabled={isSaving || isImageUploading}
                 >
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1184,7 +1421,7 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-2xl overflow-hidden flex flex-col p-0"
+            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1197,25 +1434,12 @@ export default function BlogsPage() {
                     : "Fill in the details for your new blog post"}
                 </SheetDescription>
               </SheetHeader>
-              <div
-                className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6"
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !isSaving &&
-                    !isImageUploading &&
-                    isFormValid
-                  ) {
-                    e.preventDefault();
-                    handleSave();
-                  }
-                }}
-              >
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleClose}
                   disabled={isSaving || isImageUploading}
@@ -1223,8 +1447,9 @@ export default function BlogsPage() {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !isFormValid || isImageUploading}
+                  type="submit"
+                  form="blog-form"
+                  disabled={isSaving || isImageUploading}
                 >
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

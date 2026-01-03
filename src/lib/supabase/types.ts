@@ -7,23 +7,28 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "14.1"
+  }
   public: {
     Tables: {
       blog_categories: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
           name: string
           slug: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           id?: string
           name: string
           slug: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           id?: string
           name?: string
           slug?: string
@@ -32,46 +37,49 @@ export type Database = {
       }
       blogs: {
         Row: {
+          archived: boolean | null
           author: string | null
           category_id: string | null
           content: string | null
-          created_at: string | null
+          created_at: string
           excerpt: string | null
           id: string
           image: string | null
           slug: string
-          title: string
-          updated_at: string | null
-          archived: boolean | null
+          status: string
           tags: string[] | null
+          title: string
+          updated_at: string
         }
         Insert: {
+          archived?: boolean | null
           author?: string | null
           category_id?: string | null
           content?: string | null
-          created_at?: string | null
+          created_at?: string
           excerpt?: string | null
           id?: string
           image?: string | null
           slug: string
-          title: string
-          updated_at?: string | null
-          archived?: boolean | null
+          status?: string
           tags?: string[] | null
+          title: string
+          updated_at?: string
         }
         Update: {
+          archived?: boolean | null
           author?: string | null
           category_id?: string | null
           content?: string | null
-          created_at?: string | null
+          created_at?: string
           excerpt?: string | null
           id?: string
           image?: string | null
           slug?: string
-          title?: string
-          updated_at?: string | null
-          archived?: boolean | null
+          status?: string
           tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -86,7 +94,8 @@ export type Database = {
       leads: {
         Row: {
           avatar_color: string | null
-          created_at: string | null
+          chat_id: string | null
+          created_at: string
           email: string
           id: string
           message: string | null
@@ -94,11 +103,12 @@ export type Database = {
           phone: string | null
           source: string | null
           status: string
-          updated_at: string | null
+          updated_at: string
         }
         Insert: {
           avatar_color?: string | null
-          created_at?: string | null
+          chat_id?: string | null
+          created_at?: string
           email: string
           id?: string
           message?: string | null
@@ -106,11 +116,12 @@ export type Database = {
           phone?: string | null
           source?: string | null
           status?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Update: {
           avatar_color?: string | null
-          created_at?: string | null
+          chat_id?: string | null
+          created_at?: string
           email?: string
           id?: string
           message?: string | null
@@ -118,96 +129,34 @@ export type Database = {
           phone?: string | null
           source?: string | null
           status?: string
-          updated_at?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
-      projects: {
-        Row: {
-          category_id: string | null
-          content: string | null
-          created_at: string | null
-          description: string | null
-          id: string
-          image: string | null
-          is_new: boolean | null
-          status: string
-          tags: string[] | null
-          title: string
-          slug: string | null
-          updated_at: string | null
-          project_info: Json | null
-          quote: string | null
-          quote_author: string | null
-        }
-        Insert: {
-          category_id?: string | null
-          content?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image?: string | null
-          is_new?: boolean | null
-          status?: string
-          tags?: string[] | null
-          title: string
-          slug?: string | null
-          updated_at?: string | null
-          project_info?: Json | null
-          quote?: string | null
-          quote_author?: string | null
-        }
-        Update: {
-          category_id?: string | null
-          content?: string | null
-          created_at?: string | null
-          description?: string | null
-          id?: string
-          image?: string | null
-          is_new?: boolean | null
-          status?: string
-          tags?: string[] | null
-          title?: string
-          slug?: string | null
-          updated_at?: string | null
-          project_info?: Json | null
-          quote?: string | null
-          quote_author?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "projects_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "blog_categories"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       project_gallery_images: {
         Row: {
-          id: string
-          project_id: string
-          image_url: string
+          created_at: string
           display_order: number
-          created_at: string | null
-          updated_at: string | null
+          id: string
+          image_url: string
+          project_id: string
+          updated_at: string
         }
         Insert: {
-          id?: string
-          project_id: string
-          image_url: string
+          created_at?: string
           display_order?: number
-          created_at?: string | null
-          updated_at?: string | null
+          id?: string
+          image_url: string
+          project_id: string
+          updated_at?: string
         }
         Update: {
-          id?: string
-          project_id?: string
-          image_url?: string
+          created_at?: string
           display_order?: number
-          created_at?: string | null
-          updated_at?: string | null
+          id?: string
+          image_url?: string
+          project_id?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -219,58 +168,67 @@ export type Database = {
           },
         ]
       }
-      services: {
+      projects: {
         Row: {
-          id: string
-          title: string
-          slug: string
-          description: string | null
-          content: string | null
-          image: string | null
-          status: string
           category_id: string | null
-          tags: string[] | null
+          content: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string
           is_new: boolean | null
-          meta_title: string | null
           meta_description: string | null
-          created_at: string | null
-          updated_at: string | null
+          meta_title: string | null
+          project_info: Json | null
+          quote: string | null
+          quote_author: string | null
+          slug: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          updated_at: string
         }
         Insert: {
-          id?: string
-          title: string
-          slug: string
-          description?: string | null
-          content?: string | null
-          image?: string | null
-          status?: string
           category_id?: string | null
-          tags?: string[] | null
+          content: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image: string
           is_new?: boolean | null
-          meta_title?: string | null
           meta_description?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          meta_title?: string | null
+          project_info?: Json | null
+          quote?: string | null
+          quote_author?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
         }
         Update: {
-          id?: string
-          title?: string
-          slug?: string
-          description?: string | null
-          content?: string | null
-          image?: string | null
-          status?: string
           category_id?: string | null
-          tags?: string[] | null
+          content?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
           is_new?: boolean | null
-          meta_title?: string | null
           meta_description?: string | null
-          created_at?: string | null
-          updated_at?: string | null
+          meta_title?: string | null
+          project_info?: Json | null
+          quote?: string | null
+          quote_author?: string | null
+          slug?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "services_category_id_fkey"
+            foreignKeyName: "projects_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "blog_categories"
@@ -280,28 +238,28 @@ export type Database = {
       }
       service_gallery_images: {
         Row: {
-          id: string
-          service_id: string
-          image_url: string
+          created_at: string
           display_order: number
-          created_at: string | null
-          updated_at: string | null
+          id: string
+          image_url: string
+          service_id: string
+          updated_at: string
         }
         Insert: {
-          id?: string
-          service_id: string
-          image_url: string
+          created_at?: string
           display_order?: number
-          created_at?: string | null
-          updated_at?: string | null
+          id?: string
+          image_url: string
+          service_id: string
+          updated_at?: string
         }
         Update: {
-          id?: string
-          service_id?: string
-          image_url?: string
+          created_at?: string
           display_order?: number
-          created_at?: string | null
-          updated_at?: string | null
+          id?: string
+          image_url?: string
+          service_id?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -313,36 +271,225 @@ export type Database = {
           },
         ]
       }
-      settings: {
+      service_subservices: {
         Row: {
-          id: string
-          key: string
-          value: Json
           created_at: string
+          display_order: number
+          id: string
+          service_id: string
+          subservice_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          service_id: string
+          subservice_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          service_id?: string
+          subservice_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_subservices_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "service_subservices_subservice_id_fkey"
+            columns: ["subservice_id"]
+            isOneToOne: false
+            referencedRelation: "subservices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      services: {
+        Row: {
+          category_id: string | null
+          content: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image: string | null
+          is_new: boolean | null
+          meta_description: string | null
+          meta_title: string | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          key: string
-          value: Json
+          category_id?: string | null
+          content?: string | null
           created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_new?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
           updated_at?: string
         }
         Update: {
-          id?: string
-          key?: string
-          value?: Json
+          category_id?: string | null
+          content?: string | null
           created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_new?: boolean | null
+          meta_description?: string | null
+          meta_title?: string | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
           updated_at?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "blog_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settings: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
         Relationships: []
+      }
+      subservice_gallery_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          image_url: string
+          subservice_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url: string
+          subservice_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          image_url?: string
+          subservice_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subservice_gallery_images_subservice_id_fkey"
+            columns: ["subservice_id"]
+            isOneToOne: false
+            referencedRelation: "subservices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subservices: {
+        Row: {
+          content: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image: string | null
+          is_new: boolean
+          meta_description: string | null
+          meta_title: string | null
+          parent_service_id: string
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_new?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          parent_service_id: string
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string | null
+          is_new?: boolean
+          meta_description?: string | null
+          meta_title?: string | null
+          parent_service_id?: string
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subservices_parent_service_id_fkey"
+            columns: ["parent_service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_avatar_color: { Args: { name_text: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
@@ -353,62 +500,133 @@ export type Database = {
   }
 }
 
-// Convenience types
-export type Blog = Database["public"]["Tables"]["blogs"]["Row"]
-export type BlogInsert = Database["public"]["Tables"]["blogs"]["Insert"]
-export type BlogUpdate = Database["public"]["Tables"]["blogs"]["Update"]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-export type BlogCategory = Database["public"]["Tables"]["blog_categories"]["Row"]
-export type BlogCategoryInsert = Database["public"]["Tables"]["blog_categories"]["Insert"]
-export type BlogCategoryUpdate = Database["public"]["Tables"]["blog_categories"]["Update"]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-export type Project = Database["public"]["Tables"]["projects"]["Row"]
-export type ProjectInsert = Database["public"]["Tables"]["projects"]["Insert"]
-export type ProjectUpdate = Database["public"]["Tables"]["projects"]["Update"]
-
-export type Lead = Database["public"]["Tables"]["leads"]["Row"]
-export type LeadInsert = Database["public"]["Tables"]["leads"]["Insert"]
-export type LeadUpdate = Database["public"]["Tables"]["leads"]["Update"]
-
-export type ProjectGalleryImage = Database["public"]["Tables"]["project_gallery_images"]["Row"]
-export type ProjectGalleryImageInsert = Database["public"]["Tables"]["project_gallery_images"]["Insert"]
-export type ProjectGalleryImageUpdate = Database["public"]["Tables"]["project_gallery_images"]["Update"]
-
-export type Service = Database["public"]["Tables"]["services"]["Row"]
-export type ServiceInsert = Database["public"]["Tables"]["services"]["Insert"]
-export type ServiceUpdate = Database["public"]["Tables"]["services"]["Update"]
-
-export type ServiceGalleryImage = Database["public"]["Tables"]["service_gallery_images"]["Row"]
-export type ServiceGalleryImageInsert = Database["public"]["Tables"]["service_gallery_images"]["Insert"]
-export type ServiceGalleryImageUpdate = Database["public"]["Tables"]["service_gallery_images"]["Update"]
-
-export type Setting = Database["public"]["Tables"]["settings"]["Row"]
-export type SettingInsert = Database["public"]["Tables"]["settings"]["Insert"]
-export type SettingUpdate = Database["public"]["Tables"]["settings"]["Update"]
-
-// Blog with category relation
-export type BlogWithCategory = Blog & {
-  blog_categories: BlogCategory | null
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-// Project with category relation
-export type ProjectWithCategory = Project & {
-  blog_categories: BlogCategory | null
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-// Project with gallery images
-export type ProjectWithGallery = Project & {
-  project_gallery_images: ProjectGalleryImage[] | null
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-// Service with category relation
-export type ServiceWithCategory = Service & {
-  blog_categories: BlogCategory | null
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-// Service with gallery images
-export type ServiceWithGallery = Service & {
-  service_gallery_images: ServiceGalleryImage[] | null
-  blog_categories?: BlogCategory | null
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const
+
+// Type aliases for convenience
+export type Blog = Tables<"blogs">
+export type BlogInsert = TablesInsert<"blogs">
+export type BlogUpdate = TablesUpdate<"blogs">
+export type BlogCategory = Tables<"blog_categories">
+export type BlogCategoryInsert = TablesInsert<"blog_categories">
+export type BlogCategoryUpdate = TablesUpdate<"blog_categories">

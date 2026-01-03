@@ -37,9 +37,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import {
   Plus,
@@ -53,6 +59,7 @@ import {
   ChevronsUpDown,
   ChevronLeft,
   ChevronRight,
+  MoreVertical,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -224,7 +231,10 @@ export default function CategoriesPage() {
 
       // Show first error in toast
       const firstError = validationResult.error.issues[0];
-      toast.error(firstError.message);
+      if (firstError) {
+        toast.error(firstError.message);
+      }
+      setIsSaving(false);
       return;
     }
 
@@ -351,10 +361,14 @@ export default function CategoriesPage() {
         handleSave();
       }}
       className="space-y-6"
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+        }
+      }}
     >
       <div className="space-y-2">
-        <Label htmlFor="name">Name *</Label>
+        <Label htmlFor="name" className="text-base">Name *</Label>
         <Input
           id="name"
           value={name}
@@ -369,15 +383,13 @@ export default function CategoriesPage() {
             }
           }}
           placeholder="Enter category name"
-          className={
-            errors.name ? "border-red-500 focus-visible:ring-red-500" : ""
-          }
+          className={`h-12 text-base ${errors.name ? "border-red-500 focus-visible:ring-red-500" : ""}`}
         />
         {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="slug">Slug *</Label>
+        <Label htmlFor="slug" className="text-base">Slug *</Label>
         <Input
           id="slug"
           value={slug}
@@ -407,9 +419,7 @@ export default function CategoriesPage() {
             }
           }}
           placeholder="category-slug"
-          className={
-            errors.slug ? "border-red-500 focus-visible:ring-red-500" : ""
-          }
+          className={`h-12 text-base ${errors.slug ? "border-red-500 focus-visible:ring-red-500" : ""}`}
         />
         {errors.slug ? (
           <p className="text-xs text-red-500">{errors.slug}</p>
@@ -469,12 +479,12 @@ export default function CategoriesPage() {
         </div>
 
         {/* Table Section */}
-        <div className="flex-1 overflow-auto overflow-x-hidden">
-          <Table className="w-full">
+        <div className="flex-1 overflow-auto overflow-x-auto">
+          <Table className="w-full min-w-[800px] table-fixed">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] max-w-[60px] px-4">No</TableHead>
-                <TableHead className="w-[35%] max-w-[35%] px-4">
+                <TableHead className="w-[60px] px-4 py-4">No</TableHead>
+                <TableHead className="w-[300px] px-4 py-4">
                   <button
                     onClick={() => handleSort("name")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -483,7 +493,7 @@ export default function CategoriesPage() {
                     {getSortIcon("name")}
                   </button>
                 </TableHead>
-                <TableHead className="max-w-[200px] px-4">
+                <TableHead className="w-[250px] px-4 py-4">
                   <button
                     onClick={() => handleSort("slug")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -492,7 +502,7 @@ export default function CategoriesPage() {
                     {getSortIcon("slug")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell max-w-[120px] px-4">
+                <TableHead className="hidden lg:table-cell w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -501,7 +511,7 @@ export default function CategoriesPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[140px] max-w-[140px] px-4">
+                <TableHead className="text-right w-[80px] px-4 py-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -510,26 +520,26 @@ export default function CategoriesPage() {
               {isLoading ? (
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
-                    <TableCell className="px-4">
+                    <TableCell className="w-[60px] px-4 py-4">
                       <Skeleton className="h-5 w-8" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="w-[300px] px-4 py-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
-                    <TableCell className="px-4">
+                    <TableCell className="w-[250px] px-4 py-4">
+                      <Skeleton className="h-5 w-32" />
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell w-[150px] px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4">
-                      <Skeleton className="h-5 w-24" />
-                    </TableCell>
-                    <TableCell className="px-4">
-                      <Skeleton className="h-8 w-20 ml-auto" />
+                    <TableCell className="w-[80px] px-4 py-4">
+                      <Skeleton className="h-8 w-8 ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : paginatedCategories.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={5} className="h-[400px] px-4">
+                  <TableCell colSpan={5} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <Tags className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -552,30 +562,29 @@ export default function CategoriesPage() {
               ) : (
                 paginatedCategories.map((category, index) => (
                   <TableRow key={category.id} className="hover:bg-transparent">
-                    <TableCell className="px-4 text-gray-600">
+                    <TableCell className="w-[60px] px-4 py-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 max-w-[35%]">
-                      <div className="flex items-center gap-3 min-w-0">
+                    <TableCell className="w-[300px] px-4 py-4">
+                      <div className="flex items-center gap-2 min-w-0">
                         <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
                           <Tags className="h-4 w-4 text-gray-500" />
                         </div>
                         <div className="min-w-0 flex-1 overflow-hidden">
-                          <p className="font-medium text-gray-900 truncate max-w-[500px]">
+                          <p className="font-medium text-gray-900 truncate text-sm">
                             {category.name}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 max-w-[200px]">
-                      <Badge
-                        variant="secondary"
-                        className="font-mono text-xs truncate max-w-full"
-                      >
-                        <span className="truncate">/{category.slug}</span>
-                      </Badge>
+                    <TableCell className="w-[250px] px-4 py-4">
+                      <div className="truncate">
+                        <code className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded font-mono truncate block">
+                          {category.slug}
+                        </code>
+                      </div>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell text-gray-600 px-4 max-w-[120px] truncate">
+                    <TableCell className="hidden lg:table-cell w-[150px] px-4 py-4 text-gray-600 truncate">
                       {category.created_at
                         ? new Date(category.created_at).toLocaleDateString(
                             "en-US",
@@ -587,29 +596,36 @@ export default function CategoriesPage() {
                           )
                         : "—"}
                     </TableCell>
-                    <TableCell className="text-right px-4">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(category)}
-                          title="Edit"
-                          className="h-8 w-8 hover:bg-transparent hover:text-current"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => {
-                            setCategoryToDelete(category);
-                            setIsDeleteOpen(true);
-                          }}
-                          className="h-8 w-8 text-red-600 hover:bg-transparent hover:text-current"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                    <TableCell className="w-[80px] px-4 py-4">
+                      <div className="flex items-center justify-end">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-transparent hover:text-current"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openEdit(category)}>
+                              <Pencil className="mr-2 h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setCategoryToDelete(category);
+                                setIsDeleteOpen(true);
+                              }}
+                              variant="destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -620,7 +636,7 @@ export default function CategoriesPage() {
         </div>
 
         {/* Pagination Section */}
-        {!isLoading && filteredCategories.length > 0 && totalPages > 1 && (
+        {!isLoading && filteredCategories.length > 0 && (
           <div className="border-t p-4 bg-gray-50/50">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-gray-600">
@@ -652,43 +668,45 @@ export default function CategoriesPage() {
                   <span className="hidden sm:inline">Previous</span>
                 </Button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first page, last page, current page, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1) ||
-                        totalPages <= 7
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(page)}
-                            className="w-9 h-9 p-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="px-2 text-gray-400">
-                            ...
-                          </span>
-                        );
+                {totalPages > 0 && (
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 && page <= currentPage + 1) ||
+                          totalPages <= 7
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                currentPage === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="w-9 h-9 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
                       }
-                      return null;
-                    }
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
 
                 <Button
                   variant="outline"
@@ -713,33 +731,35 @@ export default function CategoriesPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-2xl overflow-hidden flex flex-col"
+            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
           >
-            <SheetHeader>
-              <SheetTitle>
-                {isEditing ? "Edit Category" : "Create New Category"}
-              </SheetTitle>
-              <SheetDescription>
-                {isEditing
-                  ? "Update the category details below"
-                  : "Fill in the details for your new category"}
-              </SheetDescription>
-            </SheetHeader>
-            <ScrollArea className="flex-1 -mx-6 px-6 mt-6">
-              <div className="p-6 pb-8">{formContent}</div>
-            </ScrollArea>
-            <div className="flex justify-end gap-3 pt-4 pb-4 pr-6 border-t mt-auto">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                disabled={isSaving}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing ? "Update Category" : "Create Category"}
-              </Button>
+            <div className="flex flex-col h-full overflow-hidden">
+              <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+                <SheetTitle>
+                  {isEditing ? "Edit Category" : "Create New Category"}
+                </SheetTitle>
+                <SheetDescription>
+                  {isEditing
+                    ? "Update the category details below"
+                    : "Fill in the details for your new category"}
+                </SheetDescription>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+                {formContent}
+              </div>
+              <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} disabled={isSaving}>
+                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isEditing ? "Update Category" : "Create Category"}
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>
@@ -748,32 +768,34 @@ export default function CategoriesPage() {
       {/* Mobile Drawer */}
       {isMobile && (
         <Sheet open={isOpen} onOpenChange={handleClose}>
-          <SheetContent side="right" className="w-full sm:max-w-2xl">
-            <SheetHeader>
-              <SheetTitle>
-                {isEditing ? "Edit Category" : "Create New Category"}
-              </SheetTitle>
-              <SheetDescription>
-                {isEditing
-                  ? "Update the category details below"
-                  : "Fill in the details for your new category"}
-              </SheetDescription>
-            </SheetHeader>
-            <ScrollArea className="flex-1 -mx-6 px-6 mt-6">
-              <div className="p-6 pb-8">{formContent}</div>
-            </ScrollArea>
-            <div className="flex justify-end gap-3 pt-4 pb-4 pr-6 border-t mt-auto">
-              <Button
-                variant="outline"
-                onClick={handleClose}
-                disabled={isSaving}
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSave} disabled={isSaving}>
-                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing ? "Update" : "Create"}
-              </Button>
+          <SheetContent side="right" className="w-full sm:max-w-6xl overflow-hidden flex flex-col p-0 bg-white">
+            <div className="flex flex-col h-full overflow-hidden">
+              <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+                <SheetTitle>
+                  {isEditing ? "Edit Category" : "Create New Category"}
+                </SheetTitle>
+                <SheetDescription>
+                  {isEditing
+                    ? "Update the category details below"
+                    : "Fill in the details for your new category"}
+                </SheetDescription>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+                {formContent}
+              </div>
+              <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
+                <Button
+                  variant="outline"
+                  onClick={handleClose}
+                  disabled={isSaving}
+                >
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} disabled={isSaving}>
+                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isEditing ? "Update" : "Create"}
+                </Button>
+              </div>
             </div>
           </SheetContent>
         </Sheet>

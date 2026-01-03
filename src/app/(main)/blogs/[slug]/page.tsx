@@ -16,6 +16,7 @@ export async function generateMetadata({
     .from("blogs")
     .select("*, blog_categories(*)")
     .eq("slug", resolvedParams.slug)
+    .eq("status", "published")
     .or("archived.is.null,archived.eq.false")
     .single();
 
@@ -96,6 +97,7 @@ export default async function BlogDetailPage({
     .from("blogs")
     .select("*, blog_categories(*)")
     .eq("slug", resolvedParams.slug)
+    .eq("status", "published")
     .or("archived.is.null,archived.eq.false")
     .single();
 
@@ -107,6 +109,7 @@ export default async function BlogDetailPage({
   let relatedBlogsQuery = supabase
     .from("blogs")
     .select("id, title, slug, image, excerpt, blog_categories(*)")
+    .eq("status", "published")
     .or("archived.is.null,archived.eq.false")
     .neq("id", blog.id)
     .limit(3);

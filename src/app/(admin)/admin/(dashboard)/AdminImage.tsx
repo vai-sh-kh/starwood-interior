@@ -28,7 +28,16 @@ export default function AdminImage({
   const Icon = iconMap[type];
   const sizeClasses = size === "sm" ? "w-12 h-12" : "w-16 h-16";
 
-  if (!src || hasError) {
+  // Use local placeholder image if src is placeholder.com or invalid
+  const imageSrc =
+    !src ||
+    src.includes("placeholder.com") ||
+    src === "https://placeholder.com/image.png"
+      ? "/images/default-project-image.png"
+      : src;
+
+  // Show icon fallback only if image fails to load and it's not our default placeholder
+  if (hasError && imageSrc !== "/images/default-project-image.png") {
     const gradientClasses = {
       blog: "from-blue-100 to-purple-100",
       project: "from-green-100 to-teal-100",
@@ -55,12 +64,17 @@ export default function AdminImage({
       className={`${sizeClasses} rounded-lg overflow-hidden hidden sm:block shrink-0 relative`}
     >
       <Image
-        src={src}
+        src={imageSrc}
         alt={alt}
         fill
         className="object-cover"
-        onError={() => setHasError(true)}
-        unoptimized={src?.includes("supabase.co") ?? false}
+        onError={() => {
+          // Only set error if it's not already our default placeholder
+          if (imageSrc !== "/images/default-project-image.png") {
+            setHasError(true);
+          }
+        }}
+        unoptimized={imageSrc?.includes("supabase.co") ?? false}
       />
     </div>
   );

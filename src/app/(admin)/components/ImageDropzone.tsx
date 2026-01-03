@@ -16,6 +16,7 @@ interface ImageDropzoneProps {
   maxSize?: number; // in bytes
   acceptedTypes?: string[];
   onUploadingChange?: (isUploading: boolean) => void;
+  showLabel?: boolean; // Option to show/hide the internal label
 }
 
 export default function ImageDropzone({
@@ -26,6 +27,7 @@ export default function ImageDropzone({
   maxSize = 5 * 1024 * 1024, // 5MB default
   acceptedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"],
   onUploadingChange,
+  showLabel = true, // Default to true for backward compatibility
 }: ImageDropzoneProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragActive, setIsDragActive] = useState(false);
@@ -173,10 +175,10 @@ export default function ImageDropzone({
 
   return (
     <div className="space-y-2">
-      <Label>Featured Image</Label>
+      {showLabel && <Label>Featured Image</Label>}
       {preview ? (
         <div className="relative group">
-          <div className="relative w-full h-48 rounded-lg border overflow-hidden bg-gray-50">
+          <div className="relative w-full h-80 rounded-lg border overflow-hidden bg-gray-50">
             <img
               src={preview}
               alt="Preview"

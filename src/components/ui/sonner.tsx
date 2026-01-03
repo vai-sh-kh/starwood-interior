@@ -24,6 +24,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
         error: <OctagonXIcon className="size-4" />,
         loading: <Loader2Icon className="size-4 animate-spin" />,
       }}
+      visibleToasts={props.visibleToasts ?? 5}
+      gap={props.gap ?? 12}
+      expand={true}
       style={
         {
           "--normal-bg": "var(--popover)",
@@ -36,6 +39,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         style: {
           zIndex: 99999,
+          minWidth: "300px",
+          maxWidth: "400px",
+          wordBreak: "break-word",
+          ...props.toastOptions?.style,
         },
         ...props.toastOptions,
       }}

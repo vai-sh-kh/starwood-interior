@@ -171,9 +171,6 @@ export default function Testimonials() {
           {/* Quote */}
           <div className="relative w-full mb-4">
             <div className="mb-4 relative pl-1">
-              <span className="absolute -top-2 -left-3 text-4xl text-gray-700 opacity-20 font-serif leading-none">
-                &ldquo;
-              </span>
               <p className="text-sm font-medium leading-relaxed text-gray-200 relative z-10 pl-2">
                 {testimonial.quote}
               </p>
@@ -250,9 +247,6 @@ export default function Testimonials() {
                   : "opacity-0 translate-y-8"
               }`}
             >
-              <div className="absolute -top-10 -left-6 text-8xl font-serif text-white/5 font-bold z-0">
-                &ldquo;
-              </div>
               <div className="relative z-10">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 block mb-6">
                   — Testimonials

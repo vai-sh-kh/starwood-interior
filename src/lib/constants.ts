@@ -62,6 +62,13 @@ export const IMAGES = {
   // Testimonials Section
   testimonials: {
     samuel: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3Ir9gdQycQoh0TTDkyPtTVeEURJ6ZM6MweDUECaWKy1BDXUCM34joxUHJ2SxaN7693S48276IoLWZT0wopTZYMGuO4KA70PU5OfAIKXe_cwOIqk7px311D1yM9MJpn07sGwLLW9WNS4WNE45pB_wM0PoEDPXQLXQK8-QPgDO4KV6x5hdvztHy8jo9zTwqiGVF1Vu_kzcIrEf7MnzzhH317E5itK1ycL3k46oJyU82gi-n5ucO0bt2nZrewHqkD6DRR-pp0FN47lHx",
+    akhil: "https://lh3.googleusercontent.com/aida-public/AB6AXuBmiSHBn4rL8UFI80yIZegKJQE9FlElxwh0JwIv-nTw9BfZojddDZFCssJuK7MuneLrAyoIdvFcORJuzS-oGyah7F5B3JvdcRwoFt7ZCEL_ZIifZgQ2EwCFJLqk-xRUfk3T0ZDXcBrd-om-InHRkT_w7YNN8aWUTz0UlHo-1Uyz-F9P5dcEYK8e9bynXGFZxpQ75KwdJoT76LQqpRtNcu5Im2Qr1eJSLYFgbb3xCqXrfEiX9h-SASyj0FJcTs7iaQrArGbGZzGd744",
+    abhinav: "https://lh3.googleusercontent.com/aida-public/AB6AXuDfIC0szmHcHbSDd1SxyFQ8IgxNi8gb8JKZaA63rqoWQDIwgKHFFEwy_SuCQzOWEAOZYRZHF1SDNtC4inWPdlVeBNNklzAwyRFylhg1wEHNVuK1rHDaTue-SPtP7GYLr3eakMvCF6963MaQBuT7p-6VN2lLDRfX_AD7UgMInQvXKK-Mui4vpjazNFL2NDyRbOFKdvKvnzfSTJzxZ0qHN30Unc-nI5CIzCgaXKESuyjw5ikIQLv6O3BmkwLeaX8HHqoB4ZValqQc6v0",
+    ananthan: "https://lh3.googleusercontent.com/aida-public/AB6AXuCNYJkQ2Xjejoagf_aUjWjOH2YHaG74Y3OfAr3XK-GBDKAGU97oqXW3hsWF6buITtR5AQGGmTy0_Vn1BFuNLx3q5dsr3YMh9PH8Ya9tRsf7tiQSwUFHB3QejHZI7HW9EY1kLVK8hAnIkxNvB4K-cjBmwz3ozU9ovOx5eKaoLhNqFUGdJIEJIBmWT3n3yJEiXP-wfMLIZTICaivHosCdo-lupNeLyuSqs8cccb-YnuSLf9MFFWY3SsuNbkKxxy3ImBjKiTPsV9ixL2E",
+    anoop: "https://lh3.googleusercontent.com/aida-public/AB6AXuDhD5ta_cW0zYkJ3CA5br2s8CpnYUPF_PZu-qy2987X0feAyQcImb5m6WzoI7_RRU5Ie-4ZZ44O8Zo2EMvABbOnoty8quiIY-01J_QAEgtiwkrJpnmxIxWVL5NURhlXynsSwdtkuoZGNyKWuBz0iCHjGmYqtZbfm4jdCyH2sP-Rv-e_oP-6_ZXGndbTROXMnvaPICG5S2m_s0_g4fzaJsRV_0Rmo4fmne_rXe9MbanvlJYbcW7yvPDtPLRjRc_GFMXXTDwUTjYctA8",
+    gokil: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_Xm57a_AMs8Qqlk0IyFp5qWUmaibVutmam509vhzx9amr9AWGSTqwwwFBYZ63X3FEv-OsmPG6aLJVfTXvepvcFSw3wTh9xEgJJtB3_Lq2uzr9hOzQ2ScRmw8H13-nfL2fj1gVe0DSFOmeyIfSVs9Qa39JdLIzxKpPSkmRTf48eRS_WxaRZj4_sqqe0oKRPkJKKjRDbZp37rSwVbWPh-7g0JgZnawAkGQr6NZ-u-Mrezg3CEYRuhytGp5sXjpTGt2Nqb597y4THQg",
+    nanda: "https://lh3.googleusercontent.com/aida-public/AB6AXuC8i5zWJX-o0CjpLWRKa95LDgUp57PCinJnpNIqmC4cSxfIzwc2tP-1BEmjf5U8KKKgC5FColwOHJlyd9BLHlYbzAC0gppi6FoZhebX0gk9RRtAHwHJKaijavKURmVKcTCRE2-9m5nFbPZbv3bDmDVsb4xjv1nj67JRENdvO2TopHGPiIqGZEXROvUIis9igDL_AAG_1I66Yok8Y-DzdC-nJVzNMloRQK_PHlrlOn9_vtkx2I5Q_hwu3wJWgT1449VipDwSXd6TSAU",
+    parvathy: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ-H5YmYouxtzccg2-ECpxGttNfIIl8qGkWDhqvbBkOT_RdrEFi3fj4p4OL51LMUy5F1T0p34ig_LB3YImz62yy6ImlL1EKl2CpiJaz1gKIPke8utfLoZEd45B-W9x-KXogzfaWyl5nxZw9FMhZsbJktIgJu3Y8RHyikdPDAF5kYASjPSMMes8fqEeT5Isyb6VSGPYENnj3IvjxArbNH2dxIZK8DxzF987QMduY_tEr82jnsJUS_qyqSUKm2DNo0C174bX1nUCRtk",
   },
   
   // Projects Section
@@ -82,12 +89,28 @@ export const STATS = [
 
 // Collection items
 export const COLLECTIONS = [
-  { name: "Mondrian", image: IMAGES.collection.mondrian },
-  { name: "Nimia", image: IMAGES.collection.nimia },
-  { name: "Artex", image: IMAGES.collection.artex },
-  { name: "Brera", image: IMAGES.collection.brera },
-  { name: "Alea Pro", image: IMAGES.collection.aleaPro },
-  { name: "Nimia", image: IMAGES.collection.nimiaArmchair },
+  { 
+    name: "Home Interior Design", 
+    image: IMAGES.collection.mondrian,
+    description: "Tailored design plans personalised to your style, space, and functional needs."
+  },
+  { 
+    name: "Commercial Interiors", 
+    image: IMAGES.collection.nimia,
+    description: "Modern modular kitchens that combine efficiency with aesthetic appeal."
+  },
+  { 
+    name: "3D Interior Rendering", 
+    image: IMAGES.collection.artex,
+    description: "Complete furnishing services to bring warmth, comfort, and personality to every room."
+  },
+  { 
+    name: "Architectural Drawings", 
+    image: IMAGES.collection.brera,
+    description: "Custom furniture design and execution for living rooms, bedrooms, wardrobe spaces, and more."
+  },
+  { name: "Mondrian", image: IMAGES.collection.mondrian, description: undefined },
+  { name: "Nimia", image: IMAGES.collection.nimia, description: undefined },
 ] as const;
 
 // Team Members (About Us page)
@@ -301,8 +324,8 @@ export const WORKS_COLLECTIONS = [
 // Navigation links - Updated with proper routes
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
   { href: "/projects", label: "Projects" },
+  { href: "/services", label: "Services" },
   { href: "/about-us", label: "About Us" },
   { href: "/blogs", label: "Blogs" },
   { href: "/contact", label: "Contact" },
@@ -310,8 +333,8 @@ export const NAV_LINKS = [
 
 export const BOTTOM_NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
   { href: "/projects", label: "Projects" },
+  { href: "/services", label: "Services" },
   { href: "/about-us", label: "About Us" },
   { href: "/contact", label: "Contact" },
 ] as const;
@@ -452,42 +475,89 @@ export const PAGE_METADATA = {
 
 
 export const SERVICES_LIST = [
-  { title: "Construction Planning", active: false },
-  { title: "Structural Renovations", active: true, count: "03" },
-  { title: "General Contracting", active: false },
-  { title: "Design & Build Services", active: false },
-  { title: "Site Oversight & Quality", active: false },
+  { 
+    title: "Requirement Discussion", 
+    description: "Understanding your requirements to create custom interior concepts.",
+    active: false 
+  },
+  { 
+    title: "Design Concept", 
+    description: "Development of initial concept design & layouts aligned to your aesthetic goals.",
+    active: true, 
+    count: "03" 
+  },
+  { 
+    title: "3D Visualisation", 
+    description: "Creation of detailed 3D views to give complete clarity before execution.",
+    active: false 
+  },
+  { 
+    title: "Design Finalisation", 
+    description: "Finalisation of materials, finishes, and design details with client approval.",
+    active: false 
+  },
+  { 
+    title: "Execution Management", 
+    description: "Executing the project with quality control, timeline management, and site supervision",
+    active: false 
+  },
+  { 
+    title: "Project Handover", 
+    description: "Completing final inspections and project handover with post-completion support.",
+    active: false 
+  },
 ];
 
 // Testimonials
 export const TESTIMONIALS = [
   {
     id: 1,
-    name: "Samuel T.",
-    role: "Property Developer",
-    quote: "Their attention to detail and commitment to our vision truly set them apart. The project was completed on time, on budget, and beyond expectations.",
-    imageKey: "samuel" as const,
+    name: "Akhil Prasannan",
+    role: "Client",
+    quote: "Truly impressed with the quality of the products and the service provided. Worth to mention the time-bound completion of the interiors of my apartment and the professional approach of the entire team of Starwood Interiors, Tvm. Its worth for the money that is spend.",
+    imageKey: "akhil" as const,
   },
   {
     id: 2,
-    name: "Maria L.",
-    role: "Interior Designer",
-    quote: "Working with this team transformed our space completely. Their innovative approach and professional execution exceeded all our expectations.",
-    imageKey: "samuel" as const,
+    name: "Abhinav",
+    role: "Client",
+    quote: "Outstanding service! Transformed my space into something truly special. Highly recommend their design expertise.",
+    imageKey: "abhinav" as const,
   },
   {
     id: 3,
-    name: "David K.",
-    role: "Architect",
-    quote: "The quality of work and attention to detail is outstanding. They delivered a beautiful, functional space that perfectly matches our vision.",
-    imageKey: "samuel" as const,
+    name: "Ananthan",
+    role: "Student",
+    quote: "I'm a student and wanted to revamp my bedroom. I gave these guys some Pinterest reference images to show what I wanted, and they executed exactly what I envisioned. I would recommend them to anyone for interior designing in Trivandrum.",
+    imageKey: "ananthan" as const,
   },
   {
     id: 4,
-    name: "Sarah M.",
-    role: "Homeowner",
-    quote: "From consultation to completion, the entire process was seamless. We couldn't be happier with the results and would highly recommend them.",
-    imageKey: "samuel" as const,
+    name: "Anoop",
+    role: "Client",
+    quote: "They gave clear ideas and suggestions. After getting 3D image I was so happy and I knew that it will work out really well and that exactly happened after finishing the work.",
+    imageKey: "anoop" as const,
+  },
+  {
+    id: 5,
+    name: "Gokil S",
+    role: "Client",
+    quote: "Stunning Work Designs with Great customer service. Starwood provided valuable in terms of finding the right design.",
+    imageKey: "gokil" as const,
+  },
+  {
+    id: 6,
+    name: "Nanda Gopan",
+    role: "Client",
+    quote: "Fantastic experience from start to finish. The designers were attentive and delivered exactly what I wanted.",
+    imageKey: "nanda" as const,
+  },
+  {
+    id: 7,
+    name: "Parvathy",
+    role: "Client",
+    quote: "Incredible design work! They completely revamped my office, making it both stylish and functional.",
+    imageKey: "parvathy" as const,
   },
 ];
 
@@ -819,3 +889,6 @@ export const AVATAR_COLORS = [
   "#FF1493", // Deep pink
   "#1E90FF", // Dodger blue
 ] as const;
+
+// Gallery Images Configuration
+export const MAX_GALLERY_IMAGES = 6;

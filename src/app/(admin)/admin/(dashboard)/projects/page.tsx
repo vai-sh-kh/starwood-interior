@@ -39,14 +39,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -72,6 +64,8 @@ import {
   Pencil,
   Trash2,
   Search,
+  Eye,
+  ExternalLink,
   FolderKanban,
   Loader2,
   ChevronUp,
@@ -81,7 +75,6 @@ import {
   ChevronRight,
   MoreVertical,
   X,
-  FileSearch,
 } from "lucide-react";
 import TipTapEditor from "@/app/(admin)/components/TipTapEditor";
 import ImageDropzone from "@/app/(admin)/components/ImageDropzone";
@@ -91,12 +84,6 @@ import AdminImage from "../AdminImage";
 
 type SortField = "title" | "created_at" | "category" | "status";
 type SortDirection = "asc" | "desc";
-
-// Extended Project type with SEO fields
-type ProjectWithSeo = Project & {
-  meta_title?: string | null;
-  meta_description?: string | null;
-};
 
 const ITEMS_PER_PAGE = 7;
 
@@ -114,20 +101,28 @@ const projectSchema = z.object({
     .max(200, "Slug must be less than 200 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must contain only lowercase letters, numbers, and hyphens"
+      "Only lowercase letters, numbers, and hyphens allowed"
     ),
   description: z
     .string()
+    .min(1, "Description is required")
     .max(500, "Description must be less than 500 characters")
-    .optional(),
-  content: z.string().optional(),
+    .refine((val) => val.trim().length > 0, {
+      message: "Description cannot be empty or only whitespace",
+    }),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .refine((val) => val.trim().length > 0, {
+      message: "Content cannot be empty or only whitespace",
+    }),
   image: z
     .string()
+    .min(1, "Featured image is required")
     .refine(
-      (val) => !val || val === "" || z.string().url().safeParse(val).success,
+      (val) => z.string().url().safeParse(val).success,
       "Image must be a valid URL"
-    )
-    .optional(),
+    ),
   categoryId: z
     .string()
     .refine(
@@ -202,8 +197,7 @@ export default function ProjectsPage() {
 
   // Image uploading state
   const [isImageUploading, setIsImageUploading] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [_isGalleryUploading, setIsGalleryUploading] = useState(false);
+  const [isGalleryUploading, setIsGalleryUploading] = useState(false);
 
   // Gallery images state
   const [galleryImages, setGalleryImages] = useState<
@@ -214,13 +208,6 @@ export default function ProjectsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
-  // SEO dialog state
-  const [isSeoOpen, setIsSeoOpen] = useState(false);
-  const [seoProject, setSeoProject] = useState<Project | null>(null);
-  const [metaTitle, setMetaTitle] = useState("");
-  const [metaDescription, setMetaDescription] = useState("");
-  const [isSavingSeo, setIsSavingSeo] = useState(false);
 
   const supabase = createClient();
 
@@ -440,24 +427,12 @@ export default function ProjectsPage() {
     }
   };
 
-  // Check if form is valid
-  const isFormValid = useMemo(() => {
-    const sanitizedSlug = generateSlug(slug);
-    const finalSlug =
-      sanitizedSlug || generateSlug(title) || slug.trim().toLowerCase();
-    const result = projectSchema.safeParse({
-      title,
-      slug: finalSlug,
-      description,
-      content,
-      image,
-      categoryId: categoryId || undefined,
-      status,
-    });
-    return result.success;
-  }, [title, slug, description, content, image, categoryId, status]);
-
   const handleSave = async () => {
+    // Prevent multiple submissions
+    if (isSaving) return;
+
+    setIsSaving(true);
+
     // Sanitize slug before validation
     const sanitizedSlug = generateSlug(slug);
     const finalSlug =
@@ -485,7 +460,68 @@ export default function ProjectsPage() {
       const firstError = validationResult.error.issues[0];
       if (firstError) {
         toast.error(firstError.message);
+
+        // Scroll to the first error field
+        const fieldName = firstError.path[0] as string;
+        setTimeout(() => {
+          let element: HTMLElement | null = null;
+
+          // Map field names to element IDs or selectors
+          const fieldMap: Record<string, string> = {
+            title: "title",
+            slug: "slug",
+            description: "description",
+            content: "content-editor",
+            image: "image-dropzone",
+            categoryId: "category-select",
+            status: "status-select",
+          };
+
+          const selector = fieldMap[fieldName];
+          if (selector) {
+            element = document.getElementById(selector);
+
+            // For select fields, try to find the select trigger
+            if (
+              !element &&
+              (fieldName === "categoryId" || fieldName === "status")
+            ) {
+              const label = Array.from(document.querySelectorAll("label")).find(
+                (l) =>
+                  (fieldName === "categoryId" &&
+                    l.textContent?.includes("Category")) ||
+                  (fieldName === "status" && l.textContent?.includes("Status"))
+              );
+              if (label) {
+                const selectTrigger = label.parentElement?.querySelector(
+                  '[role="combobox"]'
+                ) as HTMLElement;
+                element = selectTrigger || (label.parentElement as HTMLElement);
+              }
+            }
+
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+              // Focus the element if it's focusable
+              if (
+                element instanceof HTMLInputElement ||
+                element instanceof HTMLTextAreaElement
+              ) {
+                element.focus();
+              } else if (element instanceof HTMLElement) {
+                // Try to find a focusable child element
+                const focusable = element.querySelector(
+                  'input, textarea, [role="combobox"]'
+                ) as HTMLElement;
+                if (focusable) {
+                  focusable.focus();
+                }
+              }
+            }
+          }
+        }, 100);
       }
+      setIsSaving(false);
       return;
     }
 
@@ -517,8 +553,6 @@ export default function ProjectsPage() {
       return;
     }
 
-    setIsSaving(true);
-
     try {
       let projectId: string;
 
@@ -541,8 +575,8 @@ export default function ProjectsPage() {
           title,
           slug: finalSlug,
           description: description || null,
-          content: content || null,
-          image: image || null,
+          content: content, // Required field
+          image: image, // Required field
           category_id: categoryId || null,
           status,
           tags: tags.length > 0 ? tags : null,
@@ -580,8 +614,8 @@ export default function ProjectsPage() {
           title,
           slug: finalSlug,
           description: description || null,
-          content: content || null,
-          image: image || null,
+          content: content, // Required field
+          image: image, // Required field
           category_id: categoryId || null,
           status,
           tags: tags.length > 0 ? tags : null,
@@ -698,46 +732,6 @@ export default function ProjectsPage() {
     }
   };
 
-  const openSeoDialog = (project: Project) => {
-    setSeoProject(project);
-    const projectWithSeo = project as ProjectWithSeo;
-    setMetaTitle(projectWithSeo.meta_title || "");
-    setMetaDescription(projectWithSeo.meta_description || "");
-    setIsSeoOpen(true);
-  };
-
-  const handleSaveSeo = async () => {
-    if (!seoProject) return;
-
-    setIsSavingSeo(true);
-
-    try {
-      const { error } = await supabase
-        .from("projects")
-        .update({
-          meta_title: metaTitle.trim() || null,
-          meta_description: metaDescription.trim() || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", seoProject.id);
-
-      if (error) throw error;
-
-      toast.success("SEO settings updated successfully");
-      setIsSeoOpen(false);
-      setSeoProject(null);
-      setMetaTitle("");
-      setMetaDescription("");
-      fetchProjects();
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Failed to save SEO settings";
-      toast.error(errorMessage);
-    } finally {
-      setIsSavingSeo(false);
-    }
-  };
-
   const handleClearFilters = () => {
     setSelectedCategory("all");
     setSelectedStatus("all");
@@ -847,11 +841,24 @@ export default function ProjectsPage() {
     );
   }, [categories, categorySearchQuery]);
 
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isSaving && !isImageUploading && !isGalleryUploading) {
+      handleSave();
+    }
+  };
+
   const formContent = (
-    <div className="space-y-6 pb-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
+    <form
+      id="project-form"
+      onSubmit={handleFormSubmit}
+      className="space-y-8 pb-4"
+    >
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-3">
+          <Label htmlFor="title" className="text-base">
+            Title *
+          </Label>
           <Input
             id="title"
             value={title}
@@ -866,14 +873,16 @@ export default function ProjectsPage() {
               }
             }}
             placeholder="Enter project title"
-            className={errors.title ? "border-red-500" : ""}
+            className={`h-12 text-base ${errors.title ? "border-red-500" : ""}`}
           />
           {errors.title && (
             <p className="text-sm text-red-500">{errors.title}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="slug">Slug *</Label>
+        <div className="space-y-3">
+          <Label htmlFor="slug" className="text-base">
+            Slug *
+          </Label>
           <Input
             id="slug"
             value={slug}
@@ -903,15 +912,17 @@ export default function ProjectsPage() {
               }
             }}
             placeholder="project-slug"
-            className={errors.slug ? "border-red-500" : ""}
+            className={`h-12 text-base ${errors.slug ? "border-red-500" : ""}`}
           />
           {errors.slug && <p className="text-sm text-red-500">{errors.slug}</p>}
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-3">
+          <Label htmlFor="category" className="text-base">
+            Category
+          </Label>
           <Select
             value={categoryId || "none"}
             onValueChange={(value) => {
@@ -923,7 +934,7 @@ export default function ProjectsPage() {
               setCategorySearchQuery("");
             }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full h-12 text-base">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent
@@ -942,7 +953,7 @@ export default function ProjectsPage() {
                       setCategorySearchQuery(e.target.value);
                       e.stopPropagation();
                     }}
-                    className="pl-8 h-8 text-sm"
+                    className="pl-8 h-12 text-base"
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => {
                       e.stopPropagation();
@@ -976,8 +987,10 @@ export default function ProjectsPage() {
             <p className="text-sm text-red-500">{errors.categoryId}</p>
           )}
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="status">Status *</Label>
+        <div className="space-y-3">
+          <Label htmlFor="status" className="text-base">
+            Status *
+          </Label>
           <Select
             value={status}
             onValueChange={(value) => {
@@ -988,7 +1001,7 @@ export default function ProjectsPage() {
               }
             }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full h-12 text-base">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
@@ -1002,8 +1015,8 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Image</Label>
+      <div className="space-y-3" id="image-dropzone">
+        <Label className="text-base">Image *</Label>
         <ImageDropzone
           value={image}
           onChange={(value) => {
@@ -1016,12 +1029,15 @@ export default function ProjectsPage() {
           onUploadingChange={setIsImageUploading}
           bucket="project-images"
           folder="uploads"
+          showLabel={false}
         />
         {errors.image && <p className="text-sm text-red-500">{errors.image}</p>}
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+      <div className="space-y-3">
+        <Label htmlFor="description" className="text-base">
+          Description *
+        </Label>
         <Textarea
           id="description"
           value={description}
@@ -1032,17 +1048,25 @@ export default function ProjectsPage() {
               setErrors((prev) => ({ ...prev, description: undefined }));
             }
           }}
+          onKeyDown={(e) => {
+            // Allow Shift+Enter for new line, but prevent Enter from submitting
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+            }
+          }}
           placeholder="Brief description of the project"
-          rows={3}
-          className={errors.description ? "border-red-500" : ""}
+          rows={4}
+          className={`min-h-[120px] text-base ${
+            errors.description ? "border-red-500" : ""
+          }`}
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description}</p>
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Content</Label>
+      <div className="space-y-3" id="content-editor">
+        <Label className="text-base">Content *</Label>
         <div className="border border-gray-200 rounded-lg overflow-hidden">
           <TipTapEditor
             content={content}
@@ -1061,17 +1085,21 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      <div className="space-y-2">
-        <Label>Tags</Label>
+      <div className="space-y-3">
+        <Label className="text-base">Tags</Label>
         <div className="flex gap-2">
           <Input
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Add a tag"
-            className="flex-1"
+            className="flex-1 h-12 text-base"
           />
-          <Button type="button" onClick={handleAddTag} variant="secondary">
+          <Button
+            type="button"
+            onClick={handleAddTag}
+            className="bg-black text-white hover:bg-gray-800"
+          >
             Add
           </Button>
         </div>
@@ -1093,10 +1121,10 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between py-3 px-4 rounded-lg bg-gray-200">
         <div className="space-y-0.5">
-          <Label>Mark as New</Label>
-          <p className="text-sm text-gray-500">
+          <Label className="text-base">Mark as New</Label>
+          <p className="text-sm text-gray-600">
             Display a &quot;New&quot; badge on this project
           </p>
         </div>
@@ -1110,6 +1138,17 @@ export default function ProjectsPage() {
           bucket="project-images"
           folder="uploads"
           onUploadingChange={setIsGalleryUploading}
+          showResetButton={isEditing && galleryImages.length > 0}
+          onReset={() => {
+            if (
+              confirm(
+                "Are you sure you want to remove all gallery images? This action cannot be undone."
+              )
+            ) {
+              setGalleryImages([]);
+            }
+          }}
+          isResetting={isGalleryUploading || isSaving}
         />
       </div>
 
@@ -1122,62 +1161,75 @@ export default function ProjectsPage() {
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="projectClient">Client</Label>
+            <Label htmlFor="projectClient" className="text-base">
+              Client
+            </Label>
             <Input
               id="projectClient"
               value={projectClient}
               onChange={(e) => setProjectClient(e.target.value)}
               placeholder="e.g., Private Residential"
+              className="h-12 text-base"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="projectLocation">Location</Label>
+            <Label htmlFor="projectLocation" className="text-base">
+              Location
+            </Label>
             <Input
               id="projectLocation"
               value={projectLocation}
               onChange={(e) => setProjectLocation(e.target.value)}
               placeholder="e.g., Seattle, WA"
+              className="h-12 text-base"
             />
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-2 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="projectSize">Size</Label>
+            <Label htmlFor="projectSize" className="text-base">
+              Size
+            </Label>
             <Input
               id="projectSize"
               value={projectSize}
               onChange={(e) => setProjectSize(e.target.value)}
               placeholder="e.g., 2,500 sqft"
+              className="h-12 text-base"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="projectCompletion">Completion Date</Label>
+            <Label htmlFor="projectCompletion" className="text-base">
+              Completion Date
+            </Label>
             <Input
               id="projectCompletion"
               value={projectCompletion}
               onChange={(e) => setProjectCompletion(e.target.value)}
               placeholder="e.g., October 2023"
+              className="h-12 text-base"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label>Services</Label>
+          <Label className="text-base">Services</Label>
           <div className="flex gap-2">
             <Input
               value={serviceInput}
               onChange={(e) => setServiceInput(e.target.value)}
               onKeyDown={handleServiceKeyDown}
               placeholder="Add a service"
-              className="flex-1"
+              className="flex-1 h-12 text-base"
             />
             <Button
               type="button"
               onClick={handleAddService}
               variant="secondary"
+              className="bg-gray-800 hover:bg-gray-700 text-white"
             >
               Add
             </Button>
@@ -1215,27 +1267,39 @@ export default function ProjectsPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="quote">Quote Text</Label>
+          <Label htmlFor="quote" className="text-base">
+            Quote Text
+          </Label>
           <Textarea
             id="quote"
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
+            onKeyDown={(e) => {
+              // Allow Shift+Enter for new line, but prevent Enter from submitting
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+              }
+            }}
             placeholder='e.g., "Starwood Interiors transformed a cold warehouse into a sanctuary. The attention to detail in the joinery is absolutely world-class."'
-            rows={4}
+            rows={5}
+            className="min-h-[140px] text-base"
           />
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="quoteAuthor">Quote Author</Label>
+        <div className="space-y-2 mt-6">
+          <Label htmlFor="quoteAuthor" className="text-base">
+            Quote Author
+          </Label>
           <Input
             id="quoteAuthor"
             value={quoteAuthor}
             onChange={(e) => setQuoteAuthor(e.target.value)}
             placeholder="e.g., Homeowner"
+            className="h-12 text-base"
           />
         </div>
       </div>
-    </div>
+    </form>
   );
 
   return (
@@ -1330,14 +1394,12 @@ export default function ProjectsPage() {
         </div>
 
         {/* Table Section */}
-        <div className="flex-1 overflow-auto">
-          <Table className="w-full">
+        <div className="flex-1 overflow-auto overflow-x-auto">
+          <Table className="w-full min-w-[1000px] table-fixed">
             <TableHeader className="sticky top-0 bg-white z-10">
               <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                <TableHead className="w-[60px] max-w-[60px] px-4 py-4">
-                  No
-                </TableHead>
-                <TableHead className="max-w-[300px] px-4 py-4">
+                <TableHead className="w-[60px] px-4 py-4">No</TableHead>
+                <TableHead className="w-[250px] px-4 py-4">
                   <button
                     onClick={() => handleSort("title")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1346,7 +1408,10 @@ export default function ProjectsPage() {
                     {getSortIcon("title")}
                   </button>
                 </TableHead>
-                <TableHead className="max-w-[150px] px-4 py-4">
+                <TableHead className="hidden md:table-cell w-[200px] px-4 py-4">
+                  Slug
+                </TableHead>
+                <TableHead className="w-[150px] px-4 py-4">
                   <button
                     onClick={() => handleSort("category")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1355,7 +1420,7 @@ export default function ProjectsPage() {
                     {getSortIcon("category")}
                   </button>
                 </TableHead>
-                <TableHead className="max-w-[120px] px-4 py-4">
+                <TableHead className="w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("status")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1364,7 +1429,7 @@ export default function ProjectsPage() {
                     {getSortIcon("status")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden lg:table-cell max-w-[120px] px-4 py-4">
+                <TableHead className="hidden lg:table-cell w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
                     className="flex items-center hover:bg-transparent hover:text-current"
@@ -1373,7 +1438,7 @@ export default function ProjectsPage() {
                     {getSortIcon("created_at")}
                   </button>
                 </TableHead>
-                <TableHead className="text-right w-[80px] max-w-[80px] px-4 py-4">
+                <TableHead className="text-right w-[80px] px-4 py-4">
                   Actions
                 </TableHead>
               </TableRow>
@@ -1382,29 +1447,32 @@ export default function ProjectsPage() {
               {isLoading ? (
                 Array.from({ length: ITEMS_PER_PAGE }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-transparent">
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[60px] px-4 py-4">
                       <Skeleton className="h-5 w-8" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[250px] px-4 py-4">
                       <Skeleton className="h-5 w-48" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="hidden md:table-cell w-[200px] px-4 py-4">
+                      <Skeleton className="h-5 w-32" />
+                    </TableCell>
+                    <TableCell className="w-[150px] px-4 py-4">
                       <Skeleton className="h-5 w-20" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[120px] px-4 py-4">
                       <Skeleton className="h-5 w-16" />
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-4">
+                    <TableCell className="hidden lg:table-cell w-[120px] px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[80px] px-4 py-4">
                       <Skeleton className="h-8 w-8 ml-auto" />
                     </TableCell>
                   </TableRow>
                 ))
               ) : paginatedProjects.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={6} className="h-[400px] px-4 py-4">
+                  <TableCell colSpan={7} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <FolderKanban className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -1431,11 +1499,11 @@ export default function ProjectsPage() {
               ) : (
                 paginatedProjects.map((project, index) => (
                   <TableRow key={project.id} className="hover:bg-transparent">
-                    <TableCell className="px-4 py-4 text-gray-600">
+                    <TableCell className="w-[60px] px-4 py-4 text-gray-600">
                       {startIndex + index + 1}
                     </TableCell>
-                    <TableCell className="px-4 py-4 max-w-[300px]">
-                      <div className="flex items-center gap-3 min-w-0">
+                    <TableCell className="w-[250px] px-4 py-4">
+                      <div className="flex items-center gap-2 min-w-0">
                         <AdminImage
                           src={project.image}
                           alt={project.title}
@@ -1443,7 +1511,7 @@ export default function ProjectsPage() {
                         />
                         <div className="min-w-0 flex-1 overflow-hidden">
                           <div className="flex items-center gap-2 min-w-0">
-                            <p className="font-medium text-gray-900 truncate">
+                            <p className="font-medium text-gray-900 truncate text-sm">
                               {project.title}
                             </p>
                             {project.is_new && (
@@ -1452,15 +1520,17 @@ export default function ProjectsPage() {
                               </Badge>
                             )}
                           </div>
-                          {project.description && (
-                            <p className="text-xs text-gray-500 truncate mt-1">
-                              {project.description}
-                            </p>
-                          )}
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-4 max-w-[150px]">
+                    <TableCell className="hidden md:table-cell w-[200px] px-4 py-4">
+                      <div className="truncate">
+                        <code className="text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded font-mono truncate block">
+                          {project.slug || "—"}
+                        </code>
+                      </div>
+                    </TableCell>
+                    <TableCell className="w-[150px] px-4 py-4">
                       <div className="truncate">
                         {project.blog_categories ? (
                           <Badge
@@ -1476,7 +1546,7 @@ export default function ProjectsPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="px-4 py-4 max-w-[120px]">
+                    <TableCell className="w-[120px] px-4 py-4">
                       <Select
                         value={project.status}
                         onValueChange={(value) =>
@@ -1507,7 +1577,7 @@ export default function ProjectsPage() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell px-4 py-4 text-gray-600 max-w-[120px] truncate">
+                    <TableCell className="hidden lg:table-cell w-[120px] px-4 py-4 text-gray-600 truncate">
                       {project.created_at
                         ? new Date(project.created_at).toLocaleDateString(
                             "en-US",
@@ -1519,7 +1589,7 @@ export default function ProjectsPage() {
                           )
                         : "—"}
                     </TableCell>
-                    <TableCell className="px-4 py-4">
+                    <TableCell className="w-[80px] px-4 py-4">
                       <div className="flex items-center justify-end">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1532,21 +1602,23 @@ export default function ProjectsPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                const projectUrl = `/projects/${
+                                  project.slug || project.id
+                                }`;
+                                window.open(projectUrl, "_blank");
+                              }}
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              View
+                              <ExternalLink className="ml-2 h-3 w-3" />
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => openEdit(project)}>
                               <Pencil className="mr-2 h-4 w-4" />
                               Edit
                             </DropdownMenuItem>
-                            {project.status === "draft" && (
-                              <>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  onClick={() => openSeoDialog(project)}
-                                >
-                                  <FileSearch className="mr-2 h-4 w-4" />
-                                  SEO Settings
-                                </DropdownMenuItem>
-                              </>
-                            )}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={() => {
@@ -1570,7 +1642,7 @@ export default function ProjectsPage() {
         </div>
 
         {/* Pagination Section */}
-        {!isLoading && filteredProjects.length > 0 && totalPages > 1 && (
+        {!isLoading && filteredProjects.length > 0 && (
           <div className="border-t p-4 bg-gray-50/50">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="text-sm text-gray-600">
@@ -1602,43 +1674,46 @@ export default function ProjectsPage() {
                   <span className="hidden sm:inline">Previous</span>
                 </Button>
 
-                <div className="flex items-center gap-1">
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => {
-                      // Show first page, last page, current page, and pages around current
-                      if (
-                        page === 1 ||
-                        page === totalPages ||
-                        (page >= currentPage - 1 && page <= currentPage + 1) ||
-                        totalPages <= 7
-                      ) {
-                        return (
-                          <Button
-                            key={page}
-                            variant={
-                              currentPage === page ? "default" : "outline"
-                            }
-                            size="sm"
-                            onClick={() => setCurrentPage(page)}
-                            className="w-9 h-9 p-0"
-                          >
-                            {page}
-                          </Button>
-                        );
-                      } else if (
-                        page === currentPage - 2 ||
-                        page === currentPage + 2
-                      ) {
-                        return (
-                          <span key={page} className="px-2 text-gray-400">
-                            ...
-                          </span>
-                        );
+                {totalPages > 0 && (
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                      (page) => {
+                        // Show first page, last page, current page, and pages around current
+                        if (
+                          page === 1 ||
+                          page === totalPages ||
+                          (page >= currentPage - 1 &&
+                            page <= currentPage + 1) ||
+                          totalPages <= 7
+                        ) {
+                          return (
+                            <Button
+                              key={page}
+                              variant={
+                                currentPage === page ? "default" : "outline"
+                              }
+                              size="sm"
+                              onClick={() => setCurrentPage(page)}
+                              className="w-9 h-9 p-0"
+                            >
+                              {page}
+                            </Button>
+                          );
+                        } else if (
+                          page === currentPage - 2 ||
+                          page === currentPage + 2
+                        ) {
+                          return (
+                            <span key={page} className="px-2 text-gray-400">
+                              ...
+                            </span>
+                          );
+                        }
+                        return null;
                       }
-                      return null;
-                    }
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
 
                 <Button
                   variant="outline"
@@ -1663,7 +1738,7 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-2xl overflow-hidden flex flex-col p-0"
+            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1676,34 +1751,22 @@ export default function ProjectsPage() {
                     : "Fill in the details for your new project"}
                 </SheetDescription>
               </SheetHeader>
-              <div
-                className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6"
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !isSaving &&
-                    !isImageUploading &&
-                    isFormValid
-                  ) {
-                    e.preventDefault();
-                    handleSave();
-                  }
-                }}
-              >
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleClose}
-                  disabled={isSaving || isImageUploading}
+                  disabled={isSaving || isImageUploading || isGalleryUploading}
                 >
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !isFormValid || isImageUploading}
+                  type="submit"
+                  form="project-form"
+                  disabled={isSaving || isImageUploading || isGalleryUploading}
                 >
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1721,7 +1784,7 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-2xl overflow-hidden flex flex-col p-0"
+            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1734,34 +1797,22 @@ export default function ProjectsPage() {
                     : "Fill in the details for your new project"}
                 </SheetDescription>
               </SheetHeader>
-              <div
-                className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6"
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !isSaving &&
-                    !isImageUploading &&
-                    isFormValid
-                  ) {
-                    e.preventDefault();
-                    handleSave();
-                  }
-                }}
-              >
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
                 <Button
+                  type="button"
                   variant="outline"
                   onClick={handleClose}
-                  disabled={isSaving || isImageUploading}
+                  disabled={isSaving || isImageUploading || isGalleryUploading}
                 >
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleSave}
-                  disabled={isSaving || !isFormValid || isImageUploading}
+                  type="submit"
+                  form="project-form"
+                  disabled={isSaving || isImageUploading || isGalleryUploading}
                 >
                   {isSaving && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -1797,81 +1848,6 @@ export default function ProjectsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* SEO Dialog */}
-      <Dialog open={isSeoOpen} onOpenChange={setIsSeoOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>SEO Settings</DialogTitle>
-            <DialogDescription>
-              Configure SEO metadata for &quot;{seoProject?.title}&quot;
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="meta-title">Meta Title</Label>
-              <Input
-                id="meta-title"
-                value={metaTitle}
-                onChange={(e) => setMetaTitle(e.target.value)}
-                placeholder="Enter SEO title (recommended: 50-60 characters)"
-                maxLength={60}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey && !isSavingSeo) {
-                    e.preventDefault();
-                    handleSaveSeo();
-                  }
-                }}
-              />
-              <p className="text-xs text-gray-500">
-                {metaTitle.length}/60 characters
-              </p>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="meta-description">Meta Description</Label>
-              <Textarea
-                id="meta-description"
-                value={metaDescription}
-                onChange={(e) => setMetaDescription(e.target.value)}
-                placeholder="Enter SEO description (recommended: 150-160 characters)"
-                rows={4}
-                maxLength={160}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && e.shiftKey) {
-                    // Allow Shift+Enter for new lines
-                    return;
-                  }
-                  if (e.key === "Enter" && !isSavingSeo) {
-                    e.preventDefault();
-                    handleSaveSeo();
-                  }
-                }}
-              />
-              <p className="text-xs text-gray-500">
-                {metaDescription.length}/160 characters
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsSeoOpen(false);
-                setSeoProject(null);
-                setMetaTitle("");
-                setMetaDescription("");
-              }}
-              disabled={isSavingSeo}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleSaveSeo} disabled={isSavingSeo}>
-              {isSavingSeo && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save SEO Settings
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

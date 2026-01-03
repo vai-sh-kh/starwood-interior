@@ -265,7 +265,9 @@ export default function Projects() {
                 }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
-                {project.image && !imageErrors[project.id] ? (
+                {project.image && 
+                 !imageErrors[project.id] && 
+                 !project.image.includes("placeholder.com") ? (
                   <Image
                     src={project.image}
                     alt={project.title}

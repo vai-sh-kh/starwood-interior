@@ -3,7 +3,6 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { cn } from "@/lib/utils";
@@ -18,7 +17,6 @@ import {
   Undo,
   Redo,
   Link as LinkIcon,
-  Image as ImageIcon,
   Heading1,
   Heading2,
   Heading3,
@@ -32,7 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface TipTapEditorProps {
   content: string;
@@ -78,6 +76,10 @@ export default function TipTapEditor({
   onChange,
   placeholder = "Start writing your content...",
 }: TipTapEditorProps) {
+  const contentRef = useRef<string>(content || "");
+  const isUpdatingFromPropRef = useRef(false);
+  const isInitialMountRef = useRef(true);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -87,66 +89,106 @@ export default function TipTapEditor({
         // Exclude link and underline from StarterKit since we're adding them separately
         link: false,
         underline: false,
+        // Ensure all other StarterKit features are enabled
+        bold: true,
+        italic: true,
+        strike: true,
+        code: true,
+        paragraph: true,
+        bulletList: true,
+        orderedList: true,
+        listItem: true,
+        blockquote: true,
+        hardBreak: true,
+        horizontalRule: true,
+        history: true,
       }),
       Underline,
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-blue-600 underline hover:text-blue-800",
-        },
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: "rounded-lg max-w-full h-auto",
+          class: "text-blue-600 underline hover:text-blue-800 cursor-pointer",
         },
       }),
       Placeholder.configure({
         placeholder,
       }),
     ],
-    content,
+    content: content || "",
+    editable: true,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      // Only call onChange if the update is from user interaction, not from prop update
+      if (!isUpdatingFromPropRef.current) {
+        const newContent = editor.getHTML();
+        contentRef.current = newContent;
+        onChange(newContent);
+      }
     },
     editorProps: {
       attributes: {
         class:
           "prose prose-sm sm:prose-base max-w-none focus:outline-none min-h-[300px] px-4 py-3",
+        spellcheck: "true",
       },
     },
     immediatelyRender: false,
+    parseOptions: {
+      preserveWhitespace: "full",
+    },
   });
 
-  // Update editor content when content prop changes
+  // Initialize contentRef on mount
   useEffect(() => {
-    if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false });
+    if (editor && isInitialMountRef.current) {
+      contentRef.current = editor.getHTML();
+      isInitialMountRef.current = false;
+    }
+  }, [editor]);
+
+  // Update editor content when content prop changes (but not from user edits)
+  useEffect(() => {
+    if (!editor || isInitialMountRef.current) return;
+    
+    const currentContent = editor.getHTML();
+    const normalizedCurrent = (currentContent || "").trim();
+    const normalizedProp = (content || "").trim();
+    
+    // Only update if content actually changed and it's different from what we have
+    if (normalizedProp !== normalizedCurrent && normalizedProp !== contentRef.current) {
+      isUpdatingFromPropRef.current = true;
+      // setContent with emitUpdate: false to prevent triggering onChange
+      editor.commands.setContent(content || "", false);
+      contentRef.current = normalizedProp;
+      // Reset flag after a brief delay to ensure the update completes
+      setTimeout(() => {
+        isUpdatingFromPropRef.current = false;
+      }, 0);
     }
   }, [content, editor]);
 
   const setLink = useCallback(() => {
     if (!editor) return;
 
-    const previousUrl = editor.getAttributes("link").href;
-    const url = window.prompt("Enter URL:", previousUrl);
+    try {
+      const previousUrl = editor.getAttributes("link").href || "";
+      const url = window.prompt("Enter URL:", previousUrl);
 
-    if (url === null) return;
+      if (url === null) return;
 
-    if (url === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-      return;
-    }
+      if (url === "") {
+        editor.chain().focus().extendMarkRange("link").unsetLink().run();
+        return;
+      }
 
-    editor.chain().focus().extendMarkRange("link").setLink({ href: url }).run();
-  }, [editor]);
+      // Validate URL format
+      let finalUrl = url;
+      if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("mailto:") && !url.startsWith("#")) {
+        finalUrl = `https://${url}`;
+      }
 
-  const addImage = useCallback(() => {
-    if (!editor) return;
-
-    const url = window.prompt("Enter image URL:");
-
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+      editor.chain().focus().extendMarkRange("link").setLink({ href: finalUrl }).run();
+    } catch (error) {
+      console.error("Error setting link:", error);
     }
   }, [editor]);
 
@@ -163,27 +205,39 @@ export default function TipTapEditor({
         <div className="border-b border-gray-200 bg-gray-50 px-2 py-1.5 flex flex-wrap items-center gap-0.5">
           {/* Headings */}
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 1 }).run()
-            }
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 1 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 1:", error);
+              }
+            }}
             isActive={editor.isActive("heading", { level: 1 })}
             tooltip="Heading 1"
           >
             <Heading1 className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run()
-            }
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 2 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 2:", error);
+              }
+            }}
             isActive={editor.isActive("heading", { level: 2 })}
             tooltip="Heading 2"
           >
             <Heading2 className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() =>
-              editor.chain().focus().toggleHeading({ level: 3 }).run()
-            }
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 3 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 3:", error);
+              }
+            }}
             isActive={editor.isActive("heading", { level: 3 })}
             tooltip="Heading 3"
           >
@@ -194,35 +248,65 @@ export default function TipTapEditor({
 
           {/* Text formatting */}
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBold().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleBold().run();
+              } catch (error) {
+                console.error("Error toggling bold:", error);
+              }
+            }}
             isActive={editor.isActive("bold")}
-            tooltip="Bold"
+            tooltip="Bold (Ctrl+B)"
           >
             <Bold className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleItalic().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleItalic().run();
+              } catch (error) {
+                console.error("Error toggling italic:", error);
+              }
+            }}
             isActive={editor.isActive("italic")}
-            tooltip="Italic"
+            tooltip="Italic (Ctrl+I)"
           >
             <Italic className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleUnderline().run();
+              } catch (error) {
+                console.error("Error toggling underline:", error);
+              }
+            }}
             isActive={editor.isActive("underline")}
-            tooltip="Underline"
+            tooltip="Underline (Ctrl+U)"
           >
             <UnderlineIcon className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleStrike().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleStrike().run();
+              } catch (error) {
+                console.error("Error toggling strike:", error);
+              }
+            }}
             isActive={editor.isActive("strike")}
             tooltip="Strikethrough"
           >
             <Strikethrough className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleCode().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleCode().run();
+              } catch (error) {
+                console.error("Error toggling code:", error);
+              }
+            }}
             isActive={editor.isActive("code")}
             tooltip="Inline Code"
           >
@@ -233,21 +317,39 @@ export default function TipTapEditor({
 
           {/* Lists */}
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleBulletList().run();
+              } catch (error) {
+                console.error("Error toggling bullet list:", error);
+              }
+            }}
             isActive={editor.isActive("bulletList")}
             tooltip="Bullet List"
           >
             <List className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleOrderedList().run();
+              } catch (error) {
+                console.error("Error toggling ordered list:", error);
+              }
+            }}
             isActive={editor.isActive("orderedList")}
             tooltip="Numbered List"
           >
             <ListOrdered className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleBlockquote().run();
+              } catch (error) {
+                console.error("Error toggling blockquote:", error);
+              }
+            }}
             isActive={editor.isActive("blockquote")}
             tooltip="Quote"
           >
@@ -256,7 +358,7 @@ export default function TipTapEditor({
 
           <div className="w-px h-6 bg-gray-200 mx-1" />
 
-          {/* Links and images */}
+          {/* Links */}
           <ToolbarButton
             onClick={setLink}
             isActive={editor.isActive("link")}
@@ -264,11 +366,14 @@ export default function TipTapEditor({
           >
             <LinkIcon className="h-4 w-4" />
           </ToolbarButton>
-          <ToolbarButton onClick={addImage} tooltip="Add Image">
-            <ImageIcon className="h-4 w-4" />
-          </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().setHorizontalRule().run();
+              } catch (error) {
+                console.error("Error setting horizontal rule:", error);
+              }
+            }}
             tooltip="Horizontal Rule"
           >
             <Minus className="h-4 w-4" />
@@ -278,16 +383,28 @@ export default function TipTapEditor({
 
           {/* Undo/Redo */}
           <ToolbarButton
-            onClick={() => editor.chain().focus().undo().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().undo().run();
+              } catch (error) {
+                console.error("Error undoing:", error);
+              }
+            }}
             disabled={!editor.can().undo()}
-            tooltip="Undo"
+            tooltip="Undo (Ctrl+Z)"
           >
             <Undo className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
-            onClick={() => editor.chain().focus().redo().run()}
+            onClick={() => {
+              try {
+                editor.chain().focus().redo().run();
+              } catch (error) {
+                console.error("Error redoing:", error);
+              }
+            }}
             disabled={!editor.can().redo()}
-            tooltip="Redo"
+            tooltip="Redo (Ctrl+Y)"
           >
             <Redo className="h-4 w-4" />
           </ToolbarButton>

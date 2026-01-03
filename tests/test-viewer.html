@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright Test Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+        
+        .commands {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .command {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #60a5fa;
+            font-family: 'Courier New', monospace;
+            color: #e2e8f0;
+        }
+        
+        .command-title {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .command-code {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+        
+        .info-box {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .info-box.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .info-box.error {
+            border-left-color: #ef4444;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #60a5fa;
+        }
+        
+        .info-text {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .button {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-right: 10px;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        
+        .button:hover {
+            background: #2563eb;
+        }
+        
+        .button.secondary {
+            background: #475569;
+        }
+        
+        .button.secondary:hover {
+            background: #334155;
+        }
+        
+        code {
+            background: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎭 Playwright E2E Test Viewer</h1>
+            <p class="subtitle">Comprehensive test suite for Admin Panel</p>
+        </header>
+        
+        <div class="info-box">
+            <div class="info-title">📋 Quick Start</div>
+            <div class="info-text">
+                <p>1. Ensure your dev server is running: <code>pnpm dev</code></p>
+                <p>2. Set up <code>.env.test</code> with admin credentials</p>
+                <p>3. Run tests using one of the commands below</p>
+            </div>
+        </div>
+        
+        <div class="commands">
+            <div class="command">
+                <div class="command-title">🚀 Run All Tests (UI Mode - Recommended)</div>
+                <div class="command-code">pnpm test:e2e:ui</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Opens interactive UI where you can watch tests run, see screenshots, and debug failures
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">▶️ Run All Tests (Headless)</div>
+                <div class="command-code">pnpm test:e2e</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Runs all tests in headless mode and generates HTML report
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">👁️ Run Tests (Headed Mode)</div>
+                <div class="command-code">pnpm test:e2e:headed</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Runs tests with browser visible - useful for debugging
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">🐛 Debug Tests</div>
+                <div class="command-code">pnpm test:e2e:debug</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Opens Playwright Inspector for step-by-step debugging
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">📊 View Test Report</div>
+                <div class="command-code">pnpm test:e2e:report</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Opens the HTML test report from the last test run
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">🎯 Run Specific Test File</div>
+                <div class="command-code">pnpm exec playwright test tests/auth.spec.ts</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Run only authentication tests (replace with any test file)
+                </p>
+            </div>
+            
+            <div class="command">
+                <div class="command-title">🔍 Run Tests Matching Pattern</div>
+                <div class="command-code">pnpm exec playwright test --grep "login"</div>
+                <p style="color: #94a3b8; font-size: 12px; margin-top: 5px;">
+                    Run only tests with "login" in the name
+                </p>
+            </div>
+        </div>
+        
+        <div class="info-box warning">
+            <div class="info-title">⚠️ Before Running Tests</div>
+            <div class="info-text">
+                <p><strong>1. Environment Setup:</strong> Create <code>.env.test</code> file with:</p>
+                <pre style="background: #0f172a; padding: 10px; border-radius: 4px; margin-top: 8px; overflow-x: auto;">
+ADMIN_EMAIL=vaishakhpat2003@gmail.com
+ADMIN_PASSWORD=your-admin-password
+PLAYWRIGHT_TEST_BASE_URL=http://localhost:3000</pre>
+                
+                <p style="margin-top: 15px;"><strong>2. Dev Server:</strong> Make sure your Next.js dev server is running on port 3000</p>
+                <p style="margin-top: 10px;"><strong>3. Database:</strong> Ensure Supabase is configured and admin user exists</p>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">📚 Test Coverage</div>
+            <div class="info-text">
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>✅ Authentication (login, logout, validation)</li>
+                    <li>✅ Dashboard (stats, navigation)</li>
+                    <li>✅ Blogs Management (CRUD, search, filter, sort, pagination)</li>
+                    <li>✅ Projects Management (CRUD, gallery, project info, tags)</li>
+                    <li>✅ Services Management (CRUD, gallery, tags, SEO)</li>
+                    <li>✅ Subservices Management (CRUD, parent service, FAQ)</li>
+                    <li>✅ Categories Management (CRUD, search, sort, pagination)</li>
+                    <li>✅ Leads Management (CRUD, search, status change, details)</li>
+                    <li>✅ Settings (toggle projects/blogs enabled)</li>
+                    <li>✅ Integration Tests (complete workflows)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <div class="info-title">💡 Tips</div>
+            <div class="info-text">
+                <p>• Use <code>test:e2e:ui</code> for the best debugging experience</p>
+                <p>• Screenshots and videos are automatically captured on test failures</p>
+                <p>• Test reports are saved in <code>playwright-report/</code> directory</p>
+                <p>• Some tests may skip if required data doesn't exist (this is expected)</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

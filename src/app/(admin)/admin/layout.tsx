@@ -13,7 +13,21 @@ export default function AdminLayout({
   return (
     <>
       {children}
-      <Toaster position="top-right" richColors />
+      <Toaster
+        position="top-right"
+        richColors
+        visibleToasts={5}
+        gap={12}
+        expand={true}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            minWidth: "300px",
+            maxWidth: "400px",
+            marginBottom: "12px",
+          },
+        }}
+      />
     </>
   );
 }

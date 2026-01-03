@@ -137,12 +137,18 @@ export default function ProjectsToggle({ initialValue }: ProjectsToggleProps) {
           </TooltipContent>
         </Tooltip>
       </div>
-      <Switch
-        checked={enabled}
-        onCheckedChange={handleSwitchChange}
-        disabled={isLoading}
-        aria-label={enabled ? "Disable projects" : "Enable projects"}
-      />
+      <div className="relative flex items-center">
+        {isLoading && (
+          <Loader2 className="h-4 w-4 animate-spin text-gray-400 mr-2" />
+        )}
+        <Switch
+          checked={enabled}
+          onCheckedChange={handleSwitchChange}
+          disabled={isLoading}
+          aria-label={enabled ? "Disable projects" : "Enable projects"}
+          className={isLoading ? "opacity-50" : ""}
+        />
+      </div>
       <AlertDialog
         open={showConfirmDialog}
         onOpenChange={handleDialogOpenChange}

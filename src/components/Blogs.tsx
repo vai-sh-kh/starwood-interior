@@ -13,89 +13,101 @@ type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
 const ITEMS_PER_PAGE = 9;
 
+interface BlogsResponse {
+  blogs: BlogWithCategory[];
+  hasMore: boolean;
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export default function Blogs() {
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [blogs, setBlogs] = useState<BlogWithCategory[]>([]);
   const [categories, setCategories] = useState<BlogCategory[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
   const supabase = createClient();
 
-  const fetchBlogs = useCallback(async () => {
-    setIsLoading(true);
+  // Validate image URL
+  const isValidImageUrl = (url: string | null | undefined): boolean => {
+    if (!url) return false;
     try {
-      let query = supabase
-        .from("blogs")
-        .select("*, blog_categories(*)")
-        .or("archived.is.null,archived.eq.false");
+      const parsedUrl = new URL(url);
+      return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:";
+    } catch {
+      return false;
+    }
+  };
 
-      // Apply category filter if not "all" (uses idx_blogs_category_id index)
-      if (selectedCategory !== "all") {
-        query = query.eq("category_id", selectedCategory);
+  // Handle image error
+  const handleImageError = (imageKey: string) => {
+    setImageErrors((prev) => ({ ...prev, [imageKey]: true }));
+  };
+
+  // Fetch blogs from API
+  const fetchBlogs = useCallback(
+    async (page: number, append: boolean = false) => {
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoading(true);
       }
 
-      query = query.order("created_at", { ascending: false });
+      try {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: ITEMS_PER_PAGE.toString(),
+        });
 
-      const { data, error } = await query;
-
-      if (error) {
-        console.error("Error fetching blogs:", error);
-        setBlogs([]);
-      } else {
-        let filteredData = (data as BlogWithCategory[]) || [];
-
-        // Apply search filter across all fields: title, author, excerpt, content, and tags
-        // This ensures comprehensive search while leveraging indexes for category/archived filters
-        if (debouncedSearchQuery.trim()) {
-          const searchLower = debouncedSearchQuery.trim().toLowerCase();
-          filteredData = filteredData.filter((blog) => {
-            // Check text fields: title, author, excerpt, content (case-insensitive)
-            const titleMatch = blog.title?.toLowerCase().includes(searchLower);
-            const authorMatch = blog.author
-              ?.toLowerCase()
-              .includes(searchLower);
-            const excerptMatch = blog.excerpt
-              ?.toLowerCase()
-              .includes(searchLower);
-            const contentMatch = blog.content
-              ?.toLowerCase()
-              .includes(searchLower);
-
-            // Check tags array (case-insensitive)
-            const tagsMatch =
-              blog.tags &&
-              blog.tags.length > 0 &&
-              blog.tags.some((tag) => tag.toLowerCase().includes(searchLower));
-
-            // Include blog if search matches any field (title, author, excerpt, content, or tags)
-            return (
-              titleMatch ||
-              authorMatch ||
-              excerptMatch ||
-              contentMatch ||
-              tagsMatch ||
-              false
-            );
-          });
+        if (selectedCategory !== "all") {
+          params.append("category", selectedCategory);
         }
 
-        console.log("Fetched blogs:", filteredData.length);
-        setBlogs(filteredData);
+        if (debouncedSearchQuery.trim()) {
+          params.append("search", debouncedSearchQuery.trim());
+        }
+
+        const response = await fetch(`/api/blogs?${params.toString()}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch blogs");
+        }
+
+        const data: BlogsResponse = await response.json();
+
+        if (append) {
+          setBlogs((prev) => [...prev, ...data.blogs]);
+        } else {
+          setBlogs(data.blogs);
+        }
+
+        setHasMore(data.hasMore);
+        setCurrentPage(page);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+        if (!append) {
+          setBlogs([]);
+        }
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
       }
-    } catch (error) {
-      console.error("Error fetching blogs:", error);
-      setBlogs([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [supabase, debouncedSearchQuery, selectedCategory]);
+    },
+    [debouncedSearchQuery, selectedCategory]
+  );
 
   const fetchCategories = useCallback(async () => {
     setIsLoadingCategories(true);
@@ -123,9 +135,35 @@ export default function Blogs() {
     fetchCategories();
   }, [fetchCategories]);
 
+  // Initial load and reset when filters change
   useEffect(() => {
-    fetchBlogs();
+    fetchBlogs(1, false);
   }, [fetchBlogs]);
+
+  // Intersection Observer for infinite scroll
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore || isLoading || isLoadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && hasMore && !isLoadingMore) {
+            fetchBlogs(currentPage + 1, true);
+          }
+        });
+      },
+      {
+        rootMargin: "100px", // Start loading before reaching the bottom
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasMore, isLoading, isLoadingMore, currentPage, fetchBlogs]);
 
   const checkScrollButtons = useCallback(() => {
     if (categoryScrollRef.current) {
@@ -178,20 +216,6 @@ export default function Blogs() {
       clearTimeout(timer);
     };
   }, [searchQuery]);
-
-  // Blogs are already filtered from database query, no need to filter again
-  const filteredBlogs = blogs;
-
-  // Pagination
-  const totalPages = Math.ceil(filteredBlogs.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedBlogs = filteredBlogs.slice(startIndex, endIndex);
-
-  // Reset to page 1 when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [debouncedSearchQuery, selectedCategory]);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "";
@@ -313,13 +337,13 @@ export default function Blogs() {
       ) : null}
 
       {/* Blog Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      <main className="w-full! max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+            {Array.from({ length: 6 }).map((_, index) => (
               <article
                 key={index}
-                className="flex flex-col bg-white rounded-2xl w-[360px] overflow-hidden shadow-sm border border-gray-100"
+                className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 w-full max-w-[500px] mx-auto"
               >
                 {/* Image skeleton */}
                 <div className="relative h-64 overflow-hidden bg-gray-100">
@@ -356,7 +380,7 @@ export default function Blogs() {
               </article>
             ))}
           </div>
-        ) : paginatedBlogs.length === 0 ? (
+        ) : blogs.length === 0 ? (
           <div className="text-center py-20">
             <div className="flex flex-col items-center justify-center">
               <h3 className="text-2xl  font-bold text-gray-900 mb-3">
@@ -386,121 +410,118 @@ export default function Blogs() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {paginatedBlogs.map((blog) => (
-              <article
-                key={blog.id}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 border border-gray-100"
-              >
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  className="flex flex-col flex-1"
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10">
+              {blogs.map((blog) => (
+                <article
+                  key={blog.id}
+                  className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 border border-gray-100 min-w-0 w-full max-w-[500px] mx-auto"
                 >
-                  <div className="relative h-64 overflow-hidden bg-gray-100">
-                    {blog.image ? (
-                      <Image
-                        src={blog.image}
-                        alt={blog.title || "Blog post"}
-                        fill
-                        className="object-cover transform group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    ) : (
-                      <div className="h-full w-full bg-gray-200 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-gray-400 text-4xl">
-                          article
+                  <Link
+                    href={`/blogs/${blog.slug}`}
+                    className="flex flex-col flex-1"
+                  >
+                    <div className="relative h-64 overflow-hidden bg-gray-100">
+                      {blog.image &&
+                      isValidImageUrl(blog.image) &&
+                      !imageErrors[blog.id] ? (
+                        <Image
+                          src={blog.image}
+                          alt={blog.title || "Blog post"}
+                          fill
+                          className="object-cover transform group-hover:scale-105 transition-transform duration-500"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          unoptimized={blog.image.includes("supabase.co")}
+                          onError={() => handleImageError(blog.id)}
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gray-200 flex items-center justify-center">
+                          <span className="material-symbols-outlined text-gray-400 text-4xl">
+                            article
+                          </span>
+                        </div>
+                      )}
+                      <span className="absolute top-4 left-4 bg-white backdrop-blur text-xs font-bold uppercase tracking-wider py-1.5 px-3 rounded shadow-sm">
+                        {blog.blog_categories?.name || "Uncategorized"}
+                      </span>
+                      <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div className="flex flex-col flex-1 p-6">
+                      <div className="flex items-center text-xs text-gray-500 mb-3 space-x-2">
+                        <span>{formatDate(blog.created_at)}</span>
+                        {blog.author && (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span>{blog.author}</span>
+                          </>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-display-serif font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
+                        {blog.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
+                        {blog.excerpt || "No excerpt available"}
+                      </p>
+                      <div className="inline-flex items-center text-sm font-bold text-primary hover:opacity-70 transition-opacity">
+                        Read More{" "}
+                        <span className="material-symbols-outlined text-base ml-1 transform group-hover:translate-x-1 transition-transform">
+                          arrow_forward
                         </span>
                       </div>
-                    )}
-                    <span className="absolute top-4 left-4 bg-white backdrop-blur text-xs font-bold uppercase tracking-wider py-1.5 px-3 rounded shadow-sm">
-                      {blog.blog_categories?.name || "Uncategorized"}
-                    </span>
-                    <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                  </div>
-                  <div className="flex flex-col flex-1 p-6">
-                    <div className="flex items-center text-xs text-gray-500 mb-3 space-x-2">
-                      <span>{formatDate(blog.created_at)}</span>
-                      {blog.author && (
-                        <>
-                          <span className="w-1 h-1 rounded-full bg-gray-300"></span>
-                          <span>{blog.author}</span>
-                        </>
-                      )}
                     </div>
-                    <h3 className="text-xl font-display-serif font-bold text-gray-900 mb-3 group-hover:text-primary transition-colors">
-                      {blog.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
-                      {blog.excerpt || "No excerpt available"}
-                    </p>
-                    <div className="inline-flex items-center text-sm font-bold text-primary hover:opacity-70 transition-opacity">
-                      Read More{" "}
-                      <span className="material-symbols-outlined text-base ml-1 transform group-hover:translate-x-1 transition-transform">
-                        arrow_forward
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              </article>
-            ))}
-          </div>
-        )}
+                  </Link>
+                </article>
+              ))}
+            </div>
 
-        {/* Pagination */}
-        {!isLoading && filteredBlogs.length > 0 && totalPages > 1 && (
-          <div className="mt-16 flex justify-center items-center space-x-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-gray-100 transition border border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="material-symbols-outlined text-sm">
-                arrow_back
-              </span>
-            </button>
-
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-              // Show first page, last page, current page, and pages around current
-              if (
-                page === 1 ||
-                page === totalPages ||
-                (page >= currentPage - 1 && page <= currentPage + 1)
-              ) {
-                return (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-full font-medium transition border border-gray-100 ${
-                      currentPage === page
-                        ? "bg-primary text-white shadow-md"
-                        : "bg-white text-gray-600 hover:bg-gray-100"
-                    }`}
+            {/* Loading more skeleton */}
+            {isLoadingMore && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-10 mt-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <article
+                    key={`loading-${index}`}
+                    className="flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 w-full max-w-[500px] mx-auto"
                   >
-                    {page}
-                  </button>
-                );
-              } else if (page === currentPage - 2 || page === currentPage + 2) {
-                return (
-                  <span key={page} className="text-gray-400 px-2">
-                    ...
-                  </span>
-                );
-              }
-              return null;
-            })}
+                    {/* Image skeleton */}
+                    <div className="relative h-64 overflow-hidden bg-gray-100">
+                      <Skeleton className="w-full h-full rounded-none" />
+                      {/* Category badge skeleton */}
+                      <Skeleton className="absolute top-4 left-4 h-6 w-24 rounded" />
+                    </div>
 
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-              }
-              disabled={currentPage === totalPages}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white text-gray-600 hover:bg-gray-100 transition border border-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span className="material-symbols-outlined text-sm">
-                arrow_forward
-              </span>
-            </button>
-          </div>
+                    {/* Content skeleton */}
+                    <div className="flex flex-col flex-1 p-6">
+                      {/* Date and author skeleton */}
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-1 w-1 rounded-full" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+
+                      {/* Title skeleton */}
+                      <div className="mb-3 space-y-2">
+                        <Skeleton className="h-6 w-full" />
+                        <Skeleton className="h-6 w-4/5" />
+                      </div>
+
+                      {/* Excerpt skeleton */}
+                      <div className="mb-6 space-y-2 flex-1">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+
+                      {/* Read More skeleton */}
+                      <Skeleton className="h-5 w-28" />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+
+            {/* Sentinel element for infinite scroll */}
+            <div ref={sentinelRef} className="h-10 w-full" />
+          </>
         )}
       </main>
       <BottomNav />

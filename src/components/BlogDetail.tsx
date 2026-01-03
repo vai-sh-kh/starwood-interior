@@ -7,32 +7,6 @@ import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import BlogShareButton from "@/components/BlogShareButton";
 
-// Add styles for blog content
-const blogContentStyles = `
-  .blog-content {
-    font-size: 1.125rem;
-    line-height: 1.75;
-  }
-  .blog-content p {
-    margin-bottom: 1.5rem;
-    color: #374151;
-  }
-  .blog-content h2 {
-    font-size: 1.875rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-top: 2.5rem;
-    margin-bottom: 1.25rem;
-    line-height: 1.3;
-  }
-  .blog-content h2:first-of-type {
-    margin-top: 0;
-  }
-  .blog-content p:last-child {
-    margin-bottom: 0;
-  }
-`;
-
 interface BlogPost {
   id: string;
   slug: string;
@@ -112,9 +86,7 @@ export default function BlogDetail({
   };
 
   return (
-    <>
-      <style dangerouslySetInnerHTML={{ __html: blogContentStyles }} />
-      <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-light">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-light">
         {/* Hero Section */}
         <header className="relative pt-24 min-h-[50vh] flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0 w-full h-full">
@@ -194,14 +166,16 @@ export default function BlogDetail({
               )}
 
               {/* Content */}
-              {blog.content && (
-                <div className="prose prose-lg max-w-none">
+              {blog.content && blog.content.trim() ? (
+                <div className="prose prose-lg max-w-none project-content">
                   <div
-                    className="blog-content text-gray-700 leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: blog.content }}
+                    className="project-content-html"
+                    dangerouslySetInnerHTML={{
+                      __html: blog.content,
+                    }}
                   />
                 </div>
-              )}
+              ) : null}
 
               {/* Tags */}
               {blog.tags && blog.tags.length > 0 && (
@@ -334,6 +308,5 @@ export default function BlogDetail({
         </main>
         <Footer />
       </div>
-    </>
   );
 }

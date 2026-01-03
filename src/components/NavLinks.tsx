@@ -88,7 +88,7 @@ export default function NavLinks({
   }
 
   return (
-    <div className="hidden md:flex items-center space-x-8 text-[13px] font-medium text-gray-600">
+    <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
       {filteredNavLinks.map((link) => {
         const isActive =
           link.href === "/projects" ||

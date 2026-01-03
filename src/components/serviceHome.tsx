@@ -109,7 +109,7 @@ export default function ServiceHome() {
           }`}
         >
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">
-            — What We Do —
+            — How we work —
           </span>
         </div>
 

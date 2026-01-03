@@ -99,11 +99,24 @@ export default async function ServiceDetailPage({
     .eq("service_id", service.id)
     .order("display_order", { ascending: true });
 
+  // Fetch subservices for this service
+  const { data: subservices } = await supabase
+    .from("subservices")
+    .select("*")
+    .eq("parent_service_id", service.id)
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
   const serviceData: ServiceWithGallery = {
     ...service,
     service_gallery_images: galleryImages || [],
     blog_categories: service.blog_categories || null,
   };
 
-  return <ServiceDetail service={serviceData} />;
+  return (
+    <ServiceDetail
+      service={serviceData}
+      subservices={subservices || []}
+    />
+  );
 }

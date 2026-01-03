@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useTransition } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -10,12 +10,29 @@ import {
   X,
   Loader2,
   Image as ImageIcon,
-  ChevronUp,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MAX_GALLERY_IMAGES } from "@/lib/constants";
+import { toast } from "sonner";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface GalleryImage {
   id?: string;
@@ -31,6 +48,103 @@ interface GalleryImagesManagerProps {
   maxSize?: number;
   acceptedTypes?: string[];
   onUploadingChange?: (isUploading: boolean) => void;
+  showResetButton?: boolean;
+  onReset?: () => void;
+  isResetting?: boolean;
+}
+
+// Sortable Image Item Component
+function SortableImageItem({
+  image,
+  index,
+  isUploading,
+  onRemove,
+  onClick,
+}: {
+  image: GalleryImage;
+  index: number;
+  isUploading: boolean;
+  onRemove: () => void;
+  onClick: () => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: image.id || `image-${index}-${image.image_url}`,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "relative group bg-white border-2 rounded-lg overflow-hidden",
+        isDragging ? "border-primary shadow-lg z-50" : "border-gray-200"
+      )}
+    >
+      {/* Order Badge */}
+      <div className="absolute top-2 left-2 z-10 bg-black/70 text-white text-xs font-bold px-2 py-1 rounded">
+        {index + 1}
+      </div>
+
+      {/* Remove Button */}
+      <Button
+        type="button"
+        variant="destructive"
+        size="icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        disabled={isUploading}
+        className="absolute top-2 right-2 z-10 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity bg-red-600 hover:bg-red-700"
+        title="Remove image"
+      >
+        <X className="h-3 w-3" />
+      </Button>
+
+      {/* Drag Handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute bottom-2 right-2 z-10 bg-black/70 text-white p-1.5 rounded cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        title="Drag to reorder"
+      >
+        <GripVertical className="h-4 w-4" />
+      </div>
+
+      {/* Image */}
+      <div
+        className="relative w-full aspect-video bg-gray-50 cursor-pointer"
+        onClick={onClick}
+      >
+        <img
+          src={image.image_url}
+          alt={`Gallery image ${index + 1}`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+        {isUploading && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function GalleryImagesManager({
@@ -41,47 +155,45 @@ export default function GalleryImagesManager({
   maxSize = 5 * 1024 * 1024, // 5MB default
   acceptedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"],
   onUploadingChange,
+  showResetButton = false,
+  onReset,
+  isResetting = false,
 }: GalleryImagesManagerProps) {
   const [isDragActive, setIsDragActive] = useState(false);
-  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
+  const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
-  const [currentSliderIndex, setCurrentSliderIndex] = useState(0);
-  const [uploadProgress, setUploadProgress] = useState<{
-    current: number;
-    total: number;
-  } | null>(null);
+  const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imagesRef = useRef(images);
   const supabase = createClient();
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Keep ref in sync with images prop
   useEffect(() => {
     imagesRef.current = images;
   }, [images]);
 
-  const handleFile = useCallback(
-    async (file: File, insertIndex?: number) => {
+  // Upload a single file
+  const uploadSingleFile = useCallback(
+    async (file: File): Promise<GalleryImage | null> => {
       // Validate file type
       if (!acceptedTypes.includes(file.type)) {
-        return;
+        return null;
       }
 
       // Validate file size
       if (file.size > maxSize) {
-        return;
+        return null;
       }
-
-      // Check if we've reached the maximum limit of 5 images
-      if (images.length >= 5 && insertIndex === undefined) {
-        alert(
-          "Maximum 5 gallery images allowed. Please remove an image first."
-        );
-        return;
-      }
-
-      const tempIndex = insertIndex ?? images.length;
 
       try {
         // Generate unique filename
@@ -100,7 +212,8 @@ export default function GalleryImagesManager({
           });
 
         if (error) {
-          throw error;
+          console.error("Upload error:", error);
+          return null;
         }
 
         // Get public URL
@@ -108,71 +221,88 @@ export default function GalleryImagesManager({
           data: { publicUrl },
         } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
-        // Add to images array
-        const newImage: GalleryImage = {
+        // Return new image object
+        return {
           image_url: publicUrl,
-          display_order: tempIndex,
+          display_order: 0, // Will be updated after all uploads
         };
-
-        const newImages = [...images];
-        if (insertIndex !== undefined) {
-          newImages.splice(insertIndex, 0, newImage);
-        } else {
-          newImages.push(newImage);
-        }
-
-        // Update display_order for all images
-        const reorderedImages = newImages.map((img, idx) => ({
-          ...img,
-          display_order: idx,
-        }));
-
-        onChange(reorderedImages);
       } catch (error) {
         console.error("Upload error:", error);
-        alert(
-          `Failed to upload image: ${
-            error instanceof Error ? error.message : "Unknown error"
-          }`
-        );
+        return null;
       }
     },
-    [bucket, folder, maxSize, acceptedTypes, images, onChange, supabase]
+    [bucket, folder, maxSize, acceptedTypes, supabase]
   );
 
+  // Handle multiple files upload in parallel
   const handleMultipleFiles = useCallback(
     async (files: File[]) => {
       const currentImages = imagesRef.current;
-      const remainingSlots = 5 - currentImages.length;
-      const filesToProcess = files.slice(0, remainingSlots);
+      const remainingSlots = MAX_GALLERY_IMAGES - currentImages.length;
 
-      if (files.length > remainingSlots) {
-        alert(
-          `You can only add ${remainingSlots} more image(s). Maximum 5 gallery images allowed.`
-        );
+      if (remainingSlots <= 0) {
+        toast.error(`Maximum ${MAX_GALLERY_IMAGES} gallery images allowed. Please remove some images before adding new ones.`);
+        return;
       }
+
+      // Check if adding these files would exceed the limit
+      if (files.length > remainingSlots) {
+        toast.error(`You can only add ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}. Maximum ${MAX_GALLERY_IMAGES} gallery images allowed.`);
+      }
+
+      const filesToProcess = files.slice(0, remainingSlots);
 
       if (filesToProcess.length === 0) return;
 
-      // Process files sequentially
-      setUploadProgress({ current: 0, total: filesToProcess.length });
+      // Create file identifiers for tracking
+      const fileIdentifiers = filesToProcess.map(
+        (file, idx) => `${file.name}-${file.size}-${idx}`
+      );
+
+      // Set uploading state for all files
+      setUploadingFiles(new Set(fileIdentifiers));
       onUploadingChange?.(true);
 
-      for (let i = 0; i < filesToProcess.length; i++) {
-        const file = filesToProcess[i];
-        const currentImagesLength = imagesRef.current.length;
-        const insertIndex = currentImagesLength;
-        setUploadingIndex(insertIndex);
-        setUploadProgress({ current: i + 1, total: filesToProcess.length });
+      // Upload all files in parallel
+      startTransition(async () => {
+        try {
+          const uploadPromises = filesToProcess.map((file) =>
+            uploadSingleFile(file)
+          );
 
-        await handleFile(file, insertIndex);
-      }
+          // Wait for all uploads to complete (successful or failed)
+          const results = await Promise.allSettled(uploadPromises);
 
-      setUploadingIndex(null);
-      setUploadProgress(null);
-      onUploadingChange?.(false);
+          // Extract only successful uploads
+          const successfulUploads: GalleryImage[] = [];
+          results.forEach((result) => {
+            if (result.status === "fulfilled" && result.value !== null) {
+              successfulUploads.push(result.value);
+            }
+          });
+
+          // Update images with successful uploads
+          if (successfulUploads.length > 0) {
+            const currentImages = imagesRef.current;
+            const newImages = [...currentImages, ...successfulUploads];
+
+            // Update display_order for all images
+            const reorderedImages = newImages.map((img, idx) => ({
+              ...img,
+              display_order: idx,
+            }));
+
+            onChange(reorderedImages);
+          }
+        } catch (error) {
+          console.error("Error processing uploads:", error);
+        } finally {
+          setUploadingFiles(new Set());
+          onUploadingChange?.(false);
+        }
+      });
     },
-    [handleFile, onUploadingChange]
+    [uploadSingleFile, onChange, onUploadingChange]
   );
 
   const handleDrop = useCallback(
@@ -216,37 +346,10 @@ export default function GalleryImagesManager({
   };
 
   const handleRemove = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    // Update display_order
-    const reorderedImages = newImages.map((img, idx) => ({
-      ...img,
-      display_order: idx,
-    }));
-    onChange(reorderedImages);
-  };
-
-  const handleMoveUp = (index: number) => {
-    if (index === 0) return;
-    const newImages = [...images];
-    [newImages[index - 1], newImages[index]] = [
-      newImages[index],
-      newImages[index - 1],
-    ];
-    // Update display_order
-    const reorderedImages = newImages.map((img, idx) => ({
-      ...img,
-      display_order: idx,
-    }));
-    onChange(reorderedImages);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index === images.length - 1) return;
-    const newImages = [...images];
-    [newImages[index], newImages[index + 1]] = [
-      newImages[index + 1],
-      newImages[index],
-    ];
+    const sortedImages = [...images].sort(
+      (a, b) => a.display_order - b.display_order
+    );
+    const newImages = sortedImages.filter((_, i) => i !== index);
     // Update display_order
     const reorderedImages = newImages.map((img, idx) => ({
       ...img,
@@ -259,23 +362,29 @@ export default function GalleryImagesManager({
     (a, b) => a.display_order - b.display_order
   );
 
-  // Update slider index when images change
-  useEffect(() => {
-    if (sortedImages.length > 0 && currentSliderIndex >= sortedImages.length) {
-      setCurrentSliderIndex(Math.max(0, sortedImages.length - 1));
-    }
-  }, [sortedImages.length, currentSliderIndex]);
-
-  const handleSliderPrevious = () => {
-    setCurrentSliderIndex((prev) =>
-      prev > 0 ? prev - 1 : sortedImages.length - 1
-    );
+  // Get unique IDs for sortable items
+  const getImageId = (image: GalleryImage, index: number) => {
+    return image.id || `image-${index}-${image.image_url}`;
   };
 
-  const handleSliderNext = () => {
-    setCurrentSliderIndex((prev) =>
-      prev < sortedImages.length - 1 ? prev + 1 : 0
-    );
+  const imageIds = sortedImages.map((img, idx) => getImageId(img, idx));
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = imageIds.indexOf(active.id as string);
+      const newIndex = imageIds.indexOf(over.id as string);
+
+      const reorderedImages = arrayMove(sortedImages, oldIndex, newIndex);
+      // Update display_order
+      const updatedImages = reorderedImages.map((img, idx) => ({
+        ...img,
+        display_order: idx,
+      }));
+      onChange(updatedImages);
+    }
   };
 
   const handleImageClick = (index: number) => {
@@ -307,115 +416,50 @@ export default function GalleryImagesManager({
     }
   };
 
+  const isUploading = uploadingFiles.size > 0 || isPending;
+  const canUploadMore = images.length < MAX_GALLERY_IMAGES;
+
   return (
     <div className="space-y-4">
-      <Label>Gallery Images</Label>
+      <div className="flex items-center justify-between">
+        <Label>Gallery Images</Label>
+        {showResetButton && onReset && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onReset}
+            disabled={isResetting || isUploading}
+            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+          >
+            <X className="h-4 w-4 mr-2" />
+            Reset All Images
+          </Button>
+        )}
+      </div>
 
-      {/* Images Slider */}
+      {/* Images Grid with Drag and Drop */}
       {sortedImages.length > 0 && (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 w-full">
-          <div className="relative w-full">
-            {/* Current Image */}
-            {sortedImages[currentSliderIndex] && (
-              <div
-                className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-50 cursor-pointer"
-                onClick={() => handleImageClick(currentSliderIndex)}
-              >
-                <img
-                  src={sortedImages[currentSliderIndex].image_url}
-                  alt={`Gallery image ${currentSliderIndex + 1}`}
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={imageIds}>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {sortedImages.map((image, index) => (
+                <SortableImageItem
+                  key={getImageId(image, index)}
+                  image={image}
+                  index={index}
+                  isUploading={false} // Individual upload states handled differently
+                  onRemove={() => handleRemove(index)}
+                  onClick={() => handleImageClick(index)}
                 />
-                {uploadingIndex === currentSliderIndex && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <Loader2 className="h-6 w-6 animate-spin text-white" />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Navigation Arrows */}
-            {sortedImages.length > 1 && (
-              <>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleSliderPrevious}
-                  disabled={uploadingIndex !== null}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md"
-                  title="Previous image"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  onClick={handleSliderNext}
-                  disabled={uploadingIndex !== null}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-md"
-                  title="Next image"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
-              </>
-            )}
-
-            {/* Image Counter and Controls */}
-            <div className="mt-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  {currentSliderIndex + 1} / {sortedImages.length}
-                </span>
-                <span className="text-xs text-gray-500">
-                  Order: {sortedImages[currentSliderIndex]?.display_order + 1}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => handleMoveUp(currentSliderIndex)}
-                  disabled={currentSliderIndex === 0 || uploadingIndex !== null}
-                  className="h-8 w-8"
-                  title="Move up"
-                >
-                  <ChevronUp className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => handleRemove(currentSliderIndex)}
-                  disabled={uploadingIndex !== null}
-                  className="h-8 w-8"
-                  title="Remove"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="icon"
-                  onClick={() => handleMoveDown(currentSliderIndex)}
-                  disabled={
-                    currentSliderIndex === sortedImages.length - 1 ||
-                    uploadingIndex !== null
-                  }
-                  className="h-8 w-8"
-                  title="Move down"
-                >
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </div>
+              ))}
             </div>
-          </div>
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {/* Full Width Image Slider Dialog */}
@@ -480,18 +524,10 @@ export default function GalleryImagesManager({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={
-          images.length >= 5 ||
-          uploadingIndex !== null ||
-          uploadProgress !== null
-            ? undefined
-            : handleClick
-        }
+        onClick={!canUploadMore || isUploading ? undefined : handleClick}
         className={cn(
           "border-2 border-dashed rounded-lg p-8 text-center transition-colors",
-          images.length >= 5 ||
-            uploadingIndex !== null ||
-            uploadProgress !== null
+          !canUploadMore || isUploading
             ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
             : isDragActive
             ? "border-primary bg-primary/5 cursor-pointer"
@@ -505,30 +541,25 @@ export default function GalleryImagesManager({
           onChange={handleFileInput}
           className="hidden"
           multiple
-          disabled={
-            uploadingIndex !== null ||
-            images.length >= 5 ||
-            uploadProgress !== null
-          }
+          disabled={!canUploadMore || isUploading}
         />
         <div className="flex flex-col items-center gap-4">
-          {uploadingIndex !== null || uploadProgress ? (
+          {isUploading ? (
             <>
               <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
               <p className="text-sm text-gray-600">
-                {uploadProgress
-                  ? `Uploading ${uploadProgress.current} of ${uploadProgress.total}...`
-                  : "Uploading..."}
+                Uploading {uploadingFiles.size} image
+                {uploadingFiles.size !== 1 ? "s" : ""}...
               </p>
             </>
-          ) : images.length >= 5 ? (
+          ) : !canUploadMore ? (
             <>
               <div className="rounded-full bg-gray-200 p-4">
                 <ImageIcon className="h-8 w-8 text-gray-400" />
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-500">
-                  Maximum 5 gallery images reached
+                  Maximum {MAX_GALLERY_IMAGES} gallery images reached
                 </p>
                 <p className="text-xs text-gray-400">
                   Remove an image to add a new one
@@ -555,7 +586,8 @@ export default function GalleryImagesManager({
                       {Math.round(maxSize / 1024 / 1024)}MB per image)
                     </p>
                     <p className="text-xs text-gray-500">
-                      Maximum 5 images ({images.length}/5 used)
+                      Maximum {MAX_GALLERY_IMAGES} images ({images.length}/
+                      {MAX_GALLERY_IMAGES} used)
                     </p>
                     <p className="text-xs text-gray-500 font-medium">
                       You can select multiple images at once
@@ -566,7 +598,7 @@ export default function GalleryImagesManager({
                     variant="outline"
                     size="sm"
                     className="mt-2"
-                    disabled={images.length >= 5 || uploadingIndex !== null}
+                    disabled={!canUploadMore || isUploading}
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Add Images
