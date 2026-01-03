@@ -89,19 +89,7 @@ export default function TipTapEditor({
         // Exclude link and underline from StarterKit since we're adding them separately
         link: false,
         underline: false,
-        // Ensure all other StarterKit features are enabled
-        bold: true,
-        italic: true,
-        strike: true,
-        code: true,
-        paragraph: true,
-        bulletList: true,
-        orderedList: true,
-        listItem: true,
-        blockquote: true,
-        hardBreak: true,
-        horizontalRule: true,
-        history: true,
+        // All other StarterKit features are enabled by default
       }),
       Underline,
       Link.configure({
@@ -157,7 +145,7 @@ export default function TipTapEditor({
     if (normalizedProp !== normalizedCurrent && normalizedProp !== contentRef.current) {
       isUpdatingFromPropRef.current = true;
       // setContent with emitUpdate: false to prevent triggering onChange
-      editor.commands.setContent(content || "", false);
+      editor.commands.setContent(content || "", { emitUpdate: false });
       contentRef.current = normalizedProp;
       // Reset flag after a brief delay to ensure the update completes
       setTimeout(() => {

@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAvatarHexColor } from "@/lib/utils";
 import { z } from "zod";
 
+// Known fields that we handle explicitly
+const knownFields = ['name', 'email', 'phone', 'message', 'chat_id'];
+
 // Validation schema for the webhook payload
 const webhookPayloadSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -10,7 +13,7 @@ const webhookPayloadSchema = z.object({
   phone: z.string().optional(),
   message: z.string().optional(),
   chat_id: z.string().optional(),
-});
+}).passthrough(); // Allow additional fields
 
 /**
  * POST /api/webhooks/collect-chat
@@ -23,6 +26,7 @@ const webhookPayloadSchema = z.object({
  *   phone?: string (optional)
  *   message?: string (optional)
  *   chat_id?: string (optional)
+ *   ...any other fields will be stored in chatbot_metadata
  * }
  */
 export async function POST(request: NextRequest) {
@@ -51,11 +55,19 @@ export async function POST(request: NextRequest) {
 
     const payload = validationResult.data;
 
+    // Extract additional fields (everything except known fields)
+    const additionalFields: Record<string, any> = {};
+    for (const [key, value] of Object.entries(payload)) {
+      if (!knownFields.includes(key) && value !== null && value !== undefined) {
+        additionalFields[key] = value;
+      }
+    }
+
     // Create Supabase client
     const supabase = await createClient();
 
     // Prepare lead data
-    const leadData = {
+    const leadData: any = {
       name: payload.name.trim(),
       email: payload.email.trim().toLowerCase(),
       phone: payload.phone?.trim() || null,
@@ -65,6 +77,11 @@ export async function POST(request: NextRequest) {
       chat_id: payload.chat_id || null,
       avatar_color: getAvatarHexColor(payload.name),
     };
+
+    // Add chatbot_metadata if there are additional fields
+    if (Object.keys(additionalFields).length > 0) {
+      leadData.chatbot_metadata = additionalFields;
+    }
 
     // Insert lead into database
     const { data, error } = await supabase

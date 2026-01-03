@@ -94,6 +94,7 @@ export type Database = {
       leads: {
         Row: {
           avatar_color: string | null
+          chatbot_metadata: Json | null
           chat_id: string | null
           created_at: string
           email: string
@@ -107,6 +108,7 @@ export type Database = {
         }
         Insert: {
           avatar_color?: string | null
+          chatbot_metadata?: Json | null
           chat_id?: string | null
           created_at?: string
           email: string
@@ -120,6 +122,7 @@ export type Database = {
         }
         Update: {
           avatar_color?: string | null
+          chatbot_metadata?: Json | null
           chat_id?: string | null
           created_at?: string
           email?: string
@@ -433,6 +436,7 @@ export type Database = {
           content: string | null
           created_at: string
           description: string | null
+          faq: Json | null
           id: string
           image: string | null
           is_new: boolean
@@ -448,6 +452,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           description?: string | null
+          faq?: Json | null
           id?: string
           image?: string | null
           is_new?: boolean
@@ -463,6 +468,7 @@ export type Database = {
           content?: string | null
           created_at?: string
           description?: string | null
+          faq?: Json | null
           id?: string
           image?: string | null
           is_new?: boolean
@@ -630,3 +636,33 @@ export type BlogUpdate = TablesUpdate<"blogs">
 export type BlogCategory = Tables<"blog_categories">
 export type BlogCategoryInsert = TablesInsert<"blog_categories">
 export type BlogCategoryUpdate = TablesUpdate<"blog_categories">
+export type Lead = Tables<"leads">
+export type LeadInsert = TablesInsert<"leads">
+export type LeadUpdate = TablesUpdate<"leads">
+export type Project = Tables<"projects">
+export type ProjectInsert = TablesInsert<"projects">
+export type ProjectUpdate = TablesUpdate<"projects">
+export type Service = Tables<"services">
+export type ServiceInsert = TablesInsert<"services">
+export type ServiceUpdate = TablesUpdate<"services">
+export type Subservice = Tables<"subservices">
+export type SubserviceInsert = TablesInsert<"subservices">
+export type SubserviceUpdate = TablesUpdate<"subservices">
+export type ServiceGalleryImage = Tables<"service_gallery_images">
+export type ServiceGalleryImageInsert = TablesInsert<"service_gallery_images">
+export type ServiceGalleryImageUpdate = TablesUpdate<"service_gallery_images">
+export type ProjectGalleryImage = Tables<"project_gallery_images">
+export type ProjectGalleryImageInsert = TablesInsert<"project_gallery_images">
+export type ProjectGalleryImageUpdate = TablesUpdate<"project_gallery_images">
+
+// Composite types with relations
+export type ServiceWithCategory = Service & {
+  blog_categories: BlogCategory | null;
+};
+export type ProjectWithCategory = Project & {
+  blog_categories: BlogCategory | null;
+};
+export type ServiceWithGallery = Service & {
+  service_gallery_images: ServiceGalleryImage[];
+  blog_categories: BlogCategory | null;
+};

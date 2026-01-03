@@ -165,6 +165,7 @@ export default async function SubServiceDetailPage({
       image_url: img.image_url,
       display_order: img.display_order,
       created_at: img.created_at,
+      updated_at: img.updated_at,
     })),
     blog_categories: null,
   };

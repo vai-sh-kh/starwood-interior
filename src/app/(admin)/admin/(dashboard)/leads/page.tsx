@@ -582,7 +582,9 @@ export default function LeadsPage() {
                                 {lead.name}
                               </span>
                               {lead.source === "collect_chat" && (
-                                <Bot className="h-4 w-4 text-pink-600 shrink-0" title="From Chatbot" />
+                                <span title="From Chatbot">
+                                  <Bot className="h-4 w-4 text-pink-600 shrink-0" />
+                                </span>
                               )}
                             </div>
                           </div>
@@ -1145,7 +1147,7 @@ export default function LeadsPage() {
                   </div>
                 )}
 
-                {selectedLead.message && (
+                {(selectedLead.message || selectedLead.chatbot_metadata) && (
                   <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <div className="flex items-center gap-2 mb-3">
                       <MessageSquare className="h-5 w-5 text-gray-500" />
@@ -1153,9 +1155,52 @@ export default function LeadsPage() {
                         Message
                       </p>
                     </div>
-                    <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">
-                      {selectedLead.message}
-                    </p>
+                    {selectedLead.message && (
+                      <p className="text-gray-700 whitespace-pre-wrap leading-relaxed mb-4">
+                        {selectedLead.message}
+                      </p>
+                    )}
+                    {selectedLead.chatbot_metadata && (
+                      <div className="mt-4 pt-4 border-t border-gray-300">
+                        <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+                          Additional Chatbot Information
+                        </p>
+                        <div className="space-y-2">
+                          {Object.entries(selectedLead.chatbot_metadata as Record<string, any>).map(([key, value]) => {
+                            // Skip if value is null, undefined, or empty
+                            if (value === null || value === undefined || value === '') return null;
+                            
+                            // Format the key for display
+                            const displayKey = key
+                              .replace(/_/g, ' ')
+                              .replace(/([A-Z])/g, ' $1')
+                              .trim()
+                              .split(' ')
+                              .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                              .join(' ');
+                            
+                            // Format the value
+                            let displayValue: string;
+                            if (typeof value === 'object') {
+                              displayValue = JSON.stringify(value, null, 2);
+                            } else {
+                              displayValue = String(value);
+                            }
+                            
+                            return (
+                              <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 py-2 border-b border-gray-200 last:border-0">
+                                <span className="text-xs font-medium text-gray-600 min-w-[120px] sm:min-w-[150px]">
+                                  {displayKey}:
+                                </span>
+                                <span className="text-sm text-gray-800 flex-1 break-words">
+                                  {displayValue}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

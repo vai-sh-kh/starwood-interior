@@ -65,11 +65,11 @@ async function cleanupDatabase() {
     for (const table of tablesToClean) {
       try {
         // Delete all rows from the table
-        const { error, count } = await supabaseAdmin
+        const { data, error } = await supabaseAdmin
           .from(table)
           .delete()
           .neq('id', '00000000-0000-0000-0000-000000000000')
-          .select('*', { count: 'exact', head: true });
+          .select('*');
         
         if (error) {
           // Table might not exist or be empty, continue
@@ -79,7 +79,8 @@ async function cleanupDatabase() {
             console.log(`   ⚠️  ${table}: ${error.message}`);
           }
         } else {
-          console.log(`   ✅ Cleaned: ${table}${count ? ` (${count} rows)` : ''}`);
+          const count = data?.length ?? 0;
+          console.log(`   ✅ Cleaned: ${table}${count > 0 ? ` (${count} rows)` : ''}`);
         }
       } catch (err) {
         console.log(`   ⚠️  ${table}: ${err instanceof Error ? err.message : 'Skipped'}`);
@@ -88,11 +89,11 @@ async function cleanupDatabase() {
 
     // Clean settings table (delete all, defaults will be recreated by migrations)
     try {
-      const { error, count } = await supabaseAdmin
+      const { data, error } = await supabaseAdmin
         .from('settings')
         .delete()
         .neq('id', '00000000-0000-0000-0000-000000000000')
-        .select('*', { count: 'exact', head: true });
+        .select('*');
       
       if (error) {
         if (error.code === 'PGRST116') {
@@ -101,7 +102,8 @@ async function cleanupDatabase() {
           console.log(`   ⚠️  settings: ${error.message}`);
         }
       } else {
-        console.log(`   ✅ Cleaned: settings${count ? ` (${count} rows)` : ''} (defaults will be recreated)`);
+        const count = data?.length ?? 0;
+        console.log(`   ✅ Cleaned: settings${count > 0 ? ` (${count} rows)` : ''} (defaults will be recreated)`);
       }
     } catch (err) {
       console.log(`   ⚠️  settings: Skipped`);

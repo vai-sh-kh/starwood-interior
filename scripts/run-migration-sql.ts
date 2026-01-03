@@ -101,14 +101,15 @@ async function runMigrationSQL() {
       const { data: contentData, error: contentError } = await supabase
         .from("projects")
         .update({ content: "" })
-        .is("content", null);
+        .is("content", null)
+        .select();
 
       if (contentError) {
         console.log(`   ⚠️  Content update: ${contentError.message}`);
       } else {
         console.log("   ✅ Updated NULL content values");
-        if (contentData) {
-          console.log(`      Affected rows: ${Array.isArray(contentData) ? contentData.length : 'N/A'}`);
+        if (contentData && Array.isArray(contentData)) {
+          console.log(`      Affected rows: ${contentData.length}`);
         }
       }
     } catch (err) {
@@ -120,14 +121,15 @@ async function runMigrationSQL() {
       const { data: imageData, error: imageError } = await supabase
         .from("projects")
         .update({ image: "/images/default-project-image.png" })
-        .is("image", null);
+        .is("image", null)
+        .select();
 
       if (imageError) {
         console.log(`   ⚠️  Image update: ${imageError.message}`);
       } else {
         console.log("   ✅ Updated NULL image values");
-        if (imageData) {
-          console.log(`      Affected rows: ${Array.isArray(imageData) ? imageData.length : 'N/A'}`);
+        if (imageData && Array.isArray(imageData)) {
+          console.log(`      Affected rows: ${imageData.length}`);
         }
       }
     } catch (err) {
