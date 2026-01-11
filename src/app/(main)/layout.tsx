@@ -10,7 +10,7 @@ export default function MainLayout({
   return (
     <SmoothScroll>
       <Header />
-      <div className="mt-[60px]">{children}</div>
+      <div>{children}</div>
       <Toaster
         position="top-right"
         visibleToasts={5}

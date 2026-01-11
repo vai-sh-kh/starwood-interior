@@ -6,7 +6,7 @@ export const REVIEWS = [
     id: 1,
     name: "Akhil Prasannan",
     role: "Client",
-    quote: "Truly impressed with the quality of the products and the service provided. Worth to mention the time-bound completion of the interiors of my apartment and the professional approach of the entire team of Starwood Interiors, Tvm. Its worth for the money that is spend.",
+    quote: "Truly impressed with the quality of the products and the service provided. Worth to mention the time-bound completion of the interiors the professional approach of the entire team",
     image: IMAGES.testimonials.akhil,
   },
   {

@@ -104,7 +104,7 @@ export default function BlogDetail({
           </div>
 
           <div
-            className="relative z-10 max-w-[1440px] mx-auto px-6 md:px-12 w-full flex flex-col justify-end pb-16 md:pb-24"
+            className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-12 w-full flex flex-col justify-end pb-16 md:pb-24"
             style={{ textShadow: "0 4px 12px rgba(0,0,0,0.3)" }}
           >
             <span className="inline-block px-4 py-1.5 mb-6 w-fit text-xs font-bold tracking-[0.15em] text-white uppercase border border-white/30 bg-white/10 backdrop-blur-sm rounded-full">
@@ -123,7 +123,7 @@ export default function BlogDetail({
 
         {/* Main Content - Rounded Section */}
         <main className="relative z-20 bg-background-light -mt-10 rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
-          <div className="max-w-[1440px] mx-auto px-6 md:px-12 py-8 md:py-16 lg:py-24">
+          <div className="max-w-[1600px] mx-auto px-6 md:px-12 py-8 md:py-16 lg:py-24">
             {/* Back Button */}
             <div className="mb-8">
               <Link

@@ -223,7 +223,7 @@ export default function ServiceDetail({
 
       {/* Main Content */}
       <main className="relative z-20 bg-background-light -mt-10 rounded-t-[3rem] shadow-[0_-20px_40px_rgba(0,0,0,0.05)]">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 pt-16 pb-0 md:pb-1">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 pt-16 pb-0 md:pb-1">
           {/* Back Button */}
           <div className="mb-12">
             <Link

@@ -46,8 +46,8 @@ export default function NavLinks({
         {filteredNavLinks.map((link) => {
           const isActive =
             link.href === "/projects" ||
-            link.href === "/services" ||
-            link.href === "/blogs"
+              link.href === "/services" ||
+              link.href === "/blogs"
               ? pathname === link.href || pathname.startsWith(`${link.href}/`)
               : pathname === link.href;
           const isDetailPage =
@@ -59,20 +59,17 @@ export default function NavLinks({
               key={link.href}
               href={link.href}
               onClick={handleLinkClick}
-              className={`text-lg font-medium transition-colors w-full text-center flex items-center justify-center gap-2 ${
-                isPending ? "opacity-50 pointer-events-none" : ""
-              } ${
-                isActive
+              className={`text-xl font-medium transition-colors w-full text-center flex items-center justify-center gap-2 ${isPending ? "opacity-50 pointer-events-none" : ""
+                } ${isActive
                   ? "text-black font-bold"
                   : "text-gray-600 hover:text-black"
-              }`}
+                }`}
             >
               <span className="relative inline-block pb-1">
                 {link.label}
                 <span
-                  className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
-                    isActive ? "w-full opacity-100" : "w-0 opacity-0"
-                  }`}
+                  className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${isActive ? "w-full opacity-100" : "w-0 opacity-0"
+                    }`}
                 />
               </span>
               {isDetailPage && (
@@ -88,12 +85,12 @@ export default function NavLinks({
   }
 
   return (
-    <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
+    <div className="hidden md:flex items-center space-x-8 text-base font-medium text-gray-600">
       {filteredNavLinks.map((link) => {
         const isActive =
           link.href === "/projects" ||
-          link.href === "/services" ||
-          link.href === "/blogs"
+            link.href === "/services" ||
+            link.href === "/blogs"
             ? pathname === link.href || pathname.startsWith(`${link.href}/`)
             : pathname === link.href;
         const isDetailPage =
@@ -105,13 +102,11 @@ export default function NavLinks({
             key={link.href}
             href={link.href}
             onClick={handleLinkClick}
-            className={`relative pb-1 group transition-all duration-300 ease-in-out flex items-center gap-1.5 ${
-              isPending ? "opacity-50 pointer-events-none" : ""
-            } ${
-              isActive
+            className={`relative pb-1 group transition-all duration-300 ease-in-out flex items-center gap-1.5 ${isPending ? "opacity-50 pointer-events-none" : ""
+              } ${isActive
                 ? "text-black font-bold"
                 : "text-gray-600 hover:text-primary"
-            }`}
+              }`}
           >
             <span className="relative z-10">{link.label}</span>
             {isDetailPage && (
@@ -120,11 +115,10 @@ export default function NavLinks({
               </span>
             )}
             <span
-              className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${
-                isActive
-                  ? "w-full opacity-100"
-                  : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"
-              }`}
+              className={`absolute bottom-0 left-0 h-0.5 bg-black rounded-full transition-all duration-300 ease-in-out ${isActive
+                ? "w-full opacity-100"
+                : "w-0 opacity-0 group-hover:w-full group-hover:opacity-50"
+                }`}
             />
           </Link>
         );

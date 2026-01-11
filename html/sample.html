@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Starwood Comprehensive Home</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#187adc",
+                        "background-light": "#ffffff",
+                        "background-dark": "#111921",
+                        "stone-100": "#f5f5f4",
+                        "stone-200": "#e7e5e4",
+                        "stone-900": "#1c1917",
+                        "warm-grey": "#f2f1ef",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "serif": ["Playfair Display", "serif"],
+                    },
+                    spacing: {
+                        '128': '32rem',
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style type="text/tailwindcss">
+        html {
+            scroll-behavior: smooth;
+        }
+        .image-zoom-container:hover .image-zoom-target {
+            transform: scale(1.05);
+        }
+        .image-zoom-target {
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .masonry-grid {
+            column-count: 1;
+            column-gap: 2rem;
+        }
+        @media (min-width: 768px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+        .break-inside-avoid {
+            break-inside: avoid;
+        }
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary .expand-icon {
+            transform: rotate(45deg);
+        }
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#1c1917] dark:text-stone-200 font-display overflow-x-hidden selection:bg-black selection:text-white">
+<nav class="fixed top-0 left-0 w-full z-50 bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-stone-100 dark:border-stone-800 transition-colors duration-300">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-3xl text-black dark:text-white font-light">pentagon</span>
+<h1 class="text-2xl font-semibold tracking-tight font-serif text-black dark:text-white">Starwood</h1>
+</div>
+<div class="hidden md:flex items-center gap-12">
+<a class="text-xs uppercase tracking-widest font-medium hover:text-gray-500 transition-colors duration-200" href="#projects">Projects</a>
+<a class="text-xs uppercase tracking-widest font-medium hover:text-gray-500 transition-colors duration-200" href="#philosophy">Studio</a>
+<a class="text-xs uppercase tracking-widest font-medium hover:text-gray-500 transition-colors duration-200" href="#contact">Contact</a>
+</div>
+<button class="md:hidden p-2 text-black dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<header class="relative w-full h-screen min-h-[700px] flex flex-col justify-end pb-24">
+<div class="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzJgPfW8CjRobjkxcBnTDrwSh1a6v2I2HqyoDZeAEDuIsBIPJbEE96G-ewY8VOttdN2qsEy5ECvvHjUxQji6kxE7W1XAG9m9G3x7mLbxZeDw37OKqOXpLyiyjYktiz8AZrBzhp6Dsl6nMiMFN5Yv9VVZnzYXmP7McciYClPhK2WMINqkXotaqixGTe-VDkDRBzGd5IbbnoAB3Z3ya603_nrpaxTKHQF6jpAeHPh8oXCGqaG_SvulR2Wn6kCIaMKZtIxzZ_b6mZ3Y6G");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-10"></div>
+<div class="relative z-20 layout-content-container max-w-[1440px] w-full mx-auto px-6 md:px-12">
+<div class="max-w-3xl animate-fade-in-up">
+<p class="text-white/90 uppercase tracking-[0.2em] text-xs font-medium mb-6">Interior Architecture &amp; Design</p>
+<h2 class="text-white text-6xl md:text-8xl font-serif italic font-medium leading-[1.1] tracking-tight mb-10">
+                Elevating the <br/> <span class="not-italic">Art of Living.</span>
+</h2>
+<div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+<button class="bg-white text-black hover:bg-stone-200 border border-white px-10 py-4 text-xs uppercase tracking-widest font-semibold transition-all duration-300">
+                    View Portfolio
+                </button>
+<span class="w-12 h-[1px] bg-white/50 hidden md:block"></span>
+<p class="text-white/80 text-sm font-light max-w-xs leading-relaxed">
+                    Creating bespoke environments that harmonize luxury with minimalist principles.
+                </p>
+</div>
+</div>
+</div>
+</header>
+<section class="py-24 md:py-32 bg-stone-50 dark:bg-[#161b22]" id="philosophy">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20 items-center">
+<div class="md:col-span-5 order-2 md:order-1">
+<div class="relative aspect-[4/5] w-full overflow-hidden">
+<img alt="Starwood Design Team" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700 ease-out" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN7b30ImI73PNDuJy-i2ch2XH23T5CEROd1ajdJY4Y8rLBBNWNPjGCosicdKA0SxMGBMhKDfuY37RZN1yqzxbWsKBmJbNTETdlxc7YuwkH4EVUJUjSX1s05uVUv0L5061bbADdg-SjjuMruEsFCmlhcq-fbEQO_iNTGn_WdGp32mEnBpITTcfagFwBEFKPNwEdYfaLvrF8nEH6tCagUTx9Q8DTekDfx9mMN8-QmZOArajk55xBQdNm1wTPXP1Q5C38PHj7h0-Zj2K9"/>
+</div>
+</div>
+<div class="md:col-span-7 order-1 md:order-2">
+<span class="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6">Our Philosophy</span>
+<h3 class="text-4xl md:text-5xl font-serif text-black dark:text-white mb-8 leading-tight">
+                    We believe that true luxury lies in the <span class="italic text-gray-500">absence of the unnecessary.</span>
+</h3>
+<div class="space-y-6 text-lg font-light text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
+<p>At Starwood, our process is rooted in a deep understanding of space and light. We strip away the superfluous to reveal the essential beauty of structure and material.</p>
+<p>Our team of architects and designers works collaboratively to craft environments that are not just visually stunning, but profoundly resonant. We curate every detail, from the broad strokes of architectural form to the tactile nuance of a fabric swatch.</p>
+</div>
+<div class="mt-10">
+<a class="inline-flex items-center gap-2 text-sm uppercase tracking-widest font-medium border-b border-black dark:border-white pb-1 hover:text-gray-600 transition-colors" href="#">
+                        Meet the Team
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 md:py-32 bg-white dark:bg-background-dark" id="projects">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="flex flex-col md:flex-row justify-between md:items-end mb-16 gap-6">
+<div>
+<span class="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-2">Portfolio</span>
+<h3 class="text-4xl font-serif text-black dark:text-white">Selected Works</h3>
+</div>
+<a class="text-sm font-medium text-gray-500 hover:text-black dark:hover:text-white transition-colors uppercase tracking-widest" href="#">All Projects</a>
+</div>
+<div class="masonry-grid">
+<div class="break-inside-avoid mb-8 group cursor-pointer">
+<div class="overflow-hidden w-full aspect-[3/4] image-zoom-container bg-gray-100">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover image-zoom-target" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUMRS-4oXXvhFSXzo1Wf2BsCBQ9Yfkq9YvBDTJTr7sZaz-KYbJuJsDArhrJwIJRz4_g1C8MDr3hJAIBFx2tKxZDaFpgQgj3bmMFgKY8SjPWoP-U3GkwR_w6uIz-9XthU4Hr-i-nKS5OBstFHudloE3TvWsLAuVaqodtpN5IvMHS2lqBq758ShzUjhP5p5B80xYrrv4OWkti5voOhriWImsxvD6hlYeKL8chYYGyAW7iLIQAnij71OWeKK7C-3YC3pO0-6H60B98Ceo");'></div>
+</div>
+<div class="mt-4 flex justify-between items-baseline">
+<h4 class="text-xl font-serif group-hover:underline decoration-1 underline-offset-4">The Loft</h4>
+<span class="text-xs uppercase tracking-widest text-gray-500">New York</span>
+</div>
+</div>
+<div class="break-inside-avoid mb-8 group cursor-pointer">
+<div class="overflow-hidden w-full aspect-[4/3] image-zoom-container bg-gray-100">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover image-zoom-target" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDhQoYPhwy1TTLoP3Lu4wZUMtOBKx33poW03OwcMRQTNQ0Ls2cqcz57CdpUMdnuQmRcnv1g-CdODcK6n-G68eAUnFRmum8sWqfkbC2P3b3vAz4JLy9sQwc5VdZfUiVd_ygudYUiG944Iy5qnLmcTYYGwIDY7mH7njjAQd1XF2OmvOcWVoDYJ1JYMTERzLHaKM492IFGtw2ingXMdhcImmn0JFTrrNcLKauQUNLnQMSgKRX6tNGYzflt87PEAtuirb_zYrnlcTwdnD41");'></div>
+</div>
+<div class="mt-4 flex justify-between items-baseline">
+<h4 class="text-xl font-serif group-hover:underline decoration-1 underline-offset-4">Coastal Retreat</h4>
+<span class="text-xs uppercase tracking-widest text-gray-500">Malibu</span>
+</div>
+</div>
+<div class="break-inside-avoid mb-8 group cursor-pointer">
+<div class="overflow-hidden w-full aspect-[3/4] image-zoom-container bg-gray-100">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover image-zoom-target" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD7PuoGGBanbjSoL9ZgF0Ti2f5N0Irozf_-41MJQbrny630zS65QQ50xN7q_EdK6R3kU766KFNUBH2J-7pZylQdr8fLXkjgnCiG41A-dm25htZ4zqx0N3JPHQvxbdlp82IdqL3gCSzyt_Yqrcg-PjB4Kqgg1Av-K7mD3YvCbqMz2UTl-UDJZf78Q6OD33P8Iz-UmH4a6MGTCKlbEJRV97Wp_HfWk38GbfRHLrO1dugIdq6d8jt3KygM9OVOFcsGy5lc37UwWVGig7Re");'></div>
+</div>
+<div class="mt-4 flex justify-between items-baseline">
+<h4 class="text-xl font-serif group-hover:underline decoration-1 underline-offset-4">Urban Sanctuary</h4>
+<span class="text-xs uppercase tracking-widest text-gray-500">Tokyo</span>
+</div>
+</div>
+<div class="break-inside-avoid mb-8 group cursor-pointer">
+<div class="overflow-hidden w-full aspect-[4/5] image-zoom-container bg-gray-100">
+<img alt="Nordic Minimalism" class="w-full h-full object-cover image-zoom-target" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAC1XpVbQROpafFZQbWdWo84urD1YLvXUJAaHg7_7028wWSu4V5sph6wFeeNj6AjrcgS0ue2N-GFmTrPeX9G12CUsVRgdmoTgF-cZVsLguioRul25j3pAhGg7u9tJVH_PEXijP9-F1eCyqyNIUaU8yvO-AFnOPpwzpNme4LcAxp6Akue1MvOFeDdtJbmVWJCBR9XiZr_TMUzOHVbeJWOaWWIlpum8hf3yv66pCCXuHJPILfPfJGXHifB7RtNEaPG5fdNCINmRwASL1"/>
+</div>
+<div class="mt-4 flex justify-between items-baseline">
+<h4 class="text-xl font-serif group-hover:underline decoration-1 underline-offset-4">Nordic Light</h4>
+<span class="text-xs uppercase tracking-widest text-gray-500">Stockholm</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 bg-stone-900 text-white relative overflow-hidden">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBgmjybtIbCYHE2jf_FLemsIejhX6RRDYnFL65TGqVkQTbZKmrhORxJ2Y-QmQ3f0KybOOWWkYThG0uQnOevPodYqu0QA-7ge3MC4Z8GYpjlzseRVWPvzCi5j6TreGrautE4AYzqVNJQ1b5VXQxOSLWRaRU1JPGqzd5Wfj4QdB5bKaQDbaPQAF3pN195eV-UQkWvKcY1KFv6gBkqZ6bI3-u5oUxPO7xuekOtSWJH0iaHZcTracryipWpKPY0r4dwoBygfbXQ8EqDUD3u');"></div>
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 relative z-10">
+<div class="mb-12 border-b border-white/10 pb-6 flex justify-between items-end">
+<div>
+<span class="text-stone-400 text-xs uppercase tracking-widest block mb-2">Project Spotlight</span>
+<h2 class="text-4xl md:text-6xl font-serif">Aspen Residence</h2>
+</div>
+<div class="hidden md:block text-right">
+<p class="text-sm font-light text-stone-300">Completed 2023</p>
+<p class="text-sm font-light text-stone-300">Alpine Modernism</p>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+<div class="lg:col-span-8 space-y-4">
+<div class="aspect-video w-full overflow-hidden">
+<img alt="Aspen Residence Living Room" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN9Stgco1wxjMHmfToouhb47tc8wbwBkQiWelbYRn22u6TuBDVJvSIgv-OsjL33plapzQkjGmhXGwzbuHsT1HIyuqreBspvhoKZFxfN1EnqPS2-7Jw01F1dbaA_mJABpBzXiRTQHUDvFfBJREGyW3uTEXxh2zGTy8UFI9KHHv2VU5F9UCRJl1ljd2OZbAHZCPsojxVYcyB2g0_Q0j7dOLnwyLeMKpbWO5aGyyvAqtNHYhJ-hQ4PNIfNZz9RyVuXJy3T-i-4wLhLnwR"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<img alt="Detail Shot" class="w-full h-64 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXipJh_DzRL5YXeYucTmUzHDqv3v7hSJHO1M86SsHcObi46onQKCGKB5U70a84EiNlPrUEsoLIR1_rVA4g2jS6vnJ6oh0XQ1_uOnPjdiNfrT1anZAKZ3akZ6P0rafW771pinUoPj6dzrt5tKl86Zb8Q4E3kNK-mQ6dz0a5FDowCfX9XoyoPpyzVxFQEZAQHVeOB9S06hrchuRw5cZ_-VNeEg2NNsUWM93ns7Shz5mstm3-bkzjLJTMicIbC1jBYfyaUhbdZWVcoGZi"/>
+<div class="bg-stone-800 p-8 flex flex-col justify-center">
+<p class="font-serif text-2xl italic mb-4">"A dialogue between the raw mountain landscape and refined interior warmth."</p>
+</div>
+</div>
+</div>
+<div class="lg:col-span-4 flex flex-col justify-between">
+<div>
+<h3 class="text-xl font-serif mb-6">Material Palette</h3>
+<p class="text-stone-400 font-light mb-10 leading-relaxed">The material selection for Aspen Residence focuses on tactile richness. We utilized locally sourced timber combined with rough-hewn stone to ground the structure, while soft wools and leathers provide intimate comfort.</p>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-stone-700 overflow-hidden ring-1 ring-white/20">
+<img alt="Oak" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-YpDiFVniHsiKh_J12mbHK5Y9eYEhq1Y1age8iDCtedb73DMm3QIILpWzv4lNN4CodKRpZ6d1anZjQXqen2mG8FkvaJ8L44qrwFHQmA_D2zaTsIBeViL-0GdQAzM88oTPsiBfqUcNptrlG6GSkR52sL93iHidKWGNGaASowmgZKY12ctmCE3ptR_-4CqI-d6ugskNkdhwSLNqSpqaZ1kGJnm4yeE4pA4yXhU9Nwb5IoGT-OyZaA5DU0MSTY3oP9AOYZW-EyMYJIDb"/>
+</div>
+<div>
+<p class="text-sm font-medium">White Oak</p>
+<p class="text-xs text-stone-500">Flooring &amp; Cabinetry</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-stone-700 overflow-hidden ring-1 ring-white/20">
+<img alt="Stone" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxe5CtCo68geZlqdDDKwRIuRxxWEkd87KrzPcvdyMD5aISqZGcsjxy_h2-uYhauqApp99dslbxLM8Q1lrtlEIK-Ii6z3dm7EdIj7mjyc5-z1WAGBrW4YQC56qgqhxTPCZjt3xSLDQxV1n3geNkdggEzuTmHWwtSdMIFm6xCtB898jLsm5ivPrt0ixyBUvDILhJhX0z2i3DJaYFaL7TEcKzQTW_eJ80oTf_03PYS4dhhsmVGoKwzTCSgQjrXreyZw6WUgdCR6F_ff4C"/>
+</div>
+<div>
+<p class="text-sm font-medium">Limestone</p>
+<p class="text-xs text-stone-500">Fireplace &amp; Feature Walls</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-full bg-stone-700 overflow-hidden ring-1 ring-white/20">
+<img alt="Fabric" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgh7A8VjsddYd7mRhukxNhJnwbWAqwn7KxqolxgWLK0ZS8tacXlv9LCtSKSwMVDrJrg62uKEE0zIxdkJIgxBfvnnoCb3sg-o8ULhckzIiFOx550rGOzg2XOmmW9GVrP5XkmSMufNA2542iU1JR60qyIZlojnCZSaB3RIdumVzN9JtY0yIiAVBfqKWRAgXOrYB26tB7noOiDMMdMZNC4fTgokhAl9lt1o6lhX2uh-7PzwNDPvXNdcFAIi0RD8VxyRQlppaEPbY_oI_Q"/>
+</div>
+<div>
+<p class="text-sm font-medium">Bouclé Wool</p>
+<p class="text-xs text-stone-500">Upholstery</p>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-12 lg:mt-0">
+<a class="inline-block border border-white/30 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all" href="#">View Case Study</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 md:py-40 bg-[#faf9f6] dark:bg-[#151515]">
+<div class="max-w-4xl mx-auto px-6 md:px-12 text-center">
+<h3 class="text-3xl md:text-5xl font-serif italic text-black dark:text-stone-200 leading-tight mb-8">
+            "Starwood didn't just design our home; they curated an experience of stillness and light."
+        </h3>
+<p class="text-xs uppercase tracking-[0.2em] font-medium text-gray-500 dark:text-stone-400">
+            The Henderson Family
+        </p>
+</div>
+</section>
+<section class="py-24 md:py-32 bg-warm-grey dark:bg-[#1a1a1a]">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+<div class="lg:col-span-5">
+<h2 class="text-4xl md:text-5xl font-serif text-black dark:text-white leading-tight">Curated <br/> Inquiries</h2>
+</div>
+<div class="lg:col-span-7">
+<div class="space-y-0">
+<details class="group border-b border-stone-300 dark:border-stone-800">
+<summary class="flex items-center justify-between cursor-pointer py-8 list-none">
+<h4 class="text-lg font-display uppercase tracking-wider text-black dark:text-white">Our Design Methodology</h4>
+<span class="material-symbols-outlined expand-icon text-stone-400">add</span>
+</summary>
+<div class="pb-8 pr-12">
+<p class="font-serif text-lg text-stone-600 dark:text-stone-400 leading-relaxed italic">
+                                We approach each project as a unique architectural dialogue. Our method prioritizes the manipulation of natural light and the selection of raw, authentic materials to create spaces that breathe and evolve with their inhabitants.
+                            </p>
+</div>
+</details>
+<details class="group border-b border-stone-300 dark:border-stone-800">
+<summary class="flex items-center justify-between cursor-pointer py-8 list-none">
+<h4 class="text-lg font-display uppercase tracking-wider text-black dark:text-white">Project Timelines</h4>
+<span class="material-symbols-outlined expand-icon text-stone-400">add</span>
+</summary>
+<div class="pb-8 pr-12">
+<p class="font-serif text-lg text-stone-600 dark:text-stone-400 leading-relaxed italic">
+                                Quality requires patience. A typical comprehensive interior architecture project spans from 12 to 18 months, ensuring every custom detail is executed to our exacting standards of craftsmanship.
+                            </p>
+</div>
+</details>
+<details class="group border-b border-stone-300 dark:border-stone-800">
+<summary class="flex items-center justify-between cursor-pointer py-8 list-none">
+<h4 class="text-lg font-display uppercase tracking-wider text-black dark:text-white">Global Commissions</h4>
+<span class="material-symbols-outlined expand-icon text-stone-400">add</span>
+</summary>
+<div class="pb-8 pr-12">
+<p class="font-serif text-lg text-stone-600 dark:text-stone-400 leading-relaxed italic">
+                                While headquartered in New York, we accept select commissions globally. Our network of artisans and contractors allows us to maintain the integrity of our minimalist vision across various geographical contexts.
+                            </p>
+</div>
+</details>
+<details class="group border-b border-stone-300 dark:border-stone-800">
+<summary class="flex items-center justify-between cursor-pointer py-8 list-none">
+<h4 class="text-lg font-display uppercase tracking-wider text-black dark:text-white">Bespoke Furnishing</h4>
+<span class="material-symbols-outlined expand-icon text-stone-400">add</span>
+</summary>
+<div class="pb-8 pr-12">
+<p class="font-serif text-lg text-stone-600 dark:text-stone-400 leading-relaxed italic">
+                                We believe that a space is only complete when its furniture is in harmony with the architecture. We often design custom pieces specifically for our projects to ensure a seamless aesthetic unity.
+                            </p>
+</div>
+</details>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-32 md:py-48 bg-white dark:bg-background-dark">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 text-center">
+<a class="inline-block border border-black dark:border-white px-16 py-6 text-sm uppercase tracking-[0.2em] font-semibold hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-500" href="#contact">
+            Start Your Project
+        </a>
+</div>
+</section>
+<footer class="bg-white dark:bg-black py-20 border-t border-stone-100 dark:border-stone-900" id="contact">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+<div class="col-span-1 lg:col-span-2">
+<div class="flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-3xl text-black dark:text-white">pentagon</span>
+<span class="font-serif text-2xl font-bold text-black dark:text-white">Starwood</span>
+</div>
+<h4 class="text-3xl md:text-4xl font-serif leading-tight mb-8">Start your journey <br/> to a timeless space.</h4>
+<a class="text-xl md:text-2xl border-b border-black dark:border-white pb-1 inline-block hover:opacity-50 transition-opacity" href="mailto:hello@starwood.com">hello@starwood.com</a>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-xs uppercase tracking-widest text-gray-400 mb-2">Studio</span>
+<p class="text-sm text-gray-600 dark:text-gray-400">142 Wooster Street<br/>New York, NY 10012</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">+1 (212) 555-0199</p>
+</div>
+<div class="flex flex-col gap-4">
+<span class="text-xs uppercase tracking-widest text-gray-400 mb-2">Connect</span>
+<a class="text-sm hover:text-gray-500 transition-colors" href="#">Instagram</a>
+<a class="text-sm hover:text-gray-500 transition-colors" href="#">Pinterest</a>
+<a class="text-sm hover:text-gray-500 transition-colors" href="#">LinkedIn</a>
+<a class="text-sm hover:text-gray-500 transition-colors" href="#">Behance</a>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-100 dark:border-gray-900 gap-4">
+<p class="text-[#9aa2ac] text-xs">© 2023 Starwood Interiors. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-xs text-[#9aa2ac] hover:text-black dark:hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs text-[#9aa2ac] hover:text-black dark:hover:text-white transition-colors" href="#">Terms of Use</a>
+</div>
+</div>
+</div>
+</footer>
+
+</body></html>
