@@ -20,6 +20,8 @@
     "seed:leads": "tsx scripts/seed-leads.ts",
     "seed:all": "tsx scripts/seed-blog-categories.ts && tsx scripts/seed-blogs.ts && tsx scripts/seed-projects.ts && tsx scripts/seed-services.ts && tsx scripts/seed-subservices.ts && tsx scripts/seed-service-subservices.ts && tsx scripts/seed-leads.ts",
     "seed:all:with-admin": "./scripts/run-all-seeders.sh",
+    "seed:complete": "tsx scripts/seed-all-data.ts",
+    "reset:all": "tsx scripts/reset-and-seed-all.ts",
     "seed:remote": "tsx scripts/seed-remote-all.ts",
     "seed:remote:all": "tsx scripts/seed-remote-all.ts",
     "migrate:parent-service": "supabase migration up",

@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -11,6 +12,7 @@ export default function MainLayout({
     <SmoothScroll>
       <Header />
       <div>{children}</div>
+      <Footer />
       <Toaster
         position="top-right"
         visibleToasts={5}

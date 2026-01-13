@@ -35,8 +35,6 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-import Footer from "@/components/Footer";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -54,7 +52,6 @@ export default function RootLayout({
         className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} antialiased font-display bg-background-light text-text-light`}
       >
         {children}
-        <Footer />
         <ChatBot />
       </body>
     </html>
