@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { getAvatarHexColor } from "@/lib/utils";
 import { z } from "zod";
+import { COMPANY_INFO } from "@/lib/constants/company";
 
 // Zod validation schema
 const contactFormSchema = z.object({
@@ -172,38 +173,27 @@ export default function ContactPage() {
       <section className="py-32 md:py-48 bg-white" id="direct-console">
         <div className="max-w-[1440px] mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 lg:gap-40">
-            <div className="space-y-24">
-              {/* Global Studios */}
+            <div className="space-y-14">
+              {/* Studio */}
               <div>
-                <span className="block text-sm uppercase tracking-[0.5em] text-gray-400 mb-12 border-l-2 border-black pl-4">
-                  Global Studios
+                <span className="block text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-8 border-l-2 border-black pl-4">
+                  Our Office
                 </span>
                 <div className="grid grid-cols-1 gap-16">
                   <div className="group">
                     <h4 className="text-lg font-bold uppercase tracking-widest mb-6 text-black">
-                      Manhattan
+                      {COMPANY_INFO.address.city}
                     </h4>
                     <p className="text-lg md:text-xl text-stone-600 font-light leading-tight space-y-2">
-                      142 Wooster Street
+                      {COMPANY_INFO.address.street}
                       <br />
-                      Soho, New York 10012
+                      {COMPANY_INFO.address.area}, {COMPANY_INFO.address.city}
                       <br />
-                      <span className="block mt-4 font-normal text-black">
-                        +1 212 555 0199
-                      </span>
-                    </p>
-                  </div>
-                  <div className="group">
-                    <h4 className="text-lg font-bold uppercase tracking-widest mb-6 text-black">
-                      London
-                    </h4>
-                    <p className="text-lg md:text-xl text-stone-600 font-light leading-tight space-y-2">
-                      48 Chiltern Street
+                      {COMPANY_INFO.address.state} - {COMPANY_INFO.address.pincode}
                       <br />
-                      Marylebone, London W1U 7QS
-                      <br />
-                      <span className="block mt-4 font-normal text-black">
-                        +44 20 7946 0012
+                      {COMPANY_INFO.address.country}
+                      <span className="block mt-6 font-normal text-black">
+                        {COMPANY_INFO.contact.phone}
                       </span>
                     </p>
                   </div>
@@ -211,52 +201,56 @@ export default function ContactPage() {
               </div>
 
               {/* Electronic Mail */}
+
+              <div className="space-y-1 ">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-3">
+                    General Correspondence
+                  </p>
+                  <a
+                    className="text-3xl md:text-4xl font-serif text-black hover:text-stone-400 transition-colors block break-words"
+                    href={`mailto:${COMPANY_INFO.contact.email}`}
+                  >
+                    {COMPANY_INFO.contact.email}
+                  </a>
+                </div>
+              </div>
+
+              {/* Location Map */}
               <div>
-                <span className="block text-sm uppercase tracking-[0.5em] text-gray-400 mb-12 border-l-2 border-black pl-4">
-                  Electronic Mail
-                </span>
-                <div className="space-y-12">
-                  <div>
-                    <p className="text-sm uppercase tracking-widest text-stone-400 mb-3 font-semibold">
-                      General Correspondence
-                    </p>
-                    <a
-                      className="text-3xl md:text-5xl font-serif text-black hover:text-stone-400 transition-colors block"
-                      href="mailto:hello@starwood.com"
-                    >
-                      hello@starwood.com
-                    </a>
-                  </div>
-                  <div>
-                    <p className="text-sm uppercase tracking-widest text-stone-400 mb-3 font-semibold">
-                      Press & Media
-                    </p>
-                    <a
-                      className="text-3xl md:text-5xl font-serif text-black hover:text-stone-400 transition-colors block"
-                      href="mailto:press@starwood.com"
-                    >
-                      press@starwood.com
-                    </a>
-                  </div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-stone-400 mb-6">
+                  Location
+                </p>
+                <div className="w-full h-[300px] bg-stone-100 grayscale hover:grayscale-0 transition-all duration-500">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.726880293448!2d76.9537233758872!3d8.525872991516548!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b05bbb805bbcd47%3A0x154561147a02070!2sThampanoor%2C%20Thiruvananthapuram%2C%20Kerala!5e0!3m2!1sen!2sin!4v1709664531234!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    className="w-full h-full"
+                  />
                 </div>
               </div>
             </div>
 
             {/* Inquiry Console Form */}
             <div>
-              <span className="block text-sm uppercase tracking-[0.5em] text-gray-400 mb-16 border-l-2 border-black pl-4">
+              <span className="block text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-16 border-l-2 border-black pl-4">
                 Inquiry Console
               </span>
-              <form className="space-y-16" onSubmit={handleSubmit}>
+              <form className="space-y-12" onSubmit={handleSubmit}>
                 <div className="group relative">
                   <label
-                    className="block text-xs uppercase tracking-[0.3em] text-stone-400 mb-2 font-bold"
+                    className="block text-sm uppercase tracking-[0.2em] text-stone-400 mb-2 font-bold"
                     htmlFor="name"
                   >
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
-                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-6 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-xl md:text-2xl font-light placeholder:text-stone-200"
+                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-1 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-2xl md:text-3xl font-light placeholder:text-stone-200"
                     id="name"
                     name="name"
                     placeholder=""
@@ -273,13 +267,13 @@ export default function ContactPage() {
                 </div>
                 <div className="group relative">
                   <label
-                    className="block text-xs uppercase tracking-[0.3em] text-stone-400  font-bold"
+                    className="block text-sm uppercase tracking-[0.2em] text-stone-400  font-bold"
                     htmlFor="email"
                   >
                     Email Address <span className="text-red-500">*</span>
                   </label>
                   <input
-                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-6 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-xl md:text-2xl font-light placeholder:text-stone-200"
+                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-1 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-2xl md:text-3xl font-light placeholder:text-stone-200"
                     id="email"
                     name="email"
                     placeholder=""
@@ -296,16 +290,15 @@ export default function ContactPage() {
                 </div>
                 <div className="group relative">
                   <label
-                    className="block text-xs uppercase tracking-[0.3em] text-stone-400 mb-2 font-bold"
+                    className="block text-sm uppercase tracking-[0.2em] text-stone-400 mb-2 font-bold"
                     htmlFor="message"
                   >
-                    Your Vision <span className="text-red-500">*</span>
+                    Your Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
-                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-6 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-xl md:text-2xl font-light placeholder:text-stone-200 resize-none"
+                    className="w-full bg-transparent border-0 border-b-2 border-stone-200 py-1 px-0 focus:ring-0 focus:outline-none focus:border-stone-200 transition-colors text-2xl md:text-3xl font-light placeholder:text-stone-200 resize-none"
                     id="message"
                     name="message"
-                    placeholder="Describe the project..."
                     rows={3}
                     value={formData.message}
                     onChange={handleChange}
@@ -319,7 +312,7 @@ export default function ContactPage() {
                 </div>
                 <div className="pt-8">
                   <button
-                    className="w-full md:w-auto px-16 py-8 bg-black text-white text-sm uppercase tracking-[0.4em] font-bold hover:bg-stone-800 transition-all flex items-center justify-center gap-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full md:w-auto px-16 py-8 bg-black text-white text-sm uppercase tracking-[0.2em] font-bold hover:bg-stone-800 transition-all flex items-center justify-center gap-6 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="submit"
                     disabled={isSubmitting}
                   >
@@ -330,84 +323,6 @@ export default function ContactPage() {
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Studio Discovery Section */}
-      <section
-        className="py-32 md:py-48 bg-stone-50 border-y border-stone-100"
-        id="discovery"
-      >
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-            <div className="lg:col-span-5">
-              <h2 className="text-6xl md:text-8xl font-serif text-black leading-[0.9] tracking-tight">
-                Studio
-                <br />
-                Discovery
-              </h2>
-              <p className="mt-12 text-xl text-stone-500 font-light max-w-sm leading-relaxed">
-                Systematic transparency regarding our architectural methodology
-                and engagement protocols.
-              </p>
-            </div>
-            <div className="lg:col-span-7 space-y-0">
-              <details className="discovery-topic group">
-                <summary className="cursor-pointer border-b border-stone-200 py-12 flex items-center justify-between hover:bg-black/5 transition-colors px-4">
-                  <span className="text-2xl md:text-3xl font-serif font-light text-black">
-                    Methodology
-                  </span>
-                  <span className="material-symbols-outlined expand-icon text-3xl text-stone-300">
-                    add
-                  </span>
-                </summary>
-                <div className="discovery-topic-content px-4">
-                  <div className="py-12 text-lg font-light text-stone-600 leading-relaxed max-w-2xl">
-                    We approach each project as a unique architectural dialogue.
-                    Our method prioritizes the manipulation of natural light and
-                    the selection of raw, authentic materials to create spaces
-                    that breathe.
-                  </div>
-                </div>
-              </details>
-
-              <details className="discovery-topic group">
-                <summary className="cursor-pointer border-b border-stone-200 py-12 flex items-center justify-between hover:bg-black/5 transition-colors px-4">
-                  <span className="text-2xl md:text-3xl font-serif font-light text-black">
-                    Timeline
-                  </span>
-                  <span className="material-symbols-outlined expand-icon text-3xl text-stone-300">
-                    add
-                  </span>
-                </summary>
-                <div className="discovery-topic-content px-4">
-                  <div className="py-12 text-lg font-light text-stone-600 leading-relaxed max-w-2xl">
-                    Quality requires precision. A typical interior architecture
-                    commission spans from 12 to 18 months, ensuring every custom
-                    element is executed to our exacting standards.
-                  </div>
-                </div>
-              </details>
-
-              <details className="discovery-topic group">
-                <summary className="cursor-pointer border-b border-stone-200 py-12 flex items-center justify-between hover:bg-black/5 transition-colors px-4">
-                  <span className="text-2xl md:text-3xl font-serif font-light text-black">
-                    Management
-                  </span>
-                  <span className="material-symbols-outlined expand-icon text-3xl text-stone-300">
-                    add
-                  </span>
-                </summary>
-                <div className="discovery-topic-content px-4">
-                  <div className="py-12 text-lg font-light text-stone-600 leading-relaxed max-w-2xl">
-                    From conceptual design through to construction oversight and
-                    final styling, Starwood offers comprehensive project
-                    management for a seamless global experience.
-                  </div>
-                </div>
-              </details>
             </div>
           </div>
         </div>

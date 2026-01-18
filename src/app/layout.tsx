@@ -26,7 +26,7 @@ const playfairDisplay = Playfair_Display({
 export const metadata: Metadata = {
   title: "Starwood Interiors - Contemporary Interior Design",
   description:
-    "Defining spaces that encompass modern aesthetics with timeless elegance, our contemporary interior designs create a harmonious blend, satisfying the essence of fine living.",
+    "Starwood Interiors specialises in premium interior design services in Trivandrum, Kerala. From custom home interiors to modular kitchens and 3D design visualisation, we deliver exceptional space solutions.",
 };
 
 export const viewport: Viewport = {

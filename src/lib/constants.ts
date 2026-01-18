@@ -7,7 +7,7 @@ export const IMAGES = {
   modernStyle: "https://lh3.googleusercontent.com/aida-public/AB6AXuDdPmIIglqKml6LU6YaaZPRwyOKSHsMWZnBhLuerwJHZ8a_II65A52v91k-wmLXre8xCO7pm6l9egWs9wvpkLuk1s5JsRGWlLgw3M-sGCeFBfmiSIoxMBLW4y1hiWleGkZ6TFzcOG5_T6d2mpbNTUkSwZisgqSyS5qEKGyPEXRt6TuTIpcBz27Bu_cItuwncKUiKrJS4RPz_xR-I4TyZEx0zi8ZifTVYyhcQTbfLbFQMDcMcam-z6Vh7_NIlp179SwlWDyYQuRq6Fw",
   engageConversation: "https://lh3.googleusercontent.com/aida-public/AB6AXuDax634bQYs5gYXeyt7VX6hSlLnQ3aq9yXfIsv7fC8edAHAF3sV07mnHi_P5uvynWXXwsscjtdRXv_tRdQugr5QekAUIEy5KOMNJi7t_CRSehKdFkVh6JRs5xapVDSuWW-r11n3ohEkQv9SthGcmRssgaEWI9L_r0DvELeyXz8_v97Xm7aiDPl-58FDxYt_4DvUDhBwESm_EyKA6_5jWUPcoPp2FA40uCnt5ieBrWfdIvDxC5Nn4wxwjfYN6KVagRRE14nDrqO9Tgc",
   homeFooter: "https://lh3.googleusercontent.com/aida-public/AB6AXuA1pfcPMLpONYaMboc1hdDO5CbHdr88ze4381rPd4LUHVEO4cACLU9ZFuAr3VUuu33g6c-KN8swM96Vp1lruYkD7TOw3UJpmg5D_jCUlwgAfNDjSfSqF-a5qRr7kg067I9oWITxpeIl965tSYJR1Wz_5KYsifMo0Ceep8ogjN8eO-v896lbjUAHY3EUTKY-RRKP3jAAimQMIjvndpaGwI2gIQMUmNSQsltGvDQt910JdwUWs1_uCsOGbh3lxXqATIOBbY5EmoWbtVw",
-  
+
   // About Us page images
   aboutUs: {
     mission: "https://lh3.googleusercontent.com/aida-public/AB6AXuC8i5zWJX-o0CjpLWRKa95LDgUp57PCinJnpNIqmC4cSxfIzwc2tP-1BEmjf5U8KKKgC5FColwOHJlyd9BLHlYbzAC0gppi6FoZhebX0gk9RRtAHwHJKaijavKURmVKcTCRE2-9m5nFbPZbv3bDmDVsb4xjv1nj67JRENdvO2TopHGPiIqGZEXROvUIis9igDL_AAG_1I66Yok8Y-DzdC-nJVzNMloRQK_PHlrlOn9_vtkx2I5Q_hwu3wJWgT1449VipDwSXd6TSAU",
@@ -19,7 +19,7 @@ export const IMAGES = {
     },
     footer: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_Xm57a_AMs8Qqlk0IyFp5qWUmaibVutmam509vhzx9amr9AWGSTqwwwFBYZ63X3FEv-OsmPG6aLJVfTXvepvcFSw3wTh9xEgJJtB3_Lq2uzr9hOzQ2ScRmw8H13-nfL2fj1gVe0DSFOmeyIfSVs9Qa39JdLIzxKpPSkmRTf48eRS_WxaRZj4_sqqe0oKRPkJKKjRDbZp37rSwVbWPh-7g0JgZnawAkGQr6NZ-u-Mrezg3CEYRuhytGp5sXjpTGt2Nqb597y4THQg",
   },
-  
+
   // Services page images
   services: {
     hero: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ-H5YmYouxtzccg2-ECpxGttNfIIl8qGkWDhqvbBkOT_RdrEFi3fj4p4OL51LMUy5F1T0p34ig_LB3YImz62yy6ImlL1EKl2CpiJaz1gKIPke8utfLoZEd45B-W9x-KXogzfaWyl5nxZw9FMhZsbJktIgJu3Y8RHyikdPDAF5kYASjPSMMes8fqEeT5Isyb6VSGPYENnj3IvjxArbNH2dxIZK8DxzF987QMduY_tEr82jnsJUS_qyqSUKm2DNo0C174bX1nUCRtk",
@@ -31,7 +31,7 @@ export const IMAGES = {
     architecturalDesign: "https://lh3.googleusercontent.com/aida-public/AB6AXuC20Zliz04tKHaNXPl92WPlrezILxnzFIiQomGISE5FICZQhxJOc69V_Dp2OQvTE6CpNFtrbQ2zUIzsxsEyjmueKo03i79XLjRju1n2J8Xud7x_lFjdVmQLCMrtqh7YCVLif-GdOXWUB1wFjuH8FdH_i0nLbmc6IAi_bEWKj2ZOi675Yie9x-DRuzSTq8IeaeJC2_9yOc8Rjbz7wwBdj6we3gdrkWNkmMVyagHnJW9JgWq0R0ebpREElNZXnt6Vux_xvN1t0tLmvD8",
     footer: "https://lh3.googleusercontent.com/aida-public/AB6AXuD5Dh94_tVPAlL5Qza5k6H0WNqMWZDdRySKNmXqZtS52Gc3QuRSBenajzOrf9vw1G-SUaHmmNOLNUPppKuqfjn_JoSF97-e1kFtBrqO-V4SjqQzyc97OW845wTrC5Tp_0g3RNOrFZxxSyQQX8sscMq6HP0P28FTpZh107ev2RZpvSxTSPzUaEjn-sl8xIOqQ5WxSyPG0ktvmfmAfnJm6mWqLbJEan6GjlqjZEtAjj9y3PLiTqxqbnZntYeihdEm80WnbDUtrOt0Y8w",
   },
-  
+
   // Works/Portfolio page images
   works: {
     mondrian: "https://lh3.googleusercontent.com/aida-public/AB6AXuAfwgvBPHEY-ojYhZmeAj31kCrZ8nckkSmh2e4TE2ZTt7fsQygXYjbEGOO2vnmpnYiYd48I3iy2tqrd8x7J6BaJgPb3tOI-FUrHj6rGAI_i1t45ZBKUsk8KOidnqxirtG4gntnRXKhXD0l45UUL3YtG3-YdEbFucLdlYQ8nb35m9-NuTAfc6BWBb8W1jJmF5yPqdYd3z9aAhIJMnCHFAcaN-7GoYbfTzrHRAcAu5rj60YA6rxouGsitLhkPc0KoxhHtcPQNXYKkOEw",
@@ -42,13 +42,13 @@ export const IMAGES = {
     nimiaII: "https://lh3.googleusercontent.com/aida-public/AB6AXuCBHYdTNkNc8O8MAs9A1pBFGwzNln7L8me7fnUR1DW35Ei2brM3ELDqpiqcXNiE5UZh45X6pnOtjHTbdP7FutZqeNirhCq4miopABXn4cyRIcYTjZYAaRdQboOdeYysYtMU8V_GgH_k9nzmC3dN_DqBpgiI8RmH1l1EVxp_7YY7SqRc2BdOQGsc19WTlifkpvbUUTwKkCnpX2tma1HRq_bVX9Totn10Zof133R6CoFXKi-k2lg6icPpyB07LoYeTQUpa1prszDX2vU",
     footer: "https://lh3.googleusercontent.com/aida-public/AB6AXuDL8JGLCh2gCcgPZN0S8gtoOKazWNaXQlrtfTV820pcYVd4f-QuFbip5pp0rPmnErnbg1EPzpcgrcN-aKPLv-5KXCSSNeb9Kh5DHlX1uwTC4shAxsFLsCAPVYkfThf84oD3RgmoS8Na4suUsuaNowC5KdAmiSOWOnTv-7ubaID_sv4aC0fuOmz8ixk6liMBVPxkfqm_INm-TAJ_8VAhJ45jQmfMxO8_1En6vkwWrJ8IwSSalILhuCpfr6rg0iTyC_EGSkA-KqgBzzg",
   },
-  
+
   // Contact page images
   contact: {
     hero: "https://lh3.googleusercontent.com/aida-public/AB6AXuBg5ihetzchPB7z2gdObfkhIJJDwtIEsR1yeTI7DmQMOmsjQzxHKAI0KODF6ENqHHTU80UFEPCMTwIjRylcLIQ1pXeKS8lKQZeJhPHpqLGVdbcncHC_LqAF5S5pPEX9RYjURJT0VtXAc_EFu0_tJWlyYF70gQ5pWAhqE4Swf7BVDtKkFuxtlQTgG5jdERqj63TOftMcKw2WzoETq0IQeVTKSc7_oOC9DVrw3ApwGqdY8J9oRf9Sv3r45W2qpCZN6AM3NP5NKKsUV34",
     map: "https://lh3.googleusercontent.com/aida-public/AB6AXuDyB5EJsYgvU0yVFSrAts9J5qHIvM2Md-3LbyqjGgl_zVL1L64hoAyF8N8rB6b2n6W52mLh7wSGljwsjhjdnERw19Zive_F1xuXVCbGxkuf-CuczRlRIHdf2RPcFOgir1VZaJAWq5LjIPhie8ILUo-5Xs7PjrZWqDFY1q3KZBiehC2l20Yrt2hkXeFGI-Gur-l_gWKKuUDlqH_GTtPPQ4SV_BKHin61KUtoectQ4XuJN9HkxoOVPGanQi4eEbJB5VIEOtNHlow1PaY",
-  },  
-  
+  },
+
   // Collection images (for home page)
   collection: {
     mondrian: "https://lh3.googleusercontent.com/aida-public/AB6AXuD9hNm0DV6RZUnnLO2SXpwIHp4cDwi3rxDM_RfYLGhh47XfDhFsM7P_LgPK-FyRiGLnA6ZsQ4np9U9PszcBBpmp1MGQNZ0gXYrTzCIK0YazJsWA5AxTzZamJgQfQQEAxCX_yoQVpUyfNmg-bbihG6PnUlQOXeM6AW1bgGpa9KrxJOk6IFtC-T89C0DIB5Vew652eLlOGJQ5WHXyOIgi5wuYX0om3rdxiSVwvBxWdUie3IV-w6TMQ_d0NeyV3djQO80e-2cJRIub2VI",
@@ -58,7 +58,7 @@ export const IMAGES = {
     aleaPro: "https://lh3.googleusercontent.com/aida-public/AB6AXuCf4rq8YJqFpDkkNDKOzfhOiGSHnrKxKXch1dfrXx2uhVJd82kfZaUo2-uxDp9U7WhUhH2OJ2lCStG2lFiCdh-eQjPS6i_gglhmViTbP6-e8-2cSQKTZkLUJvHbwLooop2p-npIMULTpwWdivYRjrI7Azp5f5UIhSzHfO-FfnXNbqvcwL6iikCoCNV39HWbm7MfB5cbQ7H88ZTU5acPx3W1fsiKOn95c5wVA8uqeohsO7mi1wIdUlzmV4heGMz3RyRpSX2_G5N0OHY",
     nimiaArmchair: "https://lh3.googleusercontent.com/aida-public/AB6AXuADHMhmsL_n3jhEmcTo12Hct_kf7H1cULzyGVqlDFw46Yf3HctenFtogILlpWHeoeICn3KF2i1YfZ-sJik4le4AtVFI6y_1IEmQAjDhN99fNfQvRYwI9I-57-i1NPa6HWNjfIYxnWZpdXunUE5Q2b0-ERjde3-Wv9xGUi0sr-aPOt5v8MubR7b3ZD-1MYz2vffj8UziRDZFR96Hxx7COLe03PD5JaN7IqA35yFstPIRnWIsAXQI7Ygue9ySzSdjG3DKYRCfC6jWTd4",
   },
-  
+
   // Testimonials Section
   testimonials: {
     samuel: "https://lh3.googleusercontent.com/aida-public/AB6AXuD3Ir9gdQycQoh0TTDkyPtTVeEURJ6ZM6MweDUECaWKy1BDXUCM34joxUHJ2SxaN7693S48276IoLWZT0wopTZYMGuO4KA70PU5OfAIKXe_cwOIqk7px311D1yM9MJpn07sGwLLW9WNS4WNE45pB_wM0PoEDPXQLXQK8-QPgDO4KV6x5hdvztHy8jo9zTwqiGVF1Vu_kzcIrEf7MnzzhH317E5itK1ycL3k46oJyU82gi-n5ucO0bt2nZrewHqkD6DRR-pp0FN47lHx",
@@ -70,7 +70,7 @@ export const IMAGES = {
     nanda: "https://lh3.googleusercontent.com/aida-public/AB6AXuC8i5zWJX-o0CjpLWRKa95LDgUp57PCinJnpNIqmC4cSxfIzwc2tP-1BEmjf5U8KKKgC5FColwOHJlyd9BLHlYbzAC0gppi6FoZhebX0gk9RRtAHwHJKaijavKURmVKcTCRE2-9m5nFbPZbv3bDmDVsb4xjv1nj67JRENdvO2TopHGPiIqGZEXROvUIis9igDL_AAG_1I66Yok8Y-DzdC-nJVzNMloRQK_PHlrlOn9_vtkx2I5Q_hwu3wJWgT1449VipDwSXd6TSAU",
     parvathy: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZ-H5YmYouxtzccg2-ECpxGttNfIIl8qGkWDhqvbBkOT_RdrEFi3fj4p4OL51LMUy5F1T0p34ig_LB3YImz62yy6ImlL1EKl2CpiJaz1gKIPke8utfLoZEd45B-W9x-KXogzfaWyl5nxZw9FMhZsbJktIgJu3Y8RHyikdPDAF5kYASjPSMMes8fqEeT5Isyb6VSGPYENnj3IvjxArbNH2dxIZK8DxzF987QMduY_tEr82jnsJUS_qyqSUKm2DNo0C174bX1nUCRtk",
   },
-  
+
   // Projects Section
   projects: {
     surabaya: "https://lh3.googleusercontent.com/aida-public/AB6AXuB_eOTGBIPZuEnWZmUEcmiNAOBGXEz1m9JJ7oIgCXsafS56YdnHZETBcjlFdYXUZh6z8rJsH3-07rXxCZcrxGC0CeI3wo0ZUbLmthl8DqutTldd_o4apzeVXpHM8SVPXsz6GeffF4i8ISgeuwcLqEidbpvEO_XgqLYmmPlVaBgPpZ6ihwMoYQ72YOHkHxU-L2PEYJ4coT0jD5CnR88egUVJ_49TckSLQw_n5K4ZU17Mg0CWpj2f1bc5zeVFyQuUO_kDCOvdO_B6qCc3",
@@ -89,23 +89,23 @@ export const STATS = [
 
 // Collection items
 export const COLLECTIONS = [
-  { 
-    name: "Home Interior Design", 
+  {
+    name: "Home Interior Design",
     image: IMAGES.collection.mondrian,
     description: "Tailored design plans personalised to your style, space, and functional needs."
   },
-  { 
-    name: "Commercial Interiors", 
+  {
+    name: "Commercial Interiors",
     image: IMAGES.collection.nimia,
     description: "Modern modular kitchens that combine efficiency with aesthetic appeal."
   },
-  { 
-    name: "3D Interior Rendering", 
+  {
+    name: "3D Interior Rendering",
     image: IMAGES.collection.artex,
     description: "Complete furnishing services to bring warmth, comfort, and personality to every room."
   },
-  { 
-    name: "Architectural Drawings", 
+  {
+    name: "Architectural Drawings",
     image: IMAGES.collection.brera,
     description: "Custom furniture design and execution for living rooms, bedrooms, wardrobe spaces, and more."
   },
@@ -324,8 +324,8 @@ export const WORKS_COLLECTIONS = [
 // Navigation links - Updated with proper routes
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/projects", label: "Projects" },
   { href: "/services", label: "Services" },
+  { href: "/projects", label: "Projects" },
   { href: "/about-us", label: "About Us" },
   { href: "/blogs", label: "Blogs" },
   { href: "/contact", label: "Contact" },
@@ -475,36 +475,36 @@ export const PAGE_METADATA = {
 
 
 export const SERVICES_LIST = [
-  { 
-    title: "Requirement Discussion", 
+  {
+    title: "Requirement Discussion",
     description: "Understanding your requirements to create custom interior concepts.",
-    active: false 
+    active: false
   },
-  { 
-    title: "Design Concept", 
+  {
+    title: "Design Concept",
     description: "Development of initial concept design & layouts aligned to your aesthetic goals.",
-    active: true, 
-    count: "03" 
+    active: true,
+    count: "03"
   },
-  { 
-    title: "3D Visualisation", 
+  {
+    title: "3D Visualisation",
     description: "Creation of detailed 3D views to give complete clarity before execution.",
-    active: false 
+    active: false
   },
-  { 
-    title: "Design Finalisation", 
+  {
+    title: "Design Finalisation",
     description: "Finalisation of materials, finishes, and design details with client approval.",
-    active: false 
+    active: false
   },
-  { 
-    title: "Execution Management", 
+  {
+    title: "Execution Management",
     description: "Executing the project with quality control, timeline management, and site supervision",
-    active: false 
+    active: false
   },
-  { 
-    title: "Project Handover", 
+  {
+    title: "Project Handover",
     description: "Completing final inspections and project handover with post-completion support.",
-    active: false 
+    active: false
   },
 ];
 

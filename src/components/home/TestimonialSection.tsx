@@ -2,33 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { TESTIMONIALS } from "@/lib/constants/testimonials";
 
-const testimonials = [
-    {
-        quote: "Starwood didn't just design our home; they curated an experience of stillness and light.",
-        author: "The Henderson Family"
-    },
-    {
-        quote: "The attention to detail in every corner of our new kitchen is simply remarkable.",
-        author: "Sarah & James Miller"
-    },
-    {
-        quote: "They transformed our workspace into an environment that truly inspires productivity.",
-        author: "Creative Collective Studio"
-    },
-    {
-        quote: "A perfect blend of modern sophistication and warm, inviting textures.",
-        author: "Elena Rostova"
-    },
-    {
-        quote: "The process was seamless, and the final result exceeded our wildest expectations.",
-        author: "The Thompson Estate"
-    },
-    {
-        quote: "Their vision for light and space completely changed how we live in our home.",
-        author: "Marcus Thorne"
-    }
-];
+const testimonials = TESTIMONIALS;
 
 export default function TestimonialSection() {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -57,26 +33,42 @@ export default function TestimonialSection() {
             <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative">
                 <div className="max-w-5xl mx-auto text-center">
                     <div className="relative min-h-[300px] md:min-h-[200px] flex items-center justify-center">
-                        {testimonials.map((testimonial, index) => (
-                            <div
-                                key={index}
-                                className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-1000 ease-in-out ${index === activeIndex
-                                    ? "opacity-100 translate-y-0"
-                                    : "opacity-0 translate-y-8"
-                                    }`}
-                                style={{
-                                    pointerEvents: index === activeIndex ? "auto" : "none",
-                                    visibility: index === activeIndex ? "visible" : "hidden"
-                                }}
-                            >
-                                <h3 className="text-3xl md:text-5xl font-serif italic text-black leading-tight mb-8">
-                                    &quot;{testimonial.quote}&quot;
-                                </h3>
-                                <p className="text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
-                                    {testimonial.author}
-                                </p>
-                            </div>
-                        ))}
+                        {testimonials.map((testimonial, index) => {
+                            const isActive = index === activeIndex;
+                            const isPrev = index === (activeIndex - 1 + testimonials.length) % testimonials.length;
+                            const isNext = index === (activeIndex + 1) % testimonials.length;
+
+                            return (
+                                <div
+                                    key={testimonial.id}
+                                    className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-out ${isActive
+                                            ? "opacity-100 translate-x-0 scale-100 blur-0"
+                                            : isPrev
+                                                ? "opacity-0 -translate-x-12 scale-95 blur-sm"
+                                                : isNext
+                                                    ? "opacity-0 translate-x-12 scale-95 blur-sm"
+                                                    : "opacity-0 translate-y-8 scale-90 blur-md"
+                                        }`}
+                                    style={{
+                                        pointerEvents: isActive ? "auto" : "none",
+                                        visibility: isActive ? "visible" : "hidden"
+                                    }}
+                                >
+                                    <div className={`transition-all duration-700 delay-100 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                                        }`}>
+                                        <h3 className="text-3xl md:text-5xl font-serif italic text-black leading-tight mb-8">
+                                            &quot;{testimonial.quote}&quot;
+                                        </h3>
+                                    </div>
+                                    <div className={`transition-all duration-700 delay-200 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                                        }`}>
+                                        <p className="text-xs uppercase tracking-[0.2em] font-medium text-gray-500">
+                                            {testimonial.author}
+                                        </p>
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
 
                     <div className="flex justify-center gap-3 mt-12">

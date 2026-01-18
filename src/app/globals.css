@@ -233,6 +233,11 @@
     min-width: 44px;
   }
 
+  /* Text balancing utility */
+  .text-balanced {
+    text-wrap: balance;
+  }
+
   /* Safe area utilities for mobile devices */
   .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0);

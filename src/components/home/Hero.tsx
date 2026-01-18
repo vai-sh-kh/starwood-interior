@@ -12,25 +12,28 @@ export default function Hero() {
                         'url("https://lh3.googleusercontent.com/aida-public/AB6AXuBzJgPfW8CjRobjkxcBnTDrwSh1a6v2I2HqyoDZeAEDuIsBIPJbEE96G-ewY8VOttdN2qsEy5ECvvHjUxQji6kxE7W1XAG9m9G3x7mLbxZeDw37OKqOXpLyiyjYktiz8AZrBzhp6Dsl6nMiMFN5Yv9VVZnzYXmP7McciYClPhK2WMINqkXotaqixGTe-VDkDRBzGd5IbbnoAB3Z3ya603_nrpaxTKHQF6jpAeHPh8oXCGqaG_SvulR2Wn6kCIaMKZtIxzZ_b6mZ3Y6G")',
                 }}
             ></div>
+            {/* Black Overlay */}
+            <div className="absolute inset-0 bg-black/40 z-[5]"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent z-10"></div>
             <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent z-10"></div>
             <div className="relative z-20 w-full max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                    <p className="text-white/90 uppercase tracking-[0.2em] text-xs font-medium mb-6">
-                        Interior Architecture & Design
+                    <p className="text-white/90 uppercase tracking-[0.5em] text-xs font-bold mb-6">
+                        Starwood Interiors
                     </p>
                     <h2 className="text-white text-6xl md:text-8xl font-serif italic font-medium leading-[1.1] tracking-tight mb-10">
-                        Elevating the <br /> <span className="not-italic">Art of Living.</span>
+                        Best Interior Design Service in Trivandrum
+                        {/* Elevating the <br /> <span className="not-italic">Art of Living.</span> */}
                     </h2>
                     <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                        <Link href="/projects">
+                        <Link href="/contact">
                             <button className="bg-white text-black hover:bg-stone-200 border border-white px-10 py-4 text-xs uppercase tracking-widest font-semibold transition-all duration-300">
-                                View Portfolio
+                               Get Your Free Consultation 
                             </button>
                         </Link>
                         <span className="w-12 h-[1px] bg-white/50 hidden md:block"></span>
                         <p className="text-white/80 text-sm font-light max-w-xs leading-relaxed">
-                            Creating bespoke environments that harmonize luxury with minimalist principles.
+                            Leading interior design firm in Trivandrum delivering contemporary, functional, and sophisticated solutions for residential and commercial spaces.
                         </p>
                     </div>
                 </div>

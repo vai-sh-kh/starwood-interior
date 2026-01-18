@@ -15,12 +15,12 @@ export default function ProjectSpotlight() {
             <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative z-10">
                 <div className="mb-12 border-b border-white/10 pb-6 flex justify-between items-end">
                     <div>
-                        <span className="text-stone-400 text-xs uppercase tracking-widest block mb-2">Project Spotlight</span>
-                        <h2 className="text-4xl md:text-6xl font-serif">Aspen Residence</h2>
+                        <span className="text-stone-400 text-xs font-bold uppercase tracking-[0.2em] block mb-2">About Starwood</span>
+                        <h2 className="text-4xl md:text-5xl font-serif">Why Choose Starwood Interiors?</h2>
                     </div>
                     <div className="hidden md:block text-right">
-                        <p className="text-sm font-light text-stone-300">Completed 2023</p>
-                        <p className="text-sm font-light text-stone-300">Alpine Modernism</p>
+                        <p className="text-sm font-light text-stone-300">Since 2015</p>
+                        <p className="text-sm font-light text-stone-300">Leading interior design firm</p>
                     </div>
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -30,17 +30,17 @@ export default function ProjectSpotlight() {
                                 alt="Aspen Residence Living Room"
                                 fill
                                 className="object-cover"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCN9Stgco1wxjMHmfToouhb47tc8wbwBkQiWelbYRn22u6TuBDVJvSIgv-OsjL33plapzQkjGmhXGwzbuHsT1HIyuqreBspvhoKZFxfN1EnqPS2-7Jw01F1dbaA_mJABpBzXiRTQHUDvFfBJREGyW3uTEXxh2zGTy8UFI9KHHv2VU5F9UCRJl1ljd2OZbAHZCPsojxVYcyB2g0_Q0j7dOLnwyLeMKpbWO5aGyyvAqtNHYhJ-hQ4PNIfNZz9RyVuXJy3T-i-4wLhLnwR"
+                                src="/images/why-us-1.webp"
                                 sizes="(max-width: 1024px) 100vw, 66vw"
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* <div className="grid grid-cols-2 gap-4">
                             <div className="relative h-64 w-full">
                                 <Image
                                     alt="Detail Shot"
                                     fill
                                     className="object-cover"
-                                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsh-f6xJtE4On41mFNvkGJnlVIvKf1Z152ptw8RWdDfbn_MP-74ZmjO5ydTHvPeiwTnUpPa7CnJiD4scOIyDYtBl_QtRccKl_zKergp-6cYC_fR8j82t8wEQlxEJGuxmdcdmoXpuv9d713uWjvXtSdrFAAvsQk1IqkaM2IgC4GBeuabz-VFM4VHj1oVfbeKiU3Pf-AYExcZGFeqMbOx7hHD0w5-RcDZDOjLS3EU3lfo9v7xp-ZsYgjlJdR3yCx0Y0XG6LiizHGX3w"
+                                    src="/images/why-us-2.png"
                                     sizes="(max-width: 1024px) 50vw, 33vw"
                                 />
                             </div>
@@ -49,15 +49,36 @@ export default function ProjectSpotlight() {
                                     &quot;A dialogue between the raw mountain landscape and refined interior warmth.&quot;
                                 </p>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="lg:col-span-4 flex flex-col justify-between">
                         <div>
-                            <h3 className="text-xl font-serif mb-6">Material Palette</h3>
+                            <h3 className="text-xl font-serif mb-6">Trusted Interior Designer in Trivandrum</h3>
                             <p className="text-stone-400 font-light mb-10 leading-relaxed">
-                                The material selection for Aspen Residence focuses on tactile richness. We utilized locally sourced timber combined with rough-hewn stone to ground the structure, while soft wools and leathers provide intimate comfort.
+                                Starwood Interiors provides professional interior design services in Trivandrum tailored to homes, apartments, and residential spaces. Our expert team delivers innovative design solutions, transparent communication, and excellent craftsmanship. Contact us today to begin your interior transformation.
                             </p>
-                            <div className="space-y-6">
+
+                            {/* Statistics */}
+                            <div className="grid grid-cols-2 gap-4 mb-10 pb-10 border-b border-white/10">
+                                <div>
+                                    <p className="text-2xl font-bold text-white">100+</p>
+                                    <p className="text-xs text-stone-400 mt-1">Satisfied clients</p>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-white">99%</p>
+                                    <p className="text-xs text-stone-400 mt-1">Success rate</p>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-white">20+</p>
+                                    <p className="text-xs text-stone-400 mt-1">Team members</p>
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold text-white">10+</p>
+                                    <p className="text-xs text-stone-400 mt-1">Years of experience</p>
+                                </div>
+                            </div>
+
+                            {/* <div className="space-y-6">
                                 <div className="flex items-center gap-4">
                                     <div className="relative w-16 h-16 rounded-full bg-stone-700 overflow-hidden ring-1 ring-white/20">
                                         <Image
@@ -100,15 +121,15 @@ export default function ProjectSpotlight() {
                                         <p className="text-xs text-stone-500">Upholstery</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                         <div className="mt-12 lg:mt-0">
                             <Link
-                                className="inline-flex items-center gap-2 border border-white/30 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all group"
-                                href="/works/aspen"
+                                className="inline-flex items-center gap-2 border border-white/30 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in-out group"
+                                href="/about-us"
                             >
-                                View Case Study
-                                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                <span className="group-hover:opacity-90 transition-opacity duration-300">About us</span>
+                                <ArrowRight className="w-4 h-4 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-90" />
                             </Link>
                         </div>
                     </div>

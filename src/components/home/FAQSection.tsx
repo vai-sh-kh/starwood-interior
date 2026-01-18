@@ -5,20 +5,28 @@ import { useState } from "react";
 
 const faqs = [
     {
-        question: "Our Design Methodology",
-        answer: "We approach each project as a unique architectural dialogue. Our method prioritizes the manipulation of natural light and the selection of raw, authentic materials to create spaces that breathe and evolve with their inhabitants."
+        question: "Do you compromise on quality?",
+        answer: "No. We do not compromise on quality in any way. Every project we undertake is executed with the highest standards of craftsmanship and attention to detail."
     },
     {
-        question: "Project Timelines",
-        answer: "Quality requires patience. A typical comprehensive interior architecture project spans from 12 to 18 months, ensuring every custom detail is executed to our exacting standards of craftsmanship."
+        question: "Do you take up all projects?",
+        answer: "We only commit to projects where we are confident we can give our 100%. This ensures complete focus, timely delivery, and superior results."
     },
     {
-        question: "Global Commissions",
-        answer: "While headquartered in New York, we accept select commissions globally. Our network of artisans and contractors allows us to maintain the integrity of our minimalist vision across various geographical contexts."
+        question: "What is your approach to design and product quality?",
+        answer: "We place total emphasis on product quality and design integrity. Every design decision is made to balance durability, functionality, and visual appeal."
     },
     {
-        question: "Bespoke Furnishing",
-        answer: "We believe that a space is only complete when its furniture is in harmony with the architecture. We often design custom pieces specifically for our projects to ensure a seamless aesthetic unity."
+        question: "Do you consider customer suggestions?",
+        answer: "Absolutely. We value our customers' ideas and feedback and give them due consideration throughout the design and execution process."
+    },
+    {
+        question: "Do you offer innovative design solutions?",
+        answer: "Yes. We specialize in innovative interior design solutions that maximize the use of space without compromising on aesthetics."
+    },
+    {
+        question: "What values guide your business practices?",
+        answer: "We believe in honest and transparent business practices in everything we do, building long-term trust with our clients."
     }
 ];
 
@@ -31,7 +39,7 @@ export default function FAQSection() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
                     <div className="lg:col-span-4">
                         <span className="block text-xs font-bold tracking-[0.2em] uppercase text-stone-400 mb-4">Inquiries</span>
-                        <h2 className="text-4xl md:text-6xl font-serif text-black leading-tight">
+                        <h2 className="text-4xl md:text-5xl font-serif text-black leading-tight">
                             Curated <br /> Inquiries
                         </h2>
                     </div>
