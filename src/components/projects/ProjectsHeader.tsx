@@ -1,10 +1,10 @@
-export default function AboutHeader() {
+export default function ProjectsHeader() {
     return (
         <header className="relative w-full h-[75vh] min-h-[600px] flex flex-col justify-end pb-24">
             <div
                 className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-transform duration-[2000ms] hover:scale-105"
                 style={{
-                    backgroundImage: `url("/images/abouts.png")`,
+                    backgroundImage: `url("/images/project-detail.png")`,
                 }}
             ></div>
             {/* Black Overlay - Darker */}
@@ -14,10 +14,10 @@ export default function AboutHeader() {
             <div className="relative z-20 max-w-[1600px] w-full mx-auto px-6 md:px-12">
                 <div className="max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     <span className="block text-[10px] uppercase tracking-[0.5em] font-bold text-white/90 mb-6 drop-shadow-sm">
-                        The Studio Profile
+                        Curated Works
                     </span>
                     <h2 className="text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-serif italic font-light leading-none tracking-tighter drop-shadow-md">
-                        About Us
+                        Our Projects
                     </h2>
                     <div className="mt-8 w-24 h-[1px] bg-white/50"></div>
                 </div>

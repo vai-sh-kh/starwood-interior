@@ -51,6 +51,7 @@ interface GalleryImagesManagerProps {
   showResetButton?: boolean;
   onReset?: () => void;
   isResetting?: boolean;
+  description?: string;
 }
 
 // Sortable Image Item Component
@@ -158,6 +159,7 @@ export default function GalleryImagesManager({
   showResetButton = false,
   onReset,
   isResetting = false,
+  description,
 }: GalleryImagesManagerProps) {
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploadingFiles, setUploadingFiles] = useState<Set<string>>(new Set());
@@ -421,21 +423,24 @@ export default function GalleryImagesManager({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Label>Gallery Images</Label>
-        {showResetButton && onReset && (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={onReset}
-            disabled={isResetting || isUploading}
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-          >
-            <X className="h-4 w-4 mr-2" />
-            Reset All Images
-          </Button>
-        )}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <Label>Gallery Images</Label>
+          {showResetButton && onReset && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onReset}
+              disabled={isResetting || isUploading}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Reset All Images
+            </Button>
+          )}
+        </div>
+        {description && <p className="text-sm text-gray-500">{description}</p>}
       </div>
 
       {/* Images Grid with Drag and Drop */}
@@ -530,8 +535,8 @@ export default function GalleryImagesManager({
           !canUploadMore || isUploading
             ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
             : isDragActive
-            ? "border-primary bg-primary/5 cursor-pointer"
-            : "border-gray-300 hover:border-gray-400 cursor-pointer"
+              ? "border-primary bg-primary/5 cursor-pointer"
+              : "border-gray-300 hover:border-gray-400 cursor-pointer"
         )}
       >
         <input

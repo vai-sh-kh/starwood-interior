@@ -1,0 +1,72 @@
+import Link from "next/link";
+import { FileText, ArrowRight } from "lucide-react";
+import { COMPANY_INFO } from "@/lib/constants/company";
+
+export default function ContactCTA() {
+    return (
+        <section className="py-24 bg-white">
+            <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+                <div className="relative bg-stone-50 rounded-[2.5rem] p-8 md:p-14 md:px-20 overflow-hidden">
+                    {/* Background Decorative Lines */}
+                    <div className="absolute inset-0 opacity-10 pointer-events-none">
+                        <svg className="w-full h-full" viewBox="0 0 1000 400" preserveAspectRatio="none">
+                            <path
+                                d="M0,200 Q250,100 500,200 T1000,200"
+                                fill="none"
+                                stroke="#1A1A1A"
+                                strokeWidth="0.5"
+                            />
+                            <path
+                                d="M0,220 Q250,120 500,220 T1000,220"
+                                fill="none"
+                                stroke="#1A1A1A"
+                                strokeWidth="0.5"
+                            />
+                            <path
+                                d="M0,180 Q250,80 500,180 T1000,180"
+                                fill="none"
+                                stroke="#1A1A1A"
+                                strokeWidth="0.5"
+                            />
+                        </svg>
+                    </div>
+
+                    <div className="flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
+                        <div className="flex flex-col md:flex-row items-center gap-8 flex-1">
+                            {/* Icon */}
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-stone-200 rounded-full flex items-center justify-center shrink-0">
+                                <FileText className="w-7 h-7 md:w-8 md:h-8 text-stone-800" />
+                            </div>
+
+                            {/* Text Content */}
+                            <div className="text-center md:text-left max-w-2xl">
+                                <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-black mb-4 tracking-tight">
+                                    Prefer a quick chat?
+                                </h2>
+                                <p className="text-stone-600 text-sm md:text-base font-light leading-relaxed max-w-xl">
+                                    Connect with us instantly on WhatsApp for quick queries, 
+                                    project discussions, or to schedule a consultation.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Button */}
+                        <div className="shrink-0">
+                            <a
+                                href={`https://wa.me/${COMPANY_INFO.contact.whatsapp}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-black text-white hover:bg-stone-800 px-10 py-5 rounded-full text-base font-bold flex items-center gap-3 transition-all duration-300 shadow-xl"
+                            >
+                                Chat on WhatsApp
+                                <ArrowRight className="w-5 h-5" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    );
+}
+

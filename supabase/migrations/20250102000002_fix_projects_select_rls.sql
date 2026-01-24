@@ -2,7 +2,8 @@
 -- Authenticated users need to be able to read ALL projects (draft and published) for admin operations
 -- Public users can only read published projects
 
--- Add policy for authenticated users to read all projects
+-- Drop and recreate policy for authenticated users to read all projects
+DROP POLICY IF EXISTS "Authenticated users can read all projects" ON public.projects;
 CREATE POLICY "Authenticated users can read all projects"
     ON public.projects
     FOR SELECT

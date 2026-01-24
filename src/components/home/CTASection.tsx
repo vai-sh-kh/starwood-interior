@@ -1,9 +1,19 @@
 import Link from "next/link";
 import { FileText, ArrowRight } from "lucide-react";
 
-export default function CTASection() {
+interface CTASectionProps {
+    title?: string;
+    description?: string;
+    buttonText?: string;
+}
+
+export default function CTASection({
+    title = "Schedule a free interior design consultation",
+    description = "Discuss your vision with our expert designers. Get professional guidance on your space and style—no hidden fees, no obligation.",
+    buttonText = "Enquire Now"
+}: CTASectionProps) {
     return (
-        <section className="py-24 bg-white">
+        <section className="py-16 md:py-20 bg-white">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="relative bg-stone-50 rounded-[2.5rem] p-8 md:p-14 md:px-20 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10">
                     {/* Background Decorative Lines */}
@@ -39,10 +49,10 @@ export default function CTASection() {
                         {/* Text Content */}
                         <div className="text-center md:text-left max-w-2xl">
                             <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-black mb-4 tracking-tight">
-                                Schedule a free interior design consultation
+                                {title}
                             </h2>
                             <p className="text-stone-600 text-sm md:text-base font-light leading-relaxed max-w-xl">
-                                Discuss your vision with our expert designers. Get professional guidance on your space and style—no hidden fees, no obligation.
+                                {description}
                             </p>
                         </div>
                     </div>
@@ -51,7 +61,7 @@ export default function CTASection() {
                     <div className="relative z-10 shrink-0">
                         <Link href="/contact">
                             <button className="bg-black text-white hover:bg-stone-800 px-10 py-5 rounded-full text-base font-bold flex items-center gap-3 transition-all duration-300 shadow-xl">
-                                Enquire Now
+                                {buttonText}
                                 <ArrowRight className="w-5 h-5" />
                             </button>
                         </Link>

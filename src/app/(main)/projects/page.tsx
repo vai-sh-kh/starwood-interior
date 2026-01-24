@@ -1,7 +1,6 @@
 import Projects from "@/components/Projects";
-import Footer from "@/components/Footer";
-import BottomNav from "@/components/BottomNav";
-import PageContainer from "@/components/PageContainer";
+import ProjectsHeader from "@/components/projects/ProjectsHeader";
+import CTASection from "@/components/home/CTASection";
 import type { Metadata } from "next";
 import { getBooleanSetting } from "@/lib/settings";
 import { redirect } from "next/navigation";
@@ -20,14 +19,12 @@ export default async function ProjectsPage() {
   }
 
   return (
-    <>
-      <PageContainer>
-        <main className="py-12 md:py-24">
-          <Projects />
-          <BottomNav />
-        </main>
-      </PageContainer>
-      <Footer />
-    </>
+    <div className="bg-white text-stone-900 font-display overflow-x-hidden selection:bg-stone-900 selection:text-white">
+      <ProjectsHeader />
+      <main className="relative z-10">
+        <Projects />
+        <CTASection />
+      </main>
+    </div>
   );
 }

@@ -4,7 +4,7 @@ import { Page } from '@playwright/test';
  * Base Page Object for admin pages
  */
 export class AdminPage {
-  constructor(protected page: Page) {}
+  constructor(protected page: Page) { }
 
   async goto(path: string) {
     await this.page.goto(path);
@@ -219,6 +219,10 @@ export class ProjectsPage extends CRUDPage {
 
   getSaveButton() {
     return this.page.locator('button:has-text("Create"), button:has-text("Update")');
+  }
+
+  async save() {
+    await this.getSaveButton().click();
   }
 }
 

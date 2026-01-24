@@ -4,13 +4,13 @@ import { Page, expect } from '@playwright/test';
  * Wait for toast notification to appear
  * Sonner uses [data-sonner-toast] for individual toasts
  */
-export async function waitForToast(page: Page, message?: string, timeout: number = 5000) {
+export async function waitForToast(page: Page, message?: string | RegExp, timeout: number = 5000) {
   // Sonner toast selectors - try multiple approaches
   const toastSelectors = [
     '[data-sonner-toast]',
     '[data-sonner-toaster] [data-sonner-toast]',
   ];
-  
+
   // If message is provided, try to find toast with that message
   if (message) {
     // First try to find by text content (more reliable)
@@ -21,7 +21,7 @@ export async function waitForToast(page: Page, message?: string, timeout: number
     } catch {
       // Continue to try selectors
     }
-    
+
     // Try to find toast element with the message
     for (const selector of toastSelectors) {
       try {
@@ -43,10 +43,11 @@ export async function waitForToast(page: Page, message?: string, timeout: number
       }
     }
   }
-  
+
   // If we get here and message was provided, throw error
   if (message) {
-    throw new Error(`Toast with message "${message}" not found within ${timeout}ms`);
+    const messageStr = typeof message === 'string' ? message : message.source;
+    throw new Error(`Toast with message "${messageStr}" not found within ${timeout}ms`);
   }
 }
 
@@ -64,7 +65,7 @@ export async function waitForToastToDisappear(page: Page, timeout: number = 5000
 export async function waitForFormSubmission(page: Page) {
   // Wait for loading spinner to disappear
   await page.waitForSelector('button:has([class*="animate-spin"])', { state: 'hidden', timeout: 10000 });
-  
+
   // Wait a bit for any async operations
   await page.waitForTimeout(500);
 }
@@ -75,7 +76,7 @@ export async function waitForFormSubmission(page: Page) {
 export async function waitForTableLoad(page: Page) {
   // Wait for skeleton loaders to disappear
   await page.waitForSelector('[class*="skeleton"]', { state: 'hidden', timeout: 10000 });
-  
+
   // Wait for table to be visible
   await page.waitForSelector('table', { timeout: 5000 });
 }
@@ -97,7 +98,7 @@ export async function waitForSheetClose(page: Page) {
 /**
  * Wait for Supabase operation to complete (check for toast)
  */
-export async function waitForSupabaseOperation(page: Page, successMessage?: string) {
+export async function waitForSupabaseOperation(page: Page, successMessage?: string | RegExp) {
   await waitForToast(page, successMessage);
   await waitForFormSubmission(page);
 }

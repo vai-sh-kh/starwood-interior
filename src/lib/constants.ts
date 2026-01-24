@@ -359,9 +359,9 @@ export const FOOTER_LINKS = {
     { label: "Cookie Policy", href: "#" },
   ],
   contact: [
-    { label: "contact@starwoodinteriors.com", href: "mailto:contact@starwoodinteriors.com" },
-    { label: "+1 (234) 567-890", href: "tel:+1234567890" },
-    { label: "123 Design Avenue, Suite 100", href: "#" },
+    { label: "starwood@designstudio.ae", href: "mailto:starwood@designstudio.ae" },
+    { label: "+91 77368 32115", href: "tel:+917736832115" },
+    { label: "TC 25/1234, MG Road, Thampanoor, Trivandrum", href: "#" },
   ],
   socialMedia: [
     { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
@@ -437,9 +437,9 @@ export const CONTACT_CONTENT = {
   description:
     "We would love to hear from you. Fill out the form below or use our contact details to get in touch. Our team is ready to assist you with any inquiries about our designs and services.",
   details: {
-    email: "contact@starwoodinteriors.com",
-    phone: "+1 (234) 567-890",
-    address: "123 Design Avenue, Suite 100\nMetropolis, NY 10001",
+    email: "starwood@designstudio.ae",
+    phone: "+91 77368 32115",
+    address: "TC 25/1234, MG Road\nThampanoor, Trivandrum 695001",
   },
 } as const;
 
@@ -516,6 +516,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "Truly impressed with the quality of the products and the service provided. Worth to mention the time-bound completion of the interiors of my apartment and the professional approach of the entire team of Starwood Interiors, Tvm. Its worth for the money that is spend.",
     imageKey: "akhil" as const,
+    rating: 5,
   },
   {
     id: 2,
@@ -523,6 +524,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "Outstanding service! Transformed my space into something truly special. Highly recommend their design expertise.",
     imageKey: "abhinav" as const,
+    rating: 5,
   },
   {
     id: 3,
@@ -530,6 +532,7 @@ export const TESTIMONIALS = [
     role: "Student",
     quote: "I'm a student and wanted to revamp my bedroom. I gave these guys some Pinterest reference images to show what I wanted, and they executed exactly what I envisioned. I would recommend them to anyone for interior designing in Trivandrum.",
     imageKey: "ananthan" as const,
+    rating: 5,
   },
   {
     id: 4,
@@ -537,6 +540,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "They gave clear ideas and suggestions. After getting 3D image I was so happy and I knew that it will work out really well and that exactly happened after finishing the work.",
     imageKey: "anoop" as const,
+    rating: 5,
   },
   {
     id: 5,
@@ -544,6 +548,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "Stunning Work Designs with Great customer service. Starwood provided valuable in terms of finding the right design.",
     imageKey: "gokil" as const,
+    rating: 5,
   },
   {
     id: 6,
@@ -551,6 +556,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "Fantastic experience from start to finish. The designers were attentive and delivered exactly what I wanted.",
     imageKey: "nanda" as const,
+    rating: 5,
   },
   {
     id: 7,
@@ -558,6 +564,7 @@ export const TESTIMONIALS = [
     role: "Client",
     quote: "Incredible design work! They completely revamped my office, making it both stylish and functional.",
     imageKey: "parvathy" as const,
+    rating: 5,
   },
 ];
 

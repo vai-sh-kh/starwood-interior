@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/google-font-display */
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display } from "next/font/google";
+import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import ChatBot from "@/components/ChatBot";
 
@@ -21,6 +21,19 @@ const playfairDisplay = Playfair_Display({
   variable: "--font-display-serif",
   subsets: ["latin"],
   weight: ["400", "600", "700"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -49,7 +62,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} antialiased font-display bg-background-light text-text-light`}
+        className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${inter.variable} antialiased font-display bg-background-light text-text-light`}
       >
         {children}
         <ChatBot />

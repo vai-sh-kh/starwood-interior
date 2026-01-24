@@ -1,10 +1,10 @@
 export default function ServiceHeader() {
     return (
-        <header className="relative w-full h-[70vh] min-h-[600px] flex flex-col justify-end pb-24">
+        <header className="relative w-full h-[75vh] min-h-[600px] flex flex-col justify-end pb-24">
             <div
                 className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-transform duration-[2000ms] hover:scale-105"
                 style={{
-                    backgroundImage: `url("/images/abouts.png")`,
+                    backgroundImage: `url("/images/service-header.webp")`,
                 }}
             ></div>
             {/* Black Overlay - Darker */}

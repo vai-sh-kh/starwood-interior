@@ -314,6 +314,14 @@
     font-family: var(--font-body, var(--font-display)), sans-serif;
   }
 
+  .font-cormorant {
+    font-family: var(--font-cormorant), serif;
+  }
+
+  .font-inter {
+    font-family: var(--font-inter), sans-serif;
+  }
+
   /* Aspect ratio utilities */
   .aspect-hero {
     @apply aspect-[16/9] sm:aspect-[21/9] md:aspect-[3/1];

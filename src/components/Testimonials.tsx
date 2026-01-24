@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/constants";
 import { IMAGES } from "@/lib/constants";
 
@@ -170,27 +170,34 @@ export default function Testimonials() {
 
           {/* Quote */}
           <div className="relative w-full mb-4">
+            {/* Star Ratings */}
+            <div className="flex items-center gap-1 mb-3 pl-2">
+              {[...Array(testimonial.rating || 5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
             <div className="mb-4 relative pl-1">
               <p className="text-sm font-medium leading-relaxed text-gray-200 relative z-10 pl-2">
                 {testimonial.quote}
               </p>
             </div>
 
-            {/* Image */}
-            <div className="relative w-full h-44 rounded-xl overflow-hidden shadow-lg mb-4 group">
-              <Image
-                src={IMAGES.testimonials[testimonial.imageKey]}
-                alt={`Portrait of ${testimonial.name}`}
-                fill
-                className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                sizes="360px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-3 left-3 right-3 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-2.5 rounded-lg text-left shadow-lg">
+            {/* Profile Card */}
+            <div className="flex items-center gap-3 px-2 mb-4">
+              <div className="w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                <Image
+                  src={IMAGES.testimonials[testimonial.imageKey]}
+                  alt={`Portrait of ${testimonial.name}`}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
                 <h3 className="text-white font-semibold text-sm">
                   {testimonial.name}
                 </h3>
-                <p className="text-gray-300 text-[10px] tracking-wider uppercase mt-0.5">
+                <p className="text-gray-400 text-[10px] tracking-wider uppercase mt-0.5">
                   {testimonial.role}
                 </p>
               </div>
@@ -241,11 +248,10 @@ export default function Testimonials() {
             {/* Left Side */}
             <div
               ref={leftRef}
-              className={`relative transition-all duration-1000 ease-out ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
+              className={`relative transition-all duration-1000 ease-out ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+                }`}
             >
               <div className="relative z-10">
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/50 block mb-6">
@@ -267,20 +273,18 @@ export default function Testimonials() {
                   src={IMAGES.testimonials[testimonial.imageKey]}
                   alt={testimonial.name}
                   fill
-                  className={`object-cover transition-all duration-500 ease-in-out ${
-                    isTransitioning
-                      ? "opacity-0 scale-105 translate-x-4"
-                      : "opacity-100 scale-100 translate-x-0"
-                  }`}
+                  className={`object-cover transition-all duration-500 ease-in-out ${isTransitioning
+                    ? "opacity-0 scale-105 translate-x-4"
+                    : "opacity-100 scale-100 translate-x-0"
+                    }`}
                   sizes="(max-width: 768px) 100vw, 400px"
                 />
                 <div
                   key={`info-${currentIndex}`}
-                  className={`absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl p-4 text-center border border-white/10 transition-all duration-500 ease-in-out ${
-                    isTransitioning
-                      ? "opacity-0 translate-y-4"
-                      : "opacity-100 translate-y-0"
-                  }`}
+                  className={`absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl p-4 text-center border border-white/10 transition-all duration-500 ease-in-out ${isTransitioning
+                    ? "opacity-0 translate-y-4"
+                    : "opacity-100 translate-y-0"
+                    }`}
                 >
                   <h4 className="text-white font-bold text-sm tracking-wide">
                     {testimonial.name}
@@ -295,21 +299,25 @@ export default function Testimonials() {
             {/* Right Side - Quote */}
             <div
               ref={rightRef}
-              className={`flex flex-col h-full justify-center pt-8 lg:pt-0 transition-all duration-1000 ease-out delay-200 ${
-                isVisible
-                  ? "opacity-100 translate-y-0"
-                  : "opacity-0 translate-y-8"
-              }`}
+              className={`flex flex-col h-full justify-center pt-8 lg:pt-0 transition-all duration-1000 ease-out delay-200 ${isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+                }`}
             >
               <div className="relative mb-12">
                 <Quote className="w-16 h-16 text-white/30 absolute -top-10 -left-6" />
+                {/* Star Ratings */}
+                <div className="flex items-center gap-1 mb-4 pl-4">
+                  {[...Array(testimonial.rating || 5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
                 <blockquote
                   key={currentIndex}
-                  className={`text-2xl lg:text-4xl font-display text-white leading-[1.3] relative z-10 font-light transition-all duration-500 ease-in-out pl-4 ${
-                    isTransitioning
-                      ? "opacity-0 translate-y-8 scale-95"
-                      : "opacity-100 translate-y-0 scale-100"
-                  }`}
+                  className={`text-2xl lg:text-4xl font-display text-white leading-[1.3] relative z-10 font-light transition-all duration-500 ease-in-out pl-4 ${isTransitioning
+                    ? "opacity-0 translate-y-8 scale-95"
+                    : "opacity-100 translate-y-0 scale-100"
+                    }`}
                 >
                   &ldquo;{testimonial.quote}&rdquo;
                 </blockquote>

@@ -7,15 +7,20 @@ interface ProcessStep {
 
 interface ServiceDetailProcessProps {
     steps: ProcessStep[];
+    title?: string;
+    overview?: string;
 }
 
-const ServiceDetailProcess: React.FC<ServiceDetailProcessProps> = ({ steps }) => {
+const ServiceDetailProcess: React.FC<ServiceDetailProcessProps> = ({ steps, title = "A Five-Step Planning Process", overview }) => {
     return (
         <section className="py-24 md:py-32 bg-white">
-            <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+            <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="mb-20">
                     <span className="block text-[10px] font-bold tracking-[0.3em] uppercase text-stone-400 mb-4">The Methodology</span>
-                    <h3 className="text-4xl font-serif text-stone-900">A Five-Step Planning Process</h3>
+                    <h3 className="text-4xl font-serif text-stone-900 mb-6">{title}</h3>
+                    {overview && (
+                        <p className="text-stone-500 font-light max-w-3xl leading-relaxed text-lg">{overview}</p>
+                    )}
                 </div>
                 <div className="space-y-16">
                     {steps.map((step, index) => (

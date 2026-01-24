@@ -33,22 +33,23 @@ const navItems = [
     href: "/admin",
     icon: LayoutDashboard,
   },
- 
+
   {
     title: "Projects",
     href: "/admin/projects",
     icon: FolderKanban,
   },
-  {
-    title: "Services",
-    href: "/admin/services",
-    icon: Briefcase,
-  },
-  {
-    title: "Subservices",
-    href: "/admin/subservices",
-    icon: Layers,
-  },
+  // Temporarily hidden - Services management
+  // {
+  //   title: "Services",
+  //   href: "/admin/services",
+  //   icon: Briefcase,
+  // },
+  // {
+  //   title: "Subservices",
+  //   href: "/admin/subservices",
+  //   icon: Layers,
+  // },
   {
     title: "Categories",
     href: "/admin/categories",

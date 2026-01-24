@@ -84,7 +84,7 @@ export default async function BlogDetailPage({
   params: Promise<{ slug: string }> | { slug: string };
 }) {
   const resolvedParams = await params;
-  
+
   // Check if blogs are enabled
   const blogsEnabled = await getBooleanSetting("blogs_enabled", true);
   if (!blogsEnabled) {
@@ -105,21 +105,41 @@ export default async function BlogDetailPage({
     notFound();
   }
 
-  // Fetch related blogs (same category, excluding current blog)
+  // 1. Fetch related blogs from the same category
   let relatedBlogsQuery = supabase
     .from("blogs")
     .select("id, title, slug, image, excerpt, blog_categories(*)")
     .eq("status", "published")
     .or("archived.is.null,archived.eq.false")
-    .neq("id", blog.id)
-    .limit(3);
+    .neq("id", blog.id);
 
-  // If blog has a category, filter by category
   if (blog.category_id) {
     relatedBlogsQuery = relatedBlogsQuery.eq("category_id", blog.category_id);
   }
 
-  const { data: relatedBlogs } = await relatedBlogsQuery;
+  // Limit to 3 initially
+  const { data: categoryRelatedBlogs } = await relatedBlogsQuery.limit(3);
+
+  let finalRelatedBlogs = categoryRelatedBlogs || [];
+
+  // 2. Backfill if we have fewer than 3
+  if (finalRelatedBlogs.length < 3) {
+    const needed = 3 - finalRelatedBlogs.length;
+    const existingIds = [blog.id, ...finalRelatedBlogs.map((b) => b.id)];
+
+    const { data: backfillBlogs } = await supabase
+      .from("blogs")
+      .select("id, title, slug, image, excerpt, blog_categories(*)")
+      .eq("status", "published")
+      .or("archived.is.null,archived.eq.false")
+      .not("id", "in", `(${existingIds.join(",")})`)
+      .order("created_at", { ascending: false })
+      .limit(needed);
+
+    if (backfillBlogs) {
+      finalRelatedBlogs = [...finalRelatedBlogs, ...backfillBlogs];
+    }
+  }
 
   // Format blog data for component
   const blogData = {
@@ -133,14 +153,14 @@ export default async function BlogDetailPage({
     created_at: blog.created_at,
     category: blog.blog_categories
       ? {
-          name: blog.blog_categories.name,
-        }
+        name: blog.blog_categories.name,
+      }
       : null,
     tags: blog.tags,
   };
 
   const relatedBlogsData =
-    relatedBlogs?.map((rb) => ({
+    finalRelatedBlogs.map((rb) => ({
       id: rb.id,
       title: rb.title,
       slug: rb.slug || "",
@@ -148,10 +168,10 @@ export default async function BlogDetailPage({
       excerpt: rb.excerpt,
       category: rb.blog_categories
         ? {
-            name: rb.blog_categories.name,
-          }
+          name: rb.blog_categories.name,
+        }
         : null,
-    })) || [];
+    }));
 
   return <BlogDetail blog={blogData} relatedBlogs={relatedBlogsData} />;
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 interface SubService {
     title: string;
@@ -10,15 +9,17 @@ interface SubService {
 
 interface ServiceDetailSubServicesProps {
     services: SubService[];
+    title?: string;
+    note?: string;
 }
 
-const ServiceDetailSubServices: React.FC<ServiceDetailSubServicesProps> = ({ services }) => {
+const ServiceDetailSubServices: React.FC<ServiceDetailSubServicesProps> = ({ services, title = "Our Planning Services", note }) => {
     return (
         <section className="py-24 md:py-32 bg-white">
-            <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+            <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="mb-20">
                     <span className="block text-[10px] font-bold tracking-[0.3em] uppercase text-stone-400 mb-4">Core Competencies</span>
-                    <h3 className="text-4xl font-serif text-stone-900">Our Planning Services</h3>
+                    <h3 className="text-4xl font-serif text-stone-900">{title}</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {services.map((service, index) => (
@@ -33,11 +34,18 @@ const ServiceDetailSubServices: React.FC<ServiceDetailSubServicesProps> = ({ ser
                                 />
                             </div>
                             <h4 className="text-xl font-serif mb-3 text-stone-900">{service.title}</h4>
-                            <p className="text-sm text-stone-500 font-light leading-relaxed mb-6">{service.description}</p>
-                            <Link className="text-[10px] uppercase tracking-widest font-bold border-b border-stone-900/20 pb-1 hover:border-stone-900 transition-colors text-stone-900" href="#">Know more</Link>
+                            <p className="text-sm text-stone-500 font-light leading-relaxed">{service.description}</p>
                         </div>
                     ))}
                 </div>
+                {note && (
+                    <div className="mt-16 pt-8 border-t border-stone-100">
+                        <p className="text-base font-light leading-relaxed text-stone-500 italic max-w-2xl">
+                            <span className="font-medium text-stone-900 not-italic">Note: </span>
+                            {note}
+                        </p>
+                    </div>
+                )}
             </div>
         </section>
     );

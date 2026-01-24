@@ -753,8 +753,7 @@ export default function ProjectsPage() {
       if (error) throw error;
 
       toast.success(
-        `Project status changed to ${
-          newStatus === "published" ? "Published" : "Draft"
+        `Project status changed to ${newStatus === "published" ? "Published" : "Draft"
         }`
       );
       fetchProjects();
@@ -1056,9 +1055,8 @@ export default function ProjectsPage() {
           }}
           placeholder="Brief description of the project"
           rows={4}
-          className={`min-h-[120px] text-base ${
-            errors.description ? "border-red-500" : ""
-          }`}
+          className={`min-h-[120px] text-base ${errors.description ? "border-red-500" : ""
+            }`}
         />
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description}</p>
@@ -1149,6 +1147,7 @@ export default function ProjectsPage() {
             }
           }}
           isResetting={isGalleryUploading || isSaving}
+          description="Add at least 3 images for a better view."
         />
       </div>
 
@@ -1477,8 +1476,8 @@ export default function ProjectsPage() {
                       <FolderKanban className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
                         {searchQuery ||
-                        selectedCategory !== "all" ||
-                        selectedStatus !== "all"
+                          selectedCategory !== "all" ||
+                          selectedStatus !== "all"
                           ? "No projects found matching your filters"
                           : "No projects yet"}
                       </p>
@@ -1557,11 +1556,10 @@ export default function ProjectsPage() {
                         }
                       >
                         <SelectTrigger
-                          className={`w-[120px] h-8 text-xs border-0 ${
-                            project.status === "published"
+                          className={`w-[120px] h-8 text-xs border-0 ${project.status === "published"
                               ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
+                            }`}
                         >
                           <SelectValue>
                             {project.status === "published" ? (
@@ -1580,13 +1578,13 @@ export default function ProjectsPage() {
                     <TableCell className="hidden lg:table-cell w-[120px] px-4 py-4 text-gray-600 truncate">
                       {project.created_at
                         ? new Date(project.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                         : "—"}
                     </TableCell>
                     <TableCell className="w-[80px] px-4 py-4">
@@ -1604,9 +1602,8 @@ export default function ProjectsPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                const projectUrl = `/projects/${
-                                  project.slug || project.id
-                                }`;
+                                const projectUrl = `/projects/${project.slug || project.id
+                                  }`;
                                 window.open(projectUrl, "_blank");
                               }}
                             >

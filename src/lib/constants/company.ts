@@ -35,9 +35,9 @@ export const COMPANY_INFO: CompanyInfo = {
         country: "India"
     },
     contact: {
-        phone: "+91 98765 43210",
-        email: "contact@starwoodinteriors.com",
-        whatsapp: "919876543210"
+        phone: "+91 77368 32115",
+        email: "starwood@designstudio.ae",
+        whatsapp: "917736832115"
     },
     social: {
         instagram: "https://www.instagram.com/starwoodinteriors",
@@ -45,7 +45,7 @@ export const COMPANY_INFO: CompanyInfo = {
         linkedin: "https://www.linkedin.com/company/starwoodinteriors"
     },
     hours: {
-        weekdays: "Mon - Sat: 9:00 AM - 6:00 PM",
-        weekend: "Sunday: Closed"
+        weekdays: "Monday to Saturday: 9:00 AM – 5:00 PM",
+        weekend: "Sunday & Public Holidays: Closed"
     }
 };

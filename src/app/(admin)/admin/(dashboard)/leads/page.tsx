@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import * as XLSX from "xlsx";
 import { createClient } from "@/lib/supabase/client";
 import { Lead, LeadInsert, LeadUpdate } from "@/lib/supabase/types";
 import { LEAD_STATUSES } from "@/lib/constants";
@@ -62,6 +63,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import {
   Trash2,
+  Download,
   Search,
   Users,
   Loader2,
@@ -447,6 +449,23 @@ export default function LeadsPage() {
     return statusOption || LEAD_STATUSES[0];
   };
 
+  const handleExport = () => {
+    const exportData = leads.map((lead) => ({
+      Name: lead.name,
+      Email: lead.email,
+      Phone: lead.phone || "",
+      Message: lead.message || "",
+      Status: lead.status,
+      Source: lead.source,
+      Created_At: lead.created_at ? new Date(lead.created_at).toLocaleString() : "",
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Leads");
+    XLSX.writeFile(wb, `Starwood_Leads_${new Date().getFullYear()}.xlsx`);
+  };
+
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] gap-4">
       {/* Single Block Container */}
@@ -460,10 +479,16 @@ export default function LeadsPage() {
                 View and manage contact form submissions
               </p>
             </div>
-            <Button onClick={openAddSheet} className="gap-2 shrink-0">
-              <Plus className="h-4 w-4" />
-              <span>New Lead</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={handleExport} className="gap-2 shrink-0">
+                <Download className="h-4 w-4" />
+                <span>Export Excel</span>
+              </Button>
+              <Button onClick={openAddSheet} className="gap-2 shrink-0">
+                <Plus className="h-4 w-4" />
+                <span>New Lead</span>
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -813,192 +838,192 @@ export default function LeadsPage() {
             </SheetHeader>
 
             <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-base">
-                  Name <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => {
-                    setFormData({ ...formData, name: e.target.value });
-                    if (formErrors.name) {
-                      setFormErrors({ ...formErrors, name: undefined });
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      if (formData.name && formData.email) {
-                        handleSave();
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-base">
+                    Name <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                      if (formErrors.name) {
+                        setFormErrors({ ...formErrors, name: undefined });
                       }
-                    }
-                  }}
-                  placeholder="Enter full name"
-                  className={`h-12 text-base ${formErrors.name ? "border-red-500" : ""}`}
-                />
-                {formErrors.name && (
-                  <span className="text-red-500 text-sm">
-                    {formErrors.name}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-base">
-                  Email <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => {
-                    setFormData({ ...formData, email: e.target.value });
-                    if (formErrors.email) {
-                      setFormErrors({ ...formErrors, email: undefined });
-                    }
-                  }}
-                  onBlur={() => {
-                    // Validate email on blur
-                    const testData = {
-                      ...formData,
-                      email: formData.email.trim(),
-                    };
-                    const validationResult = leadFormSchema.safeParse({
-                      name: testData.name.trim(),
-                      email: testData.email.trim(),
-                      phone: testData.phone?.trim() || "",
-                      message: testData.message?.trim() || "",
-                      status: testData.status,
-                      source: testData.source,
-                    });
-                    if (!validationResult.success) {
-                      const emailError = validationResult.error.issues.find(
-                        (issue) => issue.path[0] === "email"
-                      );
-                      if (emailError) {
-                        setFormErrors({
-                          ...formErrors,
-                          email: emailError.message,
-                        });
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (formData.name && formData.email) {
+                          handleSave();
+                        }
                       }
-                    } else if (formErrors.email) {
-                      setFormErrors({ ...formErrors, email: undefined });
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      if (formData.name && formData.email) {
-                        handleSave();
+                    }}
+                    placeholder="Enter full name"
+                    className={`h-12 text-base ${formErrors.name ? "border-red-500" : ""}`}
+                  />
+                  {formErrors.name && (
+                    <span className="text-red-500 text-sm">
+                      {formErrors.name}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-base">
+                    Email <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                      if (formErrors.email) {
+                        setFormErrors({ ...formErrors, email: undefined });
                       }
-                    }
-                  }}
-                  placeholder="Enter email address"
-                  className={`h-12 text-base ${formErrors.email ? "border-red-500" : ""}`}
-                />
-                {formErrors.email && (
-                  <span className="text-red-500 text-sm">
-                    {formErrors.email}
-                  </span>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-base">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => {
-                    setFormData({ ...formData, phone: e.target.value });
-                    if (formErrors.phone) {
-                      setFormErrors({ ...formErrors, phone: undefined });
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      if (formData.name && formData.email) {
-                        handleSave();
+                    }}
+                    onBlur={() => {
+                      // Validate email on blur
+                      const testData = {
+                        ...formData,
+                        email: formData.email.trim(),
+                      };
+                      const validationResult = leadFormSchema.safeParse({
+                        name: testData.name.trim(),
+                        email: testData.email.trim(),
+                        phone: testData.phone?.trim() || "",
+                        message: testData.message?.trim() || "",
+                        status: testData.status,
+                        source: testData.source,
+                      });
+                      if (!validationResult.success) {
+                        const emailError = validationResult.error.issues.find(
+                          (issue) => issue.path[0] === "email"
+                        );
+                        if (emailError) {
+                          setFormErrors({
+                            ...formErrors,
+                            email: emailError.message,
+                          });
+                        }
+                      } else if (formErrors.email) {
+                        setFormErrors({ ...formErrors, email: undefined });
                       }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (formData.name && formData.email) {
+                          handleSave();
+                        }
+                      }
+                    }}
+                    placeholder="Enter email address"
+                    className={`h-12 text-base ${formErrors.email ? "border-red-500" : ""}`}
+                  />
+                  {formErrors.email && (
+                    <span className="text-red-500 text-sm">
+                      {formErrors.email}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-base">Phone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => {
+                      setFormData({ ...formData, phone: e.target.value });
+                      if (formErrors.phone) {
+                        setFormErrors({ ...formErrors, phone: undefined });
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        if (formData.name && formData.email) {
+                          handleSave();
+                        }
+                      }
+                    }}
+                    placeholder="Enter phone number"
+                    className={`h-12 text-base ${formErrors.phone ? "border-red-500" : ""}`}
+                  />
+                  {formErrors.phone && (
+                    <span className="text-red-500 text-sm">
+                      {formErrors.phone}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="status" className="text-base">Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, status: value })
                     }
-                  }}
-                  placeholder="Enter phone number"
-                  className={`h-12 text-base ${formErrors.phone ? "border-red-500" : ""}`}
-                />
-                {formErrors.phone && (
-                  <span className="text-red-500 text-sm">
-                    {formErrors.phone}
-                  </span>
-                )}
-              </div>
+                  >
+                    <SelectTrigger className="w-full h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {LEAD_STATUSES.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="status" className="text-base">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, status: value })
-                  }
-                >
-                  <SelectTrigger className="w-full h-12 text-base">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {LEAD_STATUSES.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="source" className="text-base">Source</Label>
-                <Select
-                  value={formData.source}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, source: value })
-                  }
-                >
-                  <SelectTrigger className="w-full h-12 text-base">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="manual">Manual</SelectItem>
-                    <SelectItem value="contact_form">Contact Form</SelectItem>
-                    <SelectItem value="collect_chat">Chatbot</SelectItem>
-                    <SelectItem value="newsletter">Newsletter</SelectItem>
-                    <SelectItem value="consultation">Consultation</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="message" className="text-base">Message</Label>
-                <Textarea
-                  id="message"
-                  value={formData.message}
-                  onChange={(e) => {
-                    setFormData({ ...formData, message: e.target.value });
-                    if (formErrors.message) {
-                      setFormErrors({ ...formErrors, message: undefined });
+                <div className="space-y-2">
+                  <Label htmlFor="source" className="text-base">Source</Label>
+                  <Select
+                    value={formData.source}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, source: value })
                     }
-                  }}
-                  placeholder="Enter message or notes"
-                  rows={5}
-                  className={`min-h-[140px] text-base ${formErrors.message ? "border-red-500" : ""}`}
-                />
-                {formErrors.message && (
-                  <span className="text-red-500 text-sm">
-                    {formErrors.message}
-                  </span>
-                )}
+                  >
+                    <SelectTrigger className="w-full h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Manual</SelectItem>
+                      <SelectItem value="contact_form">Contact Form</SelectItem>
+                      <SelectItem value="collect_chat">Chatbot</SelectItem>
+                      <SelectItem value="newsletter">Newsletter</SelectItem>
+                      <SelectItem value="consultation">Consultation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="message" className="text-base">Message</Label>
+                  <Textarea
+                    id="message"
+                    value={formData.message}
+                    onChange={(e) => {
+                      setFormData({ ...formData, message: e.target.value });
+                      if (formErrors.message) {
+                        setFormErrors({ ...formErrors, message: undefined });
+                      }
+                    }}
+                    placeholder="Enter message or notes"
+                    rows={5}
+                    className={`min-h-[140px] text-base ${formErrors.message ? "border-red-500" : ""}`}
+                  />
+                  {formErrors.message && (
+                    <span className="text-red-500 text-sm">
+                      {formErrors.message}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
             </div>
 
             <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
@@ -1169,7 +1194,7 @@ export default function LeadsPage() {
                           {Object.entries(selectedLead.chatbot_metadata as Record<string, any>).map(([key, value]) => {
                             // Skip if value is null, undefined, or empty
                             if (value === null || value === undefined || value === '') return null;
-                            
+
                             // Format the key for display
                             const displayKey = key
                               .replace(/_/g, ' ')
@@ -1178,7 +1203,7 @@ export default function LeadsPage() {
                               .split(' ')
                               .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                               .join(' ');
-                            
+
                             // Format the value
                             let displayValue: string;
                             if (typeof value === 'object') {
@@ -1186,7 +1211,7 @@ export default function LeadsPage() {
                             } else {
                               displayValue = String(value);
                             }
-                            
+
                             return (
                               <div key={key} className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 py-2 border-b border-gray-200 last:border-0">
                                 <span className="text-xs font-medium text-gray-600 min-w-[120px] sm:min-w-[150px]">

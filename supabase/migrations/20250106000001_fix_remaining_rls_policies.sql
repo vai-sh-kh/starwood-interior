@@ -64,25 +64,5 @@ CREATE POLICY "Only authenticated users can delete leads"
     FOR DELETE
     USING (auth.uid() IS NOT NULL);
 
--- Fix subservice_gallery_images table policies (if they still use auth.role())
--- Note: This table was created with auth.role() in the original migration
-DROP POLICY IF EXISTS "Only authenticated users can insert subservice gallery images" ON public.subservice_gallery_images;
-DROP POLICY IF EXISTS "Only authenticated users can update subservice gallery images" ON public.subservice_gallery_images;
-DROP POLICY IF EXISTS "Only authenticated users can delete subservice gallery images" ON public.subservice_gallery_images;
-
-CREATE POLICY "Only authenticated users can insert subservice gallery images"
-    ON public.subservice_gallery_images
-    FOR INSERT
-    WITH CHECK (auth.uid() IS NOT NULL);
-
-CREATE POLICY "Only authenticated users can update subservice gallery images"
-    ON public.subservice_gallery_images
-    FOR UPDATE
-    USING (auth.uid() IS NOT NULL)
-    WITH CHECK (auth.uid() IS NOT NULL);
-
-CREATE POLICY "Only authenticated users can delete subservice gallery images"
-    ON public.subservice_gallery_images
-    FOR DELETE
-    USING (auth.uid() IS NOT NULL);
-
+-- Note: subservice_gallery_images policies are handled in a later migration
+-- when the table is created (20251229211131_create_subservice_gallery_images_table.sql)
