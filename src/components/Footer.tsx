@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Instagram, Facebook, Mail, MessageSquare, Linkedin } from "lucide-react";
+import { Instagram, Facebook, Mail, MessageSquare } from "lucide-react";
 import { COMPANY_INFO } from "@/lib/constants/company";
 
 export default function Footer() {
@@ -33,15 +33,6 @@ export default function Footer() {
                 aria-label="Facebook"
               >
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href={COMPANY_INFO.social.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full border border-stone-700 flex items-center justify-center text-stone-400 hover:text-white hover:border-white transition-all"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="w-5 h-5" />
               </a>
               <a
                 href={`https://wa.me/${COMPANY_INFO.contact.whatsapp}`}

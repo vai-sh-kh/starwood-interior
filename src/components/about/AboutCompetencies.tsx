@@ -1,35 +1,23 @@
 import Image from "next/image";
+import { SERVICES_DATA } from "@/lib/services-data";
 
-const services = [
-    {
-        number: "01",
-        title: "Residential",
-        image: "/images/about-service-1.webp",
-        alt: "Residential",
-        offset: "",
-    },
-    {
-        number: "02",
-        title: "Commercial",
-        image: "/images/about-value-4.webp",
-        alt: "Commercial",
-        offset: "md:mt-12 lg:mt-24",
-    },
-    {
-        number: "03",
-        title: "3D Rendering",
-        image: "/images/about-value-2.webp",
-        alt: "3D Rendering",
-        offset: "",
-    },
-    {
-        number: "04",
-        title: "Fit-out Drawings",
-        image: "/images/about-value-1.webp",
-        alt: "Fit-out Drawings",
-        offset: "md:mt-12 lg:mt-24",
-    },
+const slugs = [
+    "residential-interiors",
+    "commercial-interiors",
+    "3d-rendering",
+    "joinery-shop-drawings",
 ];
+
+const services = slugs.map((slug, index) => {
+    const service = SERVICES_DATA.find((s) => s.slug === slug);
+    return {
+        number: `0${index + 1}`,
+        title: service?.listingTitle,
+        image: service?.listingImage || "",
+        alt: service?.listingTitle || "",
+        offset: index % 2 !== 0 ? "md:mt-12 lg:mt-24" : "",
+    };
+});
 
 export default function AboutCompetencies() {
     return (

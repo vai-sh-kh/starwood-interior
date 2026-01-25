@@ -4,11 +4,11 @@ export default function ServiceHeader() {
             <div
                 className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-transform duration-[2000ms] hover:scale-105"
                 style={{
-                    backgroundImage: `url("/images/service-header.webp")`,
+                    backgroundImage: `url("/images/home/service%20-banner.jpeg")`,
                 }}
             ></div>
             {/* Black Overlay - Darker */}
-            <div className="absolute inset-0 bg-black/50 z-[5]"></div>
+            {/* <div className="absolute inset-0 bg-black/50 z-[5]"></div> */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
             <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-10"></div>
             <div className="relative z-20 max-w-[1600px] w-full mx-auto px-6 md:px-12">

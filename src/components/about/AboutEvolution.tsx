@@ -34,20 +34,10 @@ export default function AboutEvolution() {
                         </h3>
                         <div className="space-y-4 sm:space-y-6 text-base sm:text-lg text-stone-600 font-light leading-relaxed sm:leading-loose max-w-xl">
                             <p>
-                                What began as a specialized boutique studio in Trivandrum has
-                                evolved into a powerhouse of interior luxury. Over the past
-                                decade, we have expanded our footprint to Kochi and Mavelikara,
-                                bringing our signature minimalist aesthetic to Kerala&apos;s most
-                                discerning homeowners.
+                              From our humble beginnings in Trivandrum, Starwood Interiors has grown into a trusted name in interior design, serving clients across Kochi, Mavelikara, and beyond. Established in 2015, we are closely affiliated with Design Studio LLC, Dubai, which has significantly enriched our design expertise. 
                             </p>
                             <p>
-                                Our affiliation with{" "}
-                                <span className="font-medium text-stone-900">
-                                    Design Studio LLC, Dubai
-                                </span>
-                                , allows us to tap into international logistics and global design
-                                trends, ensuring our clients receive world-class materials and
-                                contemporary methodologies tailored for the local context.
+                                This collaboration brings Gulf‑experienced designers and international standards to every project we execute in Kerala and the region. 
                             </p>
                         </div>
                         <div className="pt-6">

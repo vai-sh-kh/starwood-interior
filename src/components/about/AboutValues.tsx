@@ -26,8 +26,8 @@ const values = [
         title: "Innovation",
         description:
             "Pushing boundaries with avant-garde materials and sustainable design solutions for the future.",
-        image: "/images/about-value-4.webp",
-        alt: "Architectural rendering detail",
+        image: "/images/services/commercial/resturant-interior.jpg",
+        alt: "Modern architectural innovation detail with sustainable materials and LED lighting",
     },
 ];
 

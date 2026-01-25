@@ -20,8 +20,7 @@ export default function AboutQuote() {
                     {/* Text on Right */}
                     <div className="space-y-6">
                         <p className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif text-stone-800 leading-[1.4] italic text-balanced">
-                            &quot;Since our inception in 2015, we have been transforming homes and commercial spaces in
-                            Kerala with designs that blend functionality, elegance, and personalized style.&quot;
+                            &quot;Since our inception in 2015, we have been transforming homes and commercial spaces in Kerala with designs that blend functionality, elegance, and personalized style.&quot;
                         </p>
                         <div className="w-12 h-[1px] bg-stone-300"></div>
                     </div>
