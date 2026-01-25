@@ -73,42 +73,42 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Living Room Interiors",
                 description: "Creating welcoming spaces that balance comfort with sophisticated aesthetics.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/resedential/living-room.jpg"
             },
             {
                 title: "Bedroom Interiors",
                 description: "Designing restful sanctuaries tailored to your personal style and comfort needs.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/resedential/bedroom.jpg"
             },
             {
                 title: "Modular Kitchen Interiors",
                 description: "Functional kitchen layouts optimized for efficiency and modern living.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/resedential/modular-kitchen-interior.jpg"
             },
             {
                 title: "Dining Area Interiors",
                 description: "Elegant dining spaces designed for family gatherings and entertaining.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/resedential/dining-area.jpg"
             },
             {
                 title: "Wardrobe & Storage Solutions",
                 description: "Smart storage solutions that maximize space without compromising style.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/resedential/wardrobe-storage.jpg"
             },
             {
                 title: "Home Renovation",
                 description: "Transforming existing spaces into modern, functional environments.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/resedential/home-renovation.jpg"
             },
             {
                 title: "False Ceiling & Lighting Design",
                 description: "Enhancing ambience with creative ceiling designs and strategic lighting.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/resedential/fale-ceiling.jpg"
             },
             {
                 title: "Flooring & Wall Finishes",
                 description: "Premium finishes that add character and durability to your interiors.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/resedential/flooring-wall.jpg"
             }
         ],
         process: [
@@ -191,37 +191,37 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Office Interior Design",
                 description: "Corporate offices, IT offices, and co-working spaces.",
-                imageSrc: "/images/home-service-4.png"
+                imageSrc: "/images/services/commercial/office-interior.jpg"
             },
             {
                 title: "Restaurant Interior Design",
                 description: "Cafes, fine dining, and casual dining establishments.",
-                imageSrc: "/images/home-service-6.png"
+                imageSrc: "/images/services/commercial/resturant-interior.jpg"
             },
             {
                 title: "Retail Store Interior Design",
                 description: "Apparel, electronics, furniture, and multi-brand stores.",
-                imageSrc: "/images/home-service-5.png"
+                imageSrc: "/images/services/commercial/retail-tore.jpg"
             },
             {
                 title: "Showroom Interior Design",
                 description: "Car showrooms, furniture showrooms, and other display spaces.",
-                imageSrc: "/images/about-value-1.webp"
+                imageSrc: "/images/services/commercial/showroom-interior.jpg"
             },
             {
                 title: "Clinic & Hospital Interior Design",
                 description: "Hospitals, clinics, dental offices, and wellness centers.",
-                imageSrc: "/images/about-value-2.webp"
+                imageSrc: "/images/services/commercial/clinic-interior.jpg"
             },
             {
                 title: "Cafe Interior Design",
                 description: "Standalone cafes and specialty coffee shops.",
-                imageSrc: "/images/abouts-1.png"
+                imageSrc: "/images/services/commercial/cafe-interior.jpg"
             },
             {
                 title: "Salon & Wellness Center Interiors",
                 description: "Beauty salons, spas, and fitness studios.",
-                imageSrc: "/images/abouts-2.png"
+                imageSrc: "/images/services/commercial/saloon-interior.jpg"
             }
         ],
         subServicesNote: "Detailed insights, use cases, and cost considerations for these services are shared through our blog, helping businesses make informed decisions before execution.",
@@ -306,27 +306,27 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Residential Interior 3D Rendering",
                 description: "Living rooms, bedrooms, kitchens, and complete home.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/3d-rendering/resedential-rendering.jpg"
             },
             {
                 title: "Commercial Interior 3D Rendering",
                 description: "Offices, retail stores, showrooms, and reception areas.",
-                imageSrc: "/images/service-commercial.webp"
+                imageSrc: "/images/services/3d-rendering/cmmercial-3d-rendering.jpg"
             },
             {
                 title: "Virtual Renovation Previews",
                 description: "Visualising remodels before starting work.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/3d-rendering/virtual-renovation.jpg"
             },
             {
                 title: "Lighting & Material Simulations",
                 description: "Test colors, textures, and lighting effects in realistic views.",
-                imageSrc: "/images/about-value-1.webp"
+                imageSrc: "/images/services/3d-rendering/lighting.jpg"
             },
             {
                 title: "Walkthroughs & Animations",
                 description: "Immersive 3D tours for clients to explore spaces.",
-                imageSrc: "/images/about-value-2.webp"
+                imageSrc: "/images/services/3d-rendering/animation.jpg"
             }
         ],
         subServicesNote: "Each rendering project is customized based on your floor plan & requirements.",
@@ -418,42 +418,42 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Modular Kitchen Shop Drawings",
                 description: "Detailed fabrication drawings for modular kitchen layouts and cabinets.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/joinery-shop/modular-kitchen.jpg"
             },
             {
                 title: "Wardrobe & Storage Shop Drawings",
                 description: "Technical drawings for wardrobes, storage units, and built-ins.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/joinery-shop/wardrobe.jpg"
             },
             {
                 title: "TV Unit & Living Area Joinery Drawings",
                 description: "Custom joinery details for TV units and living room furniture.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/joinery-shop/tv-unit-living-area.jpg"
             },
             {
                 title: "Bedroom Furniture Shop Drawings",
                 description: "Drawings for beds, side tables, and other bedroom furniture.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/joinery-shop/bedroom-furniture.jpg"
             },
             {
                 title: "Office & Commercial Joinery Drawings",
                 description: "Joinery details for office workstations, receptions, and commercial fit-outs.",
-                imageSrc: "/images/home-service-4.png"
+                imageSrc: "/images/services/joinery-shop/office-interiors.jpg"
             },
             {
                 title: "Custom Furniture & Fixed Joinery Details",
                 description: "Bespoke furniture drawings tailored to specific design requirements.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/joinery-shop/furniture.jpg"
             },
             {
                 title: "Material, Section & Elevation Details",
                 description: "Comprehensive views showing materials, sections, and elevations.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/joinery-shop/elevation.jpg"
             },
             {
                 title: "Hardware, Finish & Installation Specifications",
                 description: "Detailed specs for hardware, finishes, and installation procedures.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/joinery-shop/hardware-instalation.jpg"
             }
         ],
         subServicesNote: "Each drawing set is prepared with fabrication logic in mind, ensuring smooth coordination between design, workshop production, and site installation.",
@@ -517,42 +517,42 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Space Planning & Layouts",
                 description: "Optimized layouts for efficient space usage and execution planning.",
-                imageSrc: "/images/about-value-1.webp"
+                imageSrc: "/images/services/fit-out-shop/space-planing.webp"
             },
             {
                 title: "Ceiling, Partition & Wall Detailing",
                 description: "Comprehensive technical details for false ceilings, partitions, and wall treatments.",
-                imageSrc: "/images/about-value-2.webp"
+                imageSrc: "/images/services/fit-out-shop/ceiling-partition.jpg"
             },
             {
                 title: "Electrical, Lighting & Services Coordination Drawings",
                 description: "Electrical, lighting, and service coordination to minimise site conflicts.",
-                imageSrc: "/images/about-value-4.webp"
+                imageSrc: "/images/services/fit-out-shop/electrical-lighting.jpg"
             },
             {
                 title: "Flooring, Skirting & Finish Layouts",
                 description: "Exact layout patterns, skirting details, and flooring finish specifications.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/fit-out-shop/flooring-finih-layout.jpg"
             },
             {
                 title: "Furniture Placement & Integration",
                 description: "Precise placement and integration details for fixed and loose furniture.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/fit-out-shop/furniture-placment.jpg"
             },
             {
                 title: "Elevation, Section & Detail Drawings",
                 description: "Vertical views and intricate construction details for accurate fabrication.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/fit-out-shop/elevation.jpg"
             },
             {
                 title: "Material & Installation Specs",
                 description: "Detailed material, finish, and installation specifications for all trades.",
-                imageSrc: "/images/service-furniture.webp"
+                imageSrc: "/images/services/fit-out-shop/material-intalation.jpg"
             },
             {
                 title: "Site Coordination Drawings",
                 description: "Execution reference drawings to assist on-site teams and supervisors.",
-                imageSrc: "/images/service-commercial.webp"
+                imageSrc: "/images/services/fit-out-shop/ite-coordination-drawing.jpg"
             }
         ],
         subServicesNote: "Each drawing set is developed to ensure seamless alignment between design intent, site conditions, and execution methodology.",
@@ -623,42 +623,42 @@ export const SERVICES_DATA: ServiceData[] = [
             {
                 title: "Furniture Layout & Space Planning",
                 description: "Optimizing ergonomics and circulation for harmonious environments.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/floor-plans/furniture-layout.png"
             },
             {
                 title: "Residential Interior Floor Plans",
                 description: "Comprehensive spatial zoning for homes, apartments, and villas.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/floor-plans/resedential-interior.jpg"
             },
             {
                 title: "Apartment & Villa Floor Planning",
                 description: "Tailored layouts for multi-level villas and modern apartments.",
-                imageSrc: "/images/home-service-3.png"
+                imageSrc: "/images/services/floor-plans/appartment-villa.jpg"
             },
             {
                 title: "Office & Commercial Space Layouts",
                 description: "Efficiency-driven layouts for corporate offices and retail spaces.",
-                imageSrc: "/images/home-service-4.png"
+                imageSrc: "/images/services/floor-plans/office-interiors.jpg"
             },
             {
                 title: "Kitchen, Bedroom & Living Area Planning",
                 description: "Detailed planning for key functional areas of the home.",
-                imageSrc: "/images/home-service-1.png"
+                imageSrc: "/images/services/floor-plans/kitchen-bedroom.jpg"
             },
             {
                 title: "Circulation, Zoning & Clearance Planning",
                 description: "Ensuring smooth movement flow and appropriate functional zones.",
-                imageSrc: "/images/home-service-2.png"
+                imageSrc: "/images/services/floor-plans/circulation-zoning.jpg"
             },
             {
                 title: "Electrical & Service Reference Layouts",
                 description: "Layouts integrating electrical and service points with interior design.",
-                imageSrc: "/images/about-value-4.webp"
+                imageSrc: "/images/services/floor-plans/electrical.jpg"
             },
             {
                 title: "Execution-Ready Floor Plan Documentation",
                 description: "Detailed plans ready for contractor execution and site work.",
-                imageSrc: "/images/about-value-1.webp"
+                imageSrc: "/images/services/floor-plans/execution-redy-floor.webp"
             }
         ],
         subServicesNote: "Each plan is prepared with attention to movement flow, usability, and execution practicality.",

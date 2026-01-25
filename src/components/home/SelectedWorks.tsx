@@ -8,23 +8,23 @@ import { HOME_SERVICES_LIST } from "@/lib/services-data";
 
 export default function SelectedWorks() {
     return (
-        <section className="py-16 lg:py-24 bg-white" id="services">
+        <section className="py-16 md:py-24 bg-white" id="services">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-                <div className="mb-8">
-                    <div className="flex justify-between items-start mb-2">
-                        <span className="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Our Expertise</span>
+                <div className="mb-10 md:mb-12">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 md:mb-2 gap-2">
+                        <span className="block text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Our Expertise</span>
                     </div>
-                    <div className="flex justify-between items-end">
-                        <h3 className="heading-2 text-black">Selected Services</h3>
-                        <Link href="/services" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-2 transition-colors underline-offset-4 hover:underline">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
+                        <h3 className="text-2xl md:text-4xl lg:text-5xl font-serif text-black">Selected Services</h3>
+                        <Link href="/services" className="text-xs md:text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-2 transition-colors underline-offset-4 hover:underline w-fit">
                             All Services
-                            <ArrowRight className="w-4 h-4" />
+                            <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                         </Link>
                     </div>
                 </div>
 
                 {/* Grid Layout for Services */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
                     {HOME_SERVICES_LIST.map((service, index) => {
                         return (
                             <motion.div

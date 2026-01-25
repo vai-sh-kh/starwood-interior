@@ -34,42 +34,42 @@ export default function FAQSection() {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section className="pt-16 md:pt-22 bg-white">
+        <section className="py-16 md:py-24 bg-white">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-24">
                     <div className="lg:col-span-4">
-                        <span className="block text-xs font-bold tracking-[0.2em] uppercase text-stone-400 mb-4">Inquiries</span>
-                        <h2 className="text-3xl md:text-5xl font-serif text-black leading-tight">
+                        <span className="block text-[10px] md:text-xs font-bold tracking-[0.2em] uppercase text-stone-400 mb-3 md:mb-4">Inquiries</span>
+                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif text-black leading-tight">
                             Curated <br /> Inquiries
                         </h2>
                     </div>
                     <div className="lg:col-span-8">
                         <div className="divide-y divide-stone-200">
                             {faqs.map((faq, index) => (
-                                <div key={index} className="py-8">
+                                <div key={index} className="py-6 md:py-8">
                                     <button
                                         onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                                        className="flex items-center justify-between w-full text-left group"
+                                        className="flex items-center justify-between w-full text-left group min-h-[44px]"
                                     >
-                                        <h4 className="text-base md:text-lg font-display uppercase tracking-widest text-black transition-colors group-hover:text-stone-500">
+                                        <h4 className="text-sm md:text-base lg:text-lg font-display uppercase tracking-widest text-black transition-colors group-hover:text-stone-500 pr-4">
                                             {faq.question}
                                         </h4>
-                                        <div className="shrink-0 ml-4">
+                                        <div className="shrink-0">
                                             {openIndex === index ? (
-                                                <Minus className="w-5 h-5 text-black" />
+                                                <Minus className="w-4 h-4 md:w-5 md:h-5 text-black" />
                                             ) : (
-                                                <Plus className="w-5 h-5 text-stone-400 group-hover:text-black transition-colors" />
+                                                <Plus className="w-4 h-4 md:w-5 md:h-5 text-stone-400 group-hover:text-black transition-colors" />
                                             )}
                                         </div>
                                     </button>
                                     <div
                                         className={`grid transition-all duration-500 ease-in-out ${openIndex === index
-                                            ? "grid-rows-[1fr] opacity-100 mt-6"
+                                            ? "grid-rows-[1fr] opacity-100 mt-4 md:mt-6"
                                             : "grid-rows-[0fr] opacity-0"
                                             }`}
                                     >
                                         <div className="overflow-hidden">
-                                            <p className="font-serif text-lg md:text-xl text-stone-600 leading-relaxed italic pr-12">
+                                            <p className="font-serif text-base md:text-lg lg:text-xl text-stone-600 leading-relaxed italic pr-0 md:pr-12">
                                                 {faq.answer}
                                             </p>
                                         </div>

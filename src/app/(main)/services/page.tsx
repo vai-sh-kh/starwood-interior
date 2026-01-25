@@ -1,18 +1,17 @@
+"use client";
+
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import ServiceHeader from "@/components/services/ServiceHeader";
 import { ArrowRightIcon } from "lucide-react";
 import { SERVICES_DATA } from "@/lib/services-data";
 import CTASection from "@/components/home/CTASection";
 
-export const metadata: Metadata = {
-  title: "Our Expertise | Starwood Services",
-  description:
-    "Crafting bespoke private sanctuaries that blend timeless elegance with modern functionality, tailored to the unique narratives of our clients.",
-};
-
 export default function ExpertisePage() {
+  const [imageLoaded, setImageLoaded] = useState<{ [key: string]: boolean }>({});
+
   return (
     <div className="bg-white text-stone-900 font-display overflow-x-hidden selection:bg-stone-900 selection:text-white">
       {/* Service Header Banner */}
@@ -31,14 +30,18 @@ export default function ExpertisePage() {
                   href={`/services/${service.slug}`}
                   className={`service-card group cursor-pointer block ${index % 2 === 1 ? 'md:mt-16' : ''}`}
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden mb-8">
+                  <div className="relative aspect-[4/5] overflow-hidden mb-8 bg-stone-200">
+                    {!imageLoaded[service.slug] && (
+                      <div className="absolute inset-0 bg-stone-200 animate-pulse" />
+                    )}
                     <Image
                       alt={service.listingTitle}
-                      className="w-full h-full object-cover transition-transform duration-[600ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-[10px]"
+                      className={`w-full h-full object-cover transition-all duration-[600ms] ease-[cubic-bezier(0.2,0.8,0.2,1)] group-hover:-translate-y-[10px] ${imageLoaded[service.slug] ? 'opacity-100' : 'opacity-0'}`}
                       src={service.listingImage}
                       width={800}
                       height={1000}
                       unoptimized
+                      onLoad={() => setImageLoaded(prev => ({ ...prev, [service.slug]: true }))}
                     />
                     <span className="absolute top-6 left-6 text-sm font-light tracking-widest text-white mix-blend-difference">
                       {String(index + 1).padStart(2, '0')}

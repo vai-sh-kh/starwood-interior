@@ -62,18 +62,18 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
     }
 
     return (
-        <section className="py-24 bg-[#faf9f6]">
+        <section className="py-16 md:py-24 bg-[#faf9f6]">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 md:gap-6">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">The Journal</p>
-                        <h2 className="text-3xl md:text-5xl font-serif text-black">Latest Insights</h2>
+                        <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500 mb-3 md:mb-4">The Journal</p>
+                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif text-black">Latest Insights</h2>
                     </motion.div>
 
                     {blogsEnabled && (
@@ -83,16 +83,16 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: 0.2 }}
                         >
-                            <Link href="/blogs" className="group flex items-center gap-2 text-sm uppercase tracking-widest font-medium text-black hover:opacity-70 transition-opacity">
+                            <Link href="/blogs" className="group flex items-center gap-2 text-xs md:text-sm uppercase tracking-widest font-medium text-black hover:opacity-70 transition-opacity">
                                 View All Articles
-                                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                                <span className="material-symbols-outlined text-base md:text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
                             </Link>
                         </motion.div>
                     )}
                 </div>
 
                 {/* Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-6 md:gap-x-8 gap-y-10 md:gap-y-12">
                     {isLoading ? (
                         // Loading Skeletons
                         Array.from({ length: 3 }).map((_, index) => (
@@ -133,16 +133,16 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
                                     </Link>
                                 </div>
                                 <div className="flex flex-col flex-grow">
-                                    <span className="text-[10px] tracking-[0.3em] font-medium uppercase mb-3 block text-gray-400">
+                                    <span className="text-[9px] md:text-[10px] tracking-[0.3em] font-medium uppercase mb-2 md:mb-3 block text-gray-400">
                                         {blog.blog_categories?.name || "Design"}
                                     </span>
-                                    <h3 className="font-serif text-2xl mb-4 text-[#1a1a1a] leading-tight group-hover:underline decoration-1 underline-offset-4">
+                                    <h3 className="font-serif text-xl md:text-2xl mb-3 md:mb-4 text-[#1a1a1a] leading-tight group-hover:underline decoration-1 underline-offset-4">
                                         <Link href={`/blogs/${blog.slug}`}>{blog.title}</Link>
                                     </h3>
-                                    <p className="text-gray-600 font-light leading-relaxed mb-6 line-clamp-3 text-sm">
+                                    <p className="text-gray-600 font-light leading-relaxed mb-4 md:mb-6 line-clamp-3 text-sm">
                                         {blog.excerpt || "Explore how minimalist architecture and tactile materiality create sanctuaries of calm in the modern home."}
                                     </p>
-                                    <Link href={`/blogs/${blog.slug}`} className="mt-auto text-xs font-medium uppercase tracking-widest text-[#1a1a1a] hover:opacity-60 transition-opacity w-fit border-b border-black pb-0.5">
+                                    <Link href={`/blogs/${blog.slug}`} className="mt-auto text-[10px] md:text-xs font-medium uppercase tracking-widest text-[#1a1a1a] hover:opacity-60 transition-opacity w-fit border-b border-black pb-0.5">
                                         Read Article
                                     </Link>
                                 </div>

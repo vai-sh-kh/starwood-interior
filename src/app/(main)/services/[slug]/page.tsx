@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getServiceBySlug, SERVICES_DATA } from "@/lib/services-data";
 import ServiceDetailHero from "@/components/services/detail/ServiceDetailHero";
-import ServiceDetailQuote from "@/components/services/detail/ServiceDetailQuote";
 import ServiceDetailIntro from "@/components/services/detail/ServiceDetailIntro";
 import ServiceDetailSubServices from "@/components/services/detail/ServiceDetailSubServices";
 import ServiceDetailWhoFor from "@/components/services/detail/ServiceDetailWhoFor";
@@ -54,8 +53,6 @@ export default async function ServiceDetailPage(props: ServiceDetailPageProps) {
                 subtitle={service.hero.subtitle}
                 backgroundImage={service.hero.backgroundImage}
             />
-
-            <ServiceDetailQuote quote={service.quote} />
 
             <ServiceDetailIntro
                 title={service.intro.title}

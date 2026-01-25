@@ -89,17 +89,17 @@ export default function TestimonialSection() {
     };
 
     return (
-        <section className="py-24 md:py-32 bg-[#faf9f6] overflow-hidden">
+        <section className="py-16 md:py-24 lg:py-32 bg-[#faf9f6] overflow-hidden">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <motion.div
-                    className="text-center mb-16"
+                    className="text-center mb-10 md:mb-16"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.6 }}
                 >
-                    <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">What Our Clients Say</p>
-                    <h2 className="text-3xl md:text-5xl font-serif text-black">Client Curated Stories</h2>
+                    <p className="text-[10px] md:text-xs uppercase tracking-[0.3em] text-gray-500 mb-3 md:mb-4">What Our Clients Say</p>
+                    <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif text-black">Client Curated Stories</h2>
                 </motion.div>
 
                 {/* Carousel Container */}
@@ -109,7 +109,7 @@ export default function TestimonialSection() {
                     onMouseLeave={() => setIsPaused(false)}
                 >
                     {/* Desktop/Tablet 3-Row View */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 lg:gap-8">
                         {visibleTestimonials.map((item, index) => (
                             <motion.div
                                 key={`${item.id}-${currentIndex}-${index}`}
@@ -117,33 +117,33 @@ export default function TestimonialSection() {
                                 animate={{ opacity: 1, x: 0 }}
                                 exit={{ opacity: 0, x: -50 }}
                                 transition={{ duration: 0.5, ease: "easeOut" }}
-                                className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full hover:shadow-md transition-shadow duration-300"
+                                className="bg-white p-6 md:p-8 lg:p-10 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full hover:shadow-md transition-shadow duration-300"
                             >
-                                <div className="flex items-center gap-4 mb-6">
+                                <div className="flex items-center gap-3 md:gap-4 mb-5 md:mb-6">
                                     <div
-                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0"
+                                        className="w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white font-bold text-base md:text-lg shadow-sm shrink-0"
                                         style={{ backgroundColor: getProfileColor(item.name) }}
                                     >
                                         {getInitials(item.name)}
                                     </div>
                                     <div>
-                                        <h4 className="font-serif text-lg text-black leading-tight">{item.name}</h4>
-                                        <p className="text-xs text-stone-400 uppercase tracking-wider">{item.role}</p>
+                                        <h4 className="font-serif text-base md:text-lg text-black leading-tight">{item.name}</h4>
+                                        <p className="text-[10px] md:text-xs text-stone-400 uppercase tracking-wider">{item.role}</p>
                                     </div>
                                     <div className="ml-auto">
-                                        <Quote className="w-8 h-8 text-stone-100 fill-stone-100" />
+                                        <Quote className="w-6 h-6 md:w-8 md:h-8 text-stone-100 fill-stone-100" />
                                     </div>
                                 </div>
 
-                                <div className="mb-6 flex-grow">
+                                <div className="mb-5 md:mb-6 flex-grow">
                                     <p className="text-stone-600 font-light leading-relaxed italic text-sm md:text-base">
                                         &quot;{item.quote}&quot;
                                     </p>
                                 </div>
 
-                                <div className="mt-auto border-t border-stone-100 pt-4 flex justify-between items-center">
+                                <div className="mt-auto border-t border-stone-100 pt-3 md:pt-4 flex justify-between items-center">
                                     <StarRating rating={item.rating} />
-                                    <span className="text-xs text-stone-400 font-medium">Verified Client</span>
+                                    <span className="text-[10px] md:text-xs text-stone-400 font-medium">Verified Client</span>
                                 </div>
                             </motion.div>
                         ))}

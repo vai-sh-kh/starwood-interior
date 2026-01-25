@@ -13,9 +13,9 @@ export default function CTASection({
     buttonText = "Enquire Now"
 }: CTASectionProps) {
     return (
-        <section className="py-16 md:py-20 bg-white">
+        <section className="py-16 md:py-24 bg-white">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-                <div className="relative bg-stone-50 rounded-[2.5rem] p-8 md:p-14 md:px-20 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10">
+                <div className="relative bg-stone-50 rounded-3xl md:rounded-[2.5rem] p-6 md:p-14 lg:px-20 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10">
                     {/* Background Decorative Lines */}
                     <div className="absolute inset-0 opacity-10 pointer-events-none">
                         <svg className="w-full h-full" viewBox="0 0 1000 400" preserveAspectRatio="none">
@@ -40,15 +40,15 @@ export default function CTASection({
                         </svg>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 flex-1">
+                    <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10 flex-1">
                         {/* Icon */}
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-stone-200 rounded-full flex items-center justify-center shrink-0">
-                            <FileText className="w-7 h-7 md:w-8 md:h-8 text-stone-800" />
+                        <div className="w-14 h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 bg-stone-200 rounded-full flex items-center justify-center shrink-0">
+                            <FileText className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8 text-stone-800" />
                         </div>
 
                         {/* Text Content */}
                         <div className="text-center md:text-left max-w-2xl">
-                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif text-black mb-4 tracking-tight">
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-serif text-black mb-3 md:mb-4 tracking-tight">
                                 {title}
                             </h2>
                             <p className="text-stone-600 text-sm md:text-base font-light leading-relaxed max-w-xl">
@@ -60,9 +60,9 @@ export default function CTASection({
                     {/* Button */}
                     <div className="relative z-10 shrink-0">
                         <Link href="/contact">
-                            <button className="bg-black text-white hover:bg-stone-800 px-10 py-5 rounded-full text-base font-bold flex items-center gap-3 transition-all duration-300 shadow-xl">
+                            <button className="bg-black text-white hover:bg-stone-800 px-8 py-4 md:px-10 md:py-5 rounded-full text-sm md:text-base font-bold flex items-center gap-2 md:gap-3 transition-all duration-300 shadow-xl min-h-[44px]">
                                 {buttonText}
-                                <ArrowRight className="w-5 h-5" />
+                                <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
                             </button>
                         </Link>
                     </div>

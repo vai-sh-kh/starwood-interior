@@ -31,7 +31,7 @@ function Counter({ value, suffix = "" }: { value: number; suffix?: string }) {
 
 export default function ProjectSpotlight() {
     return (
-        <section className="py-24 bg-stone-900 text-white relative overflow-hidden">
+        <section className="py-16 md:py-24 bg-stone-900 text-white relative overflow-hidden">
             <div
                 className="absolute inset-0 opacity-10 pointer-events-none"
                 style={{
@@ -40,15 +40,15 @@ export default function ProjectSpotlight() {
                 }}
             ></div>
             <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative z-10">
-                <div className="mb-12 border-b border-white/10 pb-6 flex justify-between items-end">
+                <div className="mb-8 md:mb-12 border-b border-white/10 pb-4 md:pb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <span className="text-stone-400 text-xs font-bold uppercase tracking-[0.2em] block mb-2">About Starwood</span>
-                        <h2 className="text-3xl md:text-5xl font-serif">Why Choose Starwood Interiors?</h2>
+                        <span className="text-stone-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] block mb-2">About Starwood</span>
+                        <h2 className="text-2xl md:text-4xl lg:text-5xl font-serif">Why Choose Starwood Interiors?</h2>
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
@@ -61,10 +61,9 @@ export default function ProjectSpotlight() {
                         <p className="text-sm font-light text-stone-300">Leading interior design firm</p>
                     </motion.div>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
                     <motion.div
-                        className="lg:col-span-8 space-y-4"
-                        style={{ maxWidth: 'calc(100% - 60px)' }}
+                        className="lg:col-span-8 space-y-4 lg:max-w-[calc(100%-60px)]"
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -88,45 +87,45 @@ export default function ProjectSpotlight() {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.6, delay: 0.3 }}
                             >
-                                <h3 className="text-xl font-serif mb-6">Trusted Interior Designer in Trivandrum</h3>
-                                <p className="text-stone-400 font-light mb-10 leading-relaxed">
+                                <h3 className="text-lg md:text-xl font-serif mb-4 md:mb-6">Trusted Interior Designer in Trivandrum</h3>
+                                <p className="text-stone-400 text-sm md:text-base font-light mb-8 md:mb-10 leading-relaxed">
                                     Starwood Interiors provides professional interior design services in Trivandrum tailored to homes, apartments, and residential spaces. Our expert team delivers innovative design solutions, transparent communication, and excellent craftsmanship. Contact us today to begin your interior transformation.
                                 </p>
                             </motion.div>
 
                             {/* Statistics */}
-                            <div className="grid grid-cols-2 gap-4 mb-10 pb-10 border-b border-white/10">
+                            <div className="grid grid-cols-2 gap-3 md:gap-4 mb-8 md:mb-10 pb-8 md:pb-10 border-b border-white/10">
                                 <div>
                                     <Counter value={100} suffix="+" />
-                                    <p className="text-xs text-stone-400 mt-1">Satisfied clients</p>
+                                    <p className="text-[10px] md:text-xs text-stone-400 mt-1">Satisfied clients</p>
                                 </div>
                                 <div>
                                     <Counter value={99} suffix="%" />
-                                    <p className="text-xs text-stone-400 mt-1">Success rate</p>
+                                    <p className="text-[10px] md:text-xs text-stone-400 mt-1">Success rate</p>
                                 </div>
                                 <div>
                                     <Counter value={20} suffix="+" />
-                                    <p className="text-xs text-stone-400 mt-1">Team members</p>
+                                    <p className="text-[10px] md:text-xs text-stone-400 mt-1">Team members</p>
                                 </div>
                                 <div>
                                     <Counter value={10} suffix="+" />
-                                    <p className="text-xs text-stone-400 mt-1">Years of experience</p>
+                                    <p className="text-[10px] md:text-xs text-stone-400 mt-1">Years of experience</p>
                                 </div>
                             </div>
                         </div>
                         <motion.div
-                            className="mt-12 lg:mt-0"
+                            className="mt-8 lg:mt-0"
                             initial={{ opacity: 0, y: 10 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ duration: 0.5, delay: 0.5 }}
                         >
                             <Link
-                                className="inline-flex items-center gap-2 border border-white/30 px-8 py-3 text-xs uppercase tracking-widest hover:bg-white hover:text-black hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in-out group"
+                                className="inline-flex items-center gap-2 border border-white/30 px-6 py-3 md:px-8 md:py-3 text-[11px] md:text-xs uppercase tracking-widest hover:bg-white hover:text-black hover:scale-105 hover:shadow-lg transition-all duration-300 ease-in-out group min-h-[44px]"
                                 href="/about-us"
                             >
                                 <span className="group-hover:opacity-90 transition-opacity duration-300">About us</span>
-                                <ArrowRight className="w-4 h-4 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-90" />
+                                <ArrowRight className="w-3 h-3 md:w-4 md:h-4 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-90" />
                             </Link>
                         </motion.div>
                     </div>
