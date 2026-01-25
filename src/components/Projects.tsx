@@ -167,7 +167,7 @@ export default function Projects() {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
                         {Array.from({ length: 6 }).map((_, index) => (
                             <div key={index} className="flex flex-col">
-                                <Skeleton className="aspect-[5/4] w-full mb-8" />
+                                <Skeleton className="aspect-[4/5] w-full mb-8" />
                                 <Skeleton className="h-4 w-16 mb-4" />
                                 <Skeleton className="h-8 w-3/4 mb-2" />
                                 <Skeleton className="h-8 w-1/2" />
@@ -193,7 +193,7 @@ export default function Projects() {
                                         }`}
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                    <div className="aspect-[5/4] overflow-hidden mb-8 bg-stone-100 relative">
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 bg-stone-100 relative">
                                         {project.image &&
                                             !imageErrors[project.id] &&
                                             !project.image.includes("placeholder.com") ? (
@@ -239,7 +239,7 @@ export default function Projects() {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20 mt-20">
                                 {Array.from({ length: 3 }).map((_, index) => (
                                     <div key={`loading-${index}`} className="flex flex-col">
-                                        <Skeleton className="aspect-[5/4] w-full mb-8" />
+                                        <Skeleton className="aspect-[4/5] w-full mb-8" />
                                         <Skeleton className="h-4 w-16 mb-4" />
                                         <Skeleton className="h-8 w-3/4 mb-2" />
                                         <Skeleton className="h-8 w-1/2" />

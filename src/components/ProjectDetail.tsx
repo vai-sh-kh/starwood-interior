@@ -148,13 +148,19 @@ export default function ProjectDetail({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
             {/* Featured Image */}
             {featuredImage && isValidImageUrl(featuredImage) && (
-              <div className="w-full relative bg-stone-100 overflow-hidden rounded-sm shadow-sm">
+              <div className="w-full relative bg-gray-200 animate-pulse overflow-hidden rounded-sm shadow-sm transition-all duration-500">
                 {!imageErrors["featured"] ? (
                   <img
                     alt={project.title}
                     src={featuredImage}
-                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block"
+                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block opacity-0 transition-opacity duration-500"
                     onError={() => handleImageError("featured")}
+                    onLoad={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.classList.remove('opacity-0');
+                      target.parentElement?.classList.remove('animate-pulse', 'bg-gray-200');
+                      target.parentElement?.classList.add('bg-stone-100');
+                    }}
                   />
                 ) : (
                   <div className="w-full h-[60vh] flex items-center justify-center bg-stone-200">
@@ -264,7 +270,7 @@ export default function ProjectDetail({
         project.content && (
           <section className="py-24 md:py-32 bg-white border-y border-stone-100">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-              <div className="flex flex-col gap-16 lg:gap-24">
+              <div className="flex flex-col gap-4 lg:gap-4">
                 <div className="max-w-4xl">
                   <span className="block text-[10px] font-bold tracking-[0.4em] uppercase text-stone-400 mb-6">
                     Project Deep Dive
@@ -321,7 +327,7 @@ export default function ProjectDetail({
                   return (
                     <div
                       key={img.id || index}
-                      className="relative group overflow-hidden cursor-pointer aspect-square bg-stone-100"
+                      className="relative group overflow-hidden cursor-pointer aspect-square bg-gray-200 animate-pulse transition-all duration-500"
                       onClick={() => isValid && !imageErrors[imageKey] && setSelectedImageIndex(index)}
                     >
                       {isValid && !imageErrors[imageKey] ? (
@@ -330,10 +336,16 @@ export default function ProjectDetail({
                             alt={`${project.title} - Gallery image ${index + 1}`}
                             src={img.image_url}
                             fill
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-0 transition-opacity"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             onError={() => handleImageError(imageKey)}
                             unoptimized={img.image_url.includes("supabase.co")}
+                            onLoad={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.classList.remove('opacity-0');
+                              target.parentElement?.parentElement?.classList.remove('animate-pulse', 'bg-gray-200');
+                              target.parentElement?.parentElement?.classList.add('bg-stone-100');
+                            }}
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">

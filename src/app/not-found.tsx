@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function NotFound() {
   return (
     <>
-      <Header />
-      <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-light pt-[60px]">
+      <div className="relative flex w-full flex-col overflow-x-hidden bg-background-light pt-[60px]">
         {/* Hero Section */}
         <div className="relative w-full">
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24 flex flex-col justify-center items-center text-center">
@@ -36,7 +35,6 @@ export default function NotFound() {
         </div>
 
         <BottomNav />
-        <Footer />
       </div>
     </>
   );

@@ -326,7 +326,7 @@ export default function Blogs() {
           )}
 
           {/* Static Insert from Design: "Curated Mood" Banner */}
-          <div className="md:col-span-2 py-12 my-12">
+          <div className="md:col-span-2 py-12 mt-15">
             <div className="relative w-full h-96 overflow-hidden">
               <Image
                 alt="Marble texture"

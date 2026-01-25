@@ -117,14 +117,14 @@ export default async function BlogDetailPage({
     relatedBlogsQuery = relatedBlogsQuery.eq("category_id", blog.category_id);
   }
 
-  // Limit to 3 initially
-  const { data: categoryRelatedBlogs } = await relatedBlogsQuery.limit(3);
+  // Limit to 9 initially
+  const { data: categoryRelatedBlogs } = await relatedBlogsQuery.limit(9);
 
   let finalRelatedBlogs = categoryRelatedBlogs || [];
 
-  // 2. Backfill if we have fewer than 3
-  if (finalRelatedBlogs.length < 3) {
-    const needed = 3 - finalRelatedBlogs.length;
+  // 2. Backfill if we have fewer than 9
+  if (finalRelatedBlogs.length < 9) {
+    const needed = 9 - finalRelatedBlogs.length;
     const existingIds = [blog.id, ...finalRelatedBlogs.map((b) => b.id)];
 
     const { data: backfillBlogs } = await supabase

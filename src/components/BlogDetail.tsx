@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Playfair_Display, Inter } from "next/font/google";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -52,6 +53,27 @@ export default function BlogDetail({
   blog,
   relatedBlogs = [],
 }: BlogDetailProps) {
+  // Slider State
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
+
+  // Responsive slider
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(1);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(2);
+      } else {
+        setItemsPerPage(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Calculate reading time
   const [readingTime, setReadingTime] = useState("5 min");
 
@@ -203,8 +225,18 @@ export default function BlogDetail({
 
       {/* Main Content Body */}
       <section className="py-24 md:py-32 bg-white border-y border-stone-100">
-        <div className="max-w-[1000px] mx-auto px-6 md:px-12">
-          <div className={`prose prose-lg prose-stone max-w-none
+        <div className="max-w-[1500px] mx-auto px-6 md:px-12">
+          <div className="flex flex-col gap-4 lg:gap-10">
+            <div className="max-w-4xl">
+              <span className="block text-[10px] font-bold tracking-[0.4em] uppercase text-stone-400 mb-6">
+                Story Deep Dive
+              </span>
+              <h3 className="text-4xl md:text-5xl lg:text-7xl font-serif text-stone-900 leading-[0.9] tracking-tighter">
+                Story <span className="italic">Overview</span>
+              </h3>
+            </div>
+            <div className="w-full">
+              <div className={`prose prose-lg prose-stone max-w-none
                     prose-headings:font-serif prose-headings:font-normal prose-headings:text-stone-900
                     prose-h1:text-5xl prose-h1:mt-16 prose-h1:mb-8
                     prose-h2:text-4xl prose-h2:mt-14 prose-h2:mb-6
@@ -217,11 +249,11 @@ export default function BlogDetail({
                     prose-ol:my-10 prose-ol:pl-10 prose-ol:list-decimal
                     prose-li:text-stone-600 prose-li:font-light prose-li:mb-4 prose-li:leading-relaxed
                     prose-blockquote:border-l-4 prose-blockquote:border-stone-300 prose-blockquote:pl-10 prose-blockquote:italic prose-blockquote:text-stone-500 prose-blockquote:my-12
-                    prose-img:rounded-[2rem] prose-img:my-16 prose-img:shadow-xl
+                    prose-img:rounded-[2.5rem] prose-img:my-16 prose-img:shadow-2xl
                     prose-hr:my-16 prose-hr:border-stone-200
                     first:prose-p:mt-0`}>
-            {/* Dropcap style injection */}
-            <style jsx global>{`
+                {/* Dropcap style injection */}
+                <style jsx global>{`
                     .prose > p:first-of-type::first-letter {
                         float: left;
                         font-family: var(--font-playfair), serif;
@@ -232,7 +264,9 @@ export default function BlogDetail({
                         color: #1c1917;
                     }
                 `}</style>
-            <div dangerouslySetInnerHTML={{ __html: blog.content || "" }} />
+                <div dangerouslySetInnerHTML={{ __html: blog.content || "" }} />
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -286,49 +320,92 @@ export default function BlogDetail({
       {/* Related Stories */}
       <section className="py-24 bg-white border-t border-stone-200">
         <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div>
               <span className="text-[10px] uppercase tracking-[0.4em] text-stone-400 mb-4 block">Archive</span>
-              <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900">Related Stories</h2>
+              <h2 className="text-4xl md:text-5xl font-serif italic text-stone-900">Related Blogs</h2>
             </div>
-            <Link href="/blogs" className="text-xs uppercase tracking-[0.2em] font-bold border-b border-stone-900 pb-2 hover:opacity-60 transition">
-              View Journal Index
-            </Link>
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentSlide(prev => Math.max(0, prev - 1))}
+                  disabled={currentSlide === 0}
+                  className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentSlide(prev => Math.min(relatedBlogs.length - itemsPerPage, prev + 1))}
+                  disabled={currentSlide >= relatedBlogs.length - itemsPerPage || relatedBlogs.length <= itemsPerPage}
+                  className="w-10 h-10 rounded-full border border-stone-200 flex items-center justify-center hover:bg-stone-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="w-px h-8 bg-stone-200 mx-2 hidden md:block"></div>
+              <Link href="/blogs" className="text-xs uppercase tracking-[0.2em] font-bold border-b border-stone-900 pb-2 hover:opacity-60 transition hidden md:block">
+                View Journal Index
+              </Link>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {relatedBlogs.map((item) => (
-              <Link href={`/blogs/${item.slug}`} key={item.id} className="group block">
-                <div className="aspect-[4/5] relative overflow-hidden bg-stone-100 mb-6">
-                  {isValidImageUrl(item.image) ? (
-                    <Image
-                      src={item.image!}
-                      alt={item.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      unoptimized={item.image!.startsWith("http")}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-stone-300">
-                      <span className="material-symbols-outlined text-4xl">image_not_supported</span>
+          <div className="relative overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${currentSlide * (100 / itemsPerPage)}%)` }}
+            >
+              {relatedBlogs.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex-shrink-0 px-3"
+                  style={{ width: `${100 / itemsPerPage}%` }}
+                >
+                  <Link href={`/blogs/${item.slug}`} className="group block h-full">
+                    <div className="aspect-square relative overflow-hidden bg-gray-200 animate-pulse mb-6">
+                      {isValidImageUrl(item.image) ? (
+                        <Image
+                          src={item.image!}
+                          alt={item.title}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          unoptimized={item.image!.startsWith("http")}
+                          onLoad={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.parentElement?.classList.remove('animate-pulse', 'bg-gray-200');
+                            target.parentElement?.classList.add('bg-stone-100');
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-stone-300 bg-stone-100">
+                          <span className="material-symbols-outlined text-4xl">image_not_supported</span>
+                        </div>
+                      )}
                     </div>
-                  )}
+                    <div className="space-y-3">
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500">
+                        {item.category?.name || "Journal"}
+                      </span>
+                      <h3 className="text-xl font-serif group-hover:italic transition-all duration-300 line-clamp-2">
+                        {item.title}
+                      </h3>
+                    </div>
+                  </Link>
                 </div>
-                <div className="space-y-3">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500">
-                    {item.category?.name || "Journal"}
-                  </span>
-                  <h3 className="text-xl font-serif group-hover:italic transition-all duration-300">
-                    {item.title}
-                  </h3>
-                </div>
-              </Link>
-            ))}
+              ))}
+            </div>
+
             {relatedBlogs.length === 0 && (
-              <div className="col-span-full py-12 text-center text-stone-400 font-light italic">
+              <div className="py-12 text-center text-stone-400 font-light italic">
                 More stories coming soon.
               </div>
             )}
+          </div>
+
+          <div className="mt-8 md:hidden text-center">
+            <Link href="/blogs" className="text-xs uppercase tracking-[0.2em] font-bold border-b border-stone-900 pb-2 hover:opacity-60 transition">
+              View Journal Index
+            </Link>
           </div>
         </div>
       </section>

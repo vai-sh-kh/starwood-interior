@@ -91,7 +91,7 @@ type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 type SortField = "title" | "created_at" | "author" | "category";
 type SortDirection = "asc" | "desc";
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 7;
 
 // Zod validation schema
 const blogSchema = z.object({
@@ -549,8 +549,7 @@ export default function BlogsPage() {
       if (error) throw error;
 
       toast.success(
-        `Blog status changed to ${
-          newStatus === "published" ? "Published" : "Draft"
+        `Blog status changed to ${newStatus === "published" ? "Published" : "Draft"
         }`
       );
       fetchBlogs();
@@ -823,9 +822,8 @@ export default function BlogsPage() {
               }
             }}
             placeholder="Author name"
-            className={`h-12 text-base ${
-              errors.author ? "border-red-500" : ""
-            }`}
+            className={`h-12 text-base ${errors.author ? "border-red-500" : ""
+              }`}
           />
           {errors.author && (
             <p className="text-sm text-red-500">{errors.author}</p>
@@ -900,9 +898,8 @@ export default function BlogsPage() {
           }}
           placeholder="Brief summary of the blog post"
           rows={4}
-          className={`min-h-[120px] text-base ${
-            errors.excerpt ? "border-red-500" : ""
-          }`}
+          className={`min-h-[120px] text-base ${errors.excerpt ? "border-red-500" : ""
+            }`}
         />
         {errors.excerpt && (
           <p className="text-sm text-red-500">{errors.excerpt}</p>
@@ -1116,8 +1113,8 @@ export default function BlogsPage() {
                       <FileText className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
                         {searchQuery ||
-                        selectedCategory !== "all" ||
-                        selectedStatus !== "all"
+                          selectedCategory !== "all" ||
+                          selectedStatus !== "all"
                           ? "No blogs found matching your filters"
                           : "No blogs yet"}
                       </p>
@@ -1186,13 +1183,13 @@ export default function BlogsPage() {
                     <TableCell className="w-[120px] px-4 py-4 text-gray-600 truncate">
                       {blog.created_at
                         ? new Date(blog.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                         : "—"}
                     </TableCell>
                     <TableCell className="w-[120px] px-4 py-4">
@@ -1206,11 +1203,10 @@ export default function BlogsPage() {
                         }
                       >
                         <SelectTrigger
-                          className={`w-[120px] h-8 text-xs border-0 ${
-                            blog.status === "published"
+                          className={`w-[120px] h-8 text-xs border-0 ${blog.status === "published"
                               ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
+                            }`}
                         >
                           <SelectValue>
                             {blog.status === "published" ? (
@@ -1241,9 +1237,8 @@ export default function BlogsPage() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => {
-                                const blogUrl = `/blogs/${
-                                  blog.slug || blog.id
-                                }`;
+                                const blogUrl = `/blogs/${blog.slug || blog.id
+                                  }`;
                                 window.open(blogUrl, "_blank");
                               }}
                             >
