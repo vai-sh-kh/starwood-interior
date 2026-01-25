@@ -64,6 +64,7 @@ export default function ProjectSpotlight() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <motion.div
                         className="lg:col-span-8 space-y-4"
+                        style={{ maxWidth: 'calc(100% - 60px)' }}
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
@@ -74,7 +75,7 @@ export default function ProjectSpotlight() {
                                 alt="Aspen Residence Living Room"
                                 fill
                                 className="object-cover"
-                                src="/images/why-us-1.webp"
+                                src="/images/home/home-why-choose-section.webp"
                                 sizes="(max-width: 1024px) 100vw, 66vw"
                             />
                         </div>

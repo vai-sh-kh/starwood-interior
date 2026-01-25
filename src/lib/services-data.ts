@@ -57,7 +57,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Residential Interiors",
             subtitle: "in Trivandrum.",
-            backgroundImage: "/images/services/residential-interior.svg"
+            backgroundImage: "/images/services/resedential-interior.jpg"
         },
         quote: "Transforming houses into homes through thoughtful design and meticulous craftsmanship.",
         intro: {
@@ -67,7 +67,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "Since 2015, we have helped over 100 homeowners across Kazhakkoottam, Pattom, Kowdiar, and nearby areas transform their houses into functional living spaces tailored to real lifestyles.",
                 "If you are searching for the best home, apartment, or villa interior designers near you, or a reliable team offering value for money interiors in Trivandrum, Starwood Interiors delivers the right balance of design creativity, quality execution, and transparent pricing."
             ],
-            imageSrc: "/images/service-residential.webp"
+            imageSrc: "/images/services/resedential-interior.jpg"
         },
         subServices: [
             {
@@ -144,7 +144,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 answer: "Absolutely. Whether you prefer contemporary, minimalist, Scandinavian, premium, or traditional interiors, each design is customised to suit your home and personal preferences."
             }
         ],
-        listingImage: "/images/services/residential-interior.svg",
+        listingImage: "/images/services/resedential-interior.jpg",
         listingTitle: "Residential Interior Designs",
         listingDescription: "We provide comprehensive residential interior design services across major city hotspots in Trivandrum, with a strong focus on long-term value, functionality, and aesthetics.",
         whoIsThisFor: {

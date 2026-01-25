@@ -10,7 +10,11 @@ import { motion } from "framer-motion";
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
-export default function RecentBlogs() {
+interface RecentBlogsProps {
+    blogsEnabled: boolean;
+}
+
+export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
     const [blogs, setBlogs] = useState<BlogWithCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const supabase = createClient();
@@ -52,6 +56,11 @@ export default function RecentBlogs() {
         }
     };
 
+    // Don't render section if blogs are disabled or no blogs are available
+    if (!blogsEnabled || (!isLoading && blogs.length === 0)) {
+        return null;
+    }
+
     return (
         <section className="py-24 bg-[#faf9f6]">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
@@ -67,17 +76,19 @@ export default function RecentBlogs() {
                         <h2 className="text-3xl md:text-5xl font-serif text-black">Latest Insights</h2>
                     </motion.div>
 
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                    >
-                        <Link href="/blogs" className="group flex items-center gap-2 text-sm uppercase tracking-widest font-medium text-black hover:opacity-70 transition-opacity">
-                            View All Articles
-                            <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
-                        </Link>
-                    </motion.div>
+                    {blogsEnabled && (
+                        <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: 0.2 }}
+                        >
+                            <Link href="/blogs" className="group flex items-center gap-2 text-sm uppercase tracking-widest font-medium text-black hover:opacity-70 transition-opacity">
+                                View All Articles
+                                <span className="material-symbols-outlined text-lg transition-transform group-hover:translate-x-1">arrow_forward</span>
+                            </Link>
+                        </motion.div>
+                    )}
                 </div>
 
                 {/* Grid */}

@@ -6,8 +6,11 @@ import TestimonialSection from "@/components/home/TestimonialSection";
 import FAQSection from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
 import RecentBlogs from "@/components/home/RecentBlogs";
+import { getBooleanSetting } from "@/lib/settings";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const blogsEnabled = await getBooleanSetting("blogs_enabled", true);
+
   return (
     <div className="flex flex-col w-full">
       <Hero />
@@ -15,7 +18,7 @@ export default function HomePage() {
       <SelectedWorks />
       <ProjectSpotlight />
       <FAQSection />
-      <RecentBlogs />
+      <RecentBlogs blogsEnabled={blogsEnabled} />
       <TestimonialSection />
       <CTASection />
     </div>
