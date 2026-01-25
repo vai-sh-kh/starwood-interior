@@ -39,7 +39,7 @@ export default function FAQSection() {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
                     <div className="lg:col-span-4">
                         <span className="block text-xs font-bold tracking-[0.2em] uppercase text-stone-400 mb-4">Inquiries</span>
-                        <h2 className="text-4xl md:text-5xl font-serif text-black leading-tight">
+                        <h2 className="text-3xl md:text-5xl font-serif text-black leading-tight">
                             Curated <br /> Inquiries
                         </h2>
                     </div>

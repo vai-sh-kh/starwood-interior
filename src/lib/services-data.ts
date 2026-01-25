@@ -57,7 +57,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Residential Interiors",
             subtitle: "in Trivandrum.",
-            backgroundImage: "/images/service-residential.webp"
+            backgroundImage: "/images/services/residential-interior.svg"
         },
         quote: "Transforming houses into homes through thoughtful design and meticulous craftsmanship.",
         intro: {
@@ -144,7 +144,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 answer: "Absolutely. Whether you prefer contemporary, minimalist, Scandinavian, premium, or traditional interiors, each design is customised to suit your home and personal preferences."
             }
         ],
-        listingImage: "/images/service-residential.webp",
+        listingImage: "/images/services/residential-interior.svg",
         listingTitle: "Residential Interior Designs",
         listingDescription: "We provide comprehensive residential interior design services across major city hotspots in Trivandrum, with a strong focus on long-term value, functionality, and aesthetics.",
         whoIsThisFor: {
@@ -171,7 +171,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Commercial Interior Design",
             subtitle: "in Trivandrum.",
-            backgroundImage: "/images/service-commercial.webp"
+            backgroundImage: "/images/services/commercial-interiors.jpg"
         },
         quote: "Designing workspaces that inspire productivity and reflect your brand identity.",
         intro: {
@@ -181,7 +181,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "We offer comprehensive commercial interior design service across major business hubs in Trivandrum. Since 2015, we have partnered with offices, retail spaces, and commercial establishments across Kazhakkoottam, Pattom, Kowdiar, and nearby locations to deliver interiors that support daily operations and long-term business needs.",
                 "If you are looking for experienced commercial interior designers in Trivandrum, or a dependable team for commercial interior design or renovations, Starwood Interiors offers a practical balance of design planning, execution quality, and transparent pricing."
             ],
-            imageSrc: "/images/service-commercial.webp"
+            imageSrc: "/images/services/commercial-interiors.jpg"
         },
         whoIsThisFor: {
             title: "Who This Is For",
@@ -274,7 +274,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 answer: "Yes, Starwood Interiors handles both design and execution, ensuring accountability and quality control throughout the project."
             }
         ],
-        listingImage: "/images/service-commercial.webp",
+        listingImage: "/images/services/commercial-interiors.jpg",
         listingTitle: "Commercial Interior Design",
         listingDescription: "We offer comprehensive commercial interior design service across major business hubs in Trivandrum. Since 2015, we have partnered with offices, retail spaces, and commercial establishments."
     },
@@ -285,7 +285,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "3D Rendering Services",
             subtitle: "in Kerala.",
-            backgroundImage: "/images/service-3d.webp"
+            backgroundImage: "/images/services/3d-interior-design.jpg"
         },
         quote: "Visualize your space before a single nail is driven, with photorealistic 3D renders.",
         intro: {
@@ -296,7 +296,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "Since 2015, we have delivered 3D rendering solutions for residential homes, villas, apartments, offices, and commercial spaces across Kerala and the GCC region.",
                 "If you are looking for reliable 3D interior visualisation services near you, Starwood Interiors combines design expertise, realistic 3D representation, and transparent timelines to make your vision tangible before the first implementation step."
             ],
-            imageSrc: "/images/service-3d.webp"
+            imageSrc: "/images/services/3d-interior-design.jpg"
         },
         whoIsThisFor: {
             title: "Who This Is For",
@@ -370,7 +370,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 answer: "Yes, we offer immersive 3D walkthroughs and animated tours to help you experience the space virtually."
             }
         ],
-        listingImage: "/images/about-service-1.webp",
+        listingImage: "/images/services/3d-interior-design.jpg",
         listingTitle: "3D Interior Rendering",
         listingDescription: "Starwood Interiors offers professional 3D rendering services in Kerala to help homeowners, architects, and businesses visualise spaces before execution."
     },
@@ -381,7 +381,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Joinery Shop Drawings",
             subtitle: "in Kerala.",
-            backgroundImage: "/images/service-furniture.webp"
+            backgroundImage: "/images/services/joinery-shop-drawing.jpg"
         },
         quote: "Precision technical drawings that bridge design intent and workshop reality.",
         intro: {
@@ -400,7 +400,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "• Strong expertise in detailed joinery, furniture, and fit-out shop drawings",
                 "This allows us to support both small-scale residential projects and large-volume commercial or builder-led interior works without delays or quality compromise."
             ],
-            imageSrc: "/images/service-furniture.webp"
+            imageSrc: "/images/services/joinery-shop-drawing.jpg"
         },
         whoIsThisFor: {
             title: "Who This Is For",
@@ -484,7 +484,7 @@ export const SERVICES_DATA: ServiceData[] = [
             { question: "5. Can you coordinate with interior designers or contractors?", answer: "Absolutely. We regularly work alongside designers, architects, and contractors to ensure smooth execution." },
             { question: "6. Do you provide revisions if required?", answer: "Yes. Revisions are provided based on agreed scope to ensure drawings align perfectly with site conditions and client requirements." }
         ],
-        listingImage: "/images/service-furniture.webp",
+        listingImage: "/images/services/joinery-shop-drawing.jpg",
         listingTitle: "Joinery Shop Drawings",
         listingDescription: "Starwood Interiors provides detailed and accurate joinery shop drawing services across Kerala, supporting interior designers, architects, contractors, and homeowners."
     },
@@ -495,7 +495,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Fit-Out Shop Drawings",
             subtitle: "in Kerala.",
-            backgroundImage: "/images/about-value-3.webp"
+            backgroundImage: "/images/services/fit-out-shop-drawing.jpg"
         },
         quote: "Complete technical documentation for seamless interior fit-out execution.",
         intro: {
@@ -507,7 +507,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "Since 2015, we have supported residential and commercial interior projects across Trivandrum, Kochi, Calicut, and other Kerala locations by delivering technically accurate fit-out drawings aligned with real execution workflows.",
                 "If you need reliable fit-out shop drawings in Kerala that support faster execution, trade coordination, and quality finishes, Starwood Interiors delivers consistent and dependable results."
             ],
-            imageSrc: "/images/about-value-3.webp"
+            imageSrc: "/images/services/fit-out-shop-drawing.jpg"
         },
         whoIsThisFor: {
             title: "Who This Is For",
@@ -583,7 +583,7 @@ export const SERVICES_DATA: ServiceData[] = [
             { question: "5. Do you provide drawings for turnkey interior contractors?", answer: "Yes. We regularly work with turnkey and fit-out contractors across Kerala." },
             { question: "6. Can you support fast-track fit-out projects?", answer: "Yes. Based on project scale and scope, we can support accelerated drawing timelines." }
         ],
-        listingImage: "/images/about-service-1.webp",
+        listingImage: "/images/services/fit-out-shop-drawing.jpg",
         listingTitle: "Fit-Out Shop Drawings",
         listingDescription: "Starwood Interiors provides detailed fit-out shop drawing solutions across Kerala, helping interior projects move from concept to execution with complete technical clarity."
     },
@@ -594,7 +594,7 @@ export const SERVICES_DATA: ServiceData[] = [
         hero: {
             title: "Interior Floor Plans",
             subtitle: "in Kerala.",
-            backgroundImage: "/images/service-global.webp"
+            backgroundImage: "/images/services/interior-floor-plan.webp"
         },
         quote: "Defining the foundation of functional living through precise spatial zoning and movement flow.",
         intro: {
@@ -606,7 +606,7 @@ export const SERVICES_DATA: ServiceData[] = [
                 "Since 2015, we have prepared interior floor plans for residential and commercial projects across Trivandrum, Kochi, Calicut, and other parts of Kerala, supporting smooth design approval and error-free execution.",
                 "If you are looking for professional interior floor plans in Kerala that balance aesthetics, practicality, and technical accuracy, Starwood Interiors delivers dependable planning solutions."
             ],
-            imageSrc: "/images/service-global.webp"
+            imageSrc: "/images/services/interior-floor-plan.webp"
         },
         whoIsThisFor: {
             title: "Who This Is For",
@@ -689,7 +689,7 @@ export const SERVICES_DATA: ServiceData[] = [
             { question: "5. Are revisions included in the floor planning service?", answer: "Revisions are provided based on the agreed scope and planning stage." },
             { question: "6. Can these floor plans be used for execution and shop drawings?", answer: "Yes. Our interior floor plans are prepared to support further detailing and execution documentation." }
         ],
-        listingImage: "/images/service-residential.webp",
+        listingImage: "/images/services/interior-floor-plan.webp",
         listingTitle: "Interior Floor Plans",
         listingDescription: "Starwood Interiors provides accurate and well-planned interior floor plan services across Kerala, helping interior projects achieve better space utilisation and execution clarity."
     }
@@ -698,3 +698,27 @@ export const SERVICES_DATA: ServiceData[] = [
 export function getServiceBySlug(slug: string): ServiceData | undefined {
     return SERVICES_DATA.find(service => service.slug === slug);
 }
+
+export const HOME_SERVICES_LIST = SERVICES_DATA.slice(0, 6).map((service, index) => ({
+    title: service.hero.title.replace(" Interiors", "").replace(" Services", "").replace(" Shop Drawings", ""), // Simplify titles for home page if needed, or keep full. User said "data from service page data". 
+    // Actually, looking at the design in ServiceHome, titles are short: "Design Concept", "Execution".
+    // Wait, the current ServiceHome has "Process" steps, not "Services".
+    // The user said: "update the home page service section with the data from service page data".
+    // Does he mean the PROCESS steps? Or the actual SERVICES?
+    // "create another array of data and use that for selected service section in home page"
+    // The current ServiceHome has "How we work" -> "Requirement Discussion", "Design Concept".
+    // If I replace that with "Residential", "Commercial", it changes the section from "Process" to "Services".
+    // "update the home page service section... with the data from service page data"
+    // I will assume he wants to list the SERVICES (Residential, Commercial, etc.) there.
+    // So I will map SERVICES_DATA.
+    fullTitle: service.hero.title,
+    // title: service.listingTitle.split(" ")[0] + " " + (service.listingTitle.split(" ")[1] || ""), // Shorten for display? Or use full?
+    // Let's use `hero.title` but maybe simplified.
+    // Actually, let's just use the `title` from `hero`.
+    description: service.listingDescription, // Or maybe short description?
+    active: index === 1, // Make 2nd item active like before? Or 0? Let's make index 1 active (Commercial) or just keep logic.
+    count: `0${index + 1}`,
+    image: service.listingImage,
+    slug: service.slug
+}));
+

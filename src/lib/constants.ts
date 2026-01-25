@@ -285,7 +285,7 @@ export const SERVICES = [
       <p>We maintain relationships with trusted contractors and construction professionals, and we can oversee the construction process to ensure designs are implemented correctly. Our involvement ensures that your vision is realized exactly as designed, with attention to detail at every stage.</p>
     `,
   },
-] as const;
+];
 
 // Works/Portfolio Collections
 export const WORKS_COLLECTIONS = [

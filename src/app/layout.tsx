@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/google-font-display */
 /* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
+import { Plus_Jakarta_Sans, DM_Sans, Playfair_Display, Cormorant_Garamond, Inter, Caudex } from "next/font/google";
 import "./globals.css";
 import ChatBot from "@/components/ChatBot";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-display",
@@ -36,6 +37,13 @@ const inter = Inter({
   weight: ["300", "400", "500"],
 });
 
+const caudex = Caudex({
+  variable: "--font-roxborough", // Using this var name to map to the requested "Look"
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "Starwood Interiors - Contemporary Interior Design",
   description:
@@ -62,9 +70,11 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${inter.variable} antialiased font-display bg-background-light text-text-light`}
+        className={`${plusJakartaSans.variable} ${dmSans.variable} ${playfairDisplay.variable} ${cormorantGaramond.variable} ${inter.variable} ${caudex.variable} antialiased font-display bg-background-light text-text-light`}
       >
-        {children}
+        <SmoothScroll>
+          {children}
+        </SmoothScroll>
         <ChatBot />
       </body>
     </html>

@@ -20,7 +20,7 @@ export default function Philosophy() {
                     </div>
                     <div className="md:col-span-7 order-1 md:order-2 ">
                         <span className="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400 mb-6"> Our Philosophy </span>
-                        <h3 className="text-4xl md:text-5xl font-serif text-black mb-8 leading-tight">
+                        <h3 className="text-3xl md:text-5xl font-serif text-black mb-8 leading-tight">
                             Creating Premium, Budget-Friendly <br />
                             <span className="italic text-gray-500">Interiors Since 2015.</span>
                         </h3>

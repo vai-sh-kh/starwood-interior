@@ -9,8 +9,8 @@ export const IMAGES = {
 
   // Services Section
   services: {
-    left: "https://lh3.googleusercontent.com/aida-public/AB6AXuAl7oPT9lf26qv15QuqHzesVyyrt4rD6VwxFBlcdsUjRCy9v3AIgfLUqXPbUdsK29QFq2ZAW-uWr1qwlYmL7m_PfpHCOO1cT2iG_VkdWfCJp5N8uQhY1365NMnmxe-r1eTDODqlRmROhg1zCjvbi3Ufti6PfCp0WF6w5jwWFtNgh8MRkjEWDu-Y5phofnDERBIM_qc7C85R-aFJ0V4xGvmXtUw-hrnt2XE2uBDGTLBFeUfmY_v5xVPqJ8K2sNynj3FbFS583-iTE_9t",
-    right: "https://lh3.googleusercontent.com/aida-public/AB6AXuAIypccOBaxGxTG3Ha_1Jh34Au5KuS0jBKqJM-UEGSFgUhKOglYYofsbl08ArW-hD8hpgP_zw6eN52S2BX1WeqJk6W00XYfRBOy1x9KerUIvLHuPfXuiLwy2kQm1M5cRp7ijlnGgwV8UnHabU5vKDpTldZ1Z0n9pwzDGp-HuCkieOhYGz5x8DoOzaCCI0aZ7zmOQ6Ee9IFIECC9VUcRST8oK7_Nda_OGfEvaTyQfmY6yWpZoysPFV0dHfPypVakidTD7viDEMGrAQJX",
+    left: "/images/services/commercial-interiors.jpg",
+    right: "/images/services/3d-interior-design.jpg",
   },
 
   // Projects Section

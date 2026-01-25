@@ -4,47 +4,59 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { SELECTED_WORKS } from "@/lib/constants/works";
+import { HOME_SERVICES_LIST } from "@/lib/services-data";
 
 export default function SelectedWorks() {
     return (
-        <section className="py-16 lg:py-24 bg-white" id="projects">
+        <section className="py-16 lg:py-24 bg-white" id="services">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="mb-8">
                     <div className="flex justify-between items-start mb-2">
-                        <span className="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Portfolio</span>
+                        <span className="block text-xs font-bold tracking-[0.2em] uppercase text-gray-400">Our Expertise</span>
                     </div>
                     <div className="flex justify-between items-end">
-                        <h3 className="text-3xl md:text-5xl font-serif text-black">Selected Works</h3>
-                        <Link href="/works" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-2 transition-colors underline-offset-4 hover:underline">
-                            All Works
+                        <h3 className="heading-2 text-black">Selected Services</h3>
+                        <Link href="/services" className="text-sm font-medium text-blue-600 hover:text-blue-800 flex items-center gap-2 transition-colors underline-offset-4 hover:underline">
+                            All Services
                             <ArrowRight className="w-4 h-4" />
                         </Link>
                     </div>
                 </div>
 
-                {/* Masonry Grid - CSS Columns */}
-                <div className="columns-1 sm:columns-2 lg:columns-3 gap-3">
-                    {SELECTED_WORKS.map((work) => {
+                {/* Grid Layout for Services */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {HOME_SERVICES_LIST.map((service, index) => {
                         return (
                             <motion.div
-                                key={work.id}
-                                className="relative overflow-hidden cursor-pointer mb-3 break-inside-avoid group bg-gray-100"
+                                key={service.title} // slug might be missing in simplified type or same
+                                className="relative group overflow-hidden cursor-pointer"
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.5 }}
+                                transition={{ duration: 0.5, delay: index * 0.1 }}
                             >
-                                <div className="relative w-full bg-gray-100">
-                                    <Image
-                                        src={work.image}
-                                        alt={work.title || "Interior design work"}
-                                        width={600}
-                                        height={800}
-                                        className="w-full h-auto object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-                                        loading="lazy"
-                                    />
-                                </div>
+                                <Link href={`/services/${service.slug}`}>
+                                    <div className="relative aspect-[4/5] overflow-hidden">
+                                        <Image
+                                            src={service.image}
+                                            alt={service.title}
+                                            fill
+                                            className="object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        />
+                                        {/* Overlay */}
+                                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors duration-300" />
+
+                                        {/* Content Overlay */}
+                                        <div className="absolute bottom-0 left-0 w-full p-6 text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                            <h4 className="heading-3 mb-2">{service.title}</h4>
+                                            <div className="w-12 h-[1px] bg-white/50 mb-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100" />
+                                            <p className="text-sm font-light text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100 line-clamp-2">
+                                                {service.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </Link>
                             </motion.div>
                         );
                     })}

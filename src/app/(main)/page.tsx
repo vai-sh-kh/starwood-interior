@@ -5,6 +5,7 @@ import ProjectSpotlight from "@/components/home/ProjectSpotlight";
 import TestimonialSection from "@/components/home/TestimonialSection";
 import FAQSection from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
+import RecentBlogs from "@/components/home/RecentBlogs";
 
 export default function HomePage() {
   return (
@@ -13,8 +14,9 @@ export default function HomePage() {
       <Philosophy />
       <SelectedWorks />
       <ProjectSpotlight />
-      <TestimonialSection />
       <FAQSection />
+      <RecentBlogs />
+      <TestimonialSection />
       <CTASection />
     </div>
   );

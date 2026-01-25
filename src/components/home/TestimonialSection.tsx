@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import { TESTIMONIALS } from "@/lib/constants/testimonials";
+import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import { TESTIMONIALS } from "@/lib/constants";
+import { motion } from "framer-motion";
 
 const testimonials = TESTIMONIALS;
 
@@ -45,7 +46,7 @@ function StarRating({ rating = 5 }: { rating?: number }) {
             {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                     key={star}
-                    className={`w-4 h-4 ${star <= rating
+                    className={`w-3 h-3 ${star <= rating
                         ? "fill-yellow-400 text-yellow-400"
                         : "fill-gray-200 text-gray-200"
                         }`}
@@ -56,149 +57,129 @@ function StarRating({ rating = 5 }: { rating?: number }) {
 }
 
 export default function TestimonialSection() {
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
 
+    // Auto-slide effect
     useEffect(() => {
         if (isPaused) return;
         const interval = setInterval(() => {
-            setActiveIndex((prev) => (prev + 1) % testimonials.length);
-        }, 5000);
+            setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+        }, 4000); // Slide every 4 seconds
         return () => clearInterval(interval);
     }, [isPaused]);
 
-    const handlePrevious = () => {
-        setIsPaused(true);
-        setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    };
+    // Calculate visible cards for infinite loop feel
+    // We strictly need 3 cards in a row for Desktop as requested.
+    // For seamless looping, we might need a more complex setup, but simplified carousel works well for this request.
+    const visibleTestimonials = [
+        testimonials[currentIndex % testimonials.length],
+        testimonials[(currentIndex + 1) % testimonials.length],
+        testimonials[(currentIndex + 2) % testimonials.length],
+    ];
 
     const handleNext = () => {
         setIsPaused(true);
-        setActiveIndex((prev) => (prev + 1) % testimonials.length);
+        setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    };
+
+    const handlePrev = () => {
+        setIsPaused(true);
+        setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
     };
 
     return (
-        <section className="py-32 md:py-40 bg-[#faf9f6] overflow-hidden">
-            <div className="max-w-[1600px] mx-auto px-6 md:px-12 relative">
-                {/* Section Heading */}
-                <div className="text-center mb-16">
+        <section className="py-24 md:py-32 bg-[#faf9f6] overflow-hidden">
+            <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+                <motion.div
+                    className="text-center mb-16"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                >
                     <p className="text-xs uppercase tracking-[0.3em] text-gray-500 mb-4">What Our Clients Say</p>
-                    <h2 className="text-4xl md:text-5xl font-serif text-black">Client Testimonials</h2>
-                </div>
+                    <h2 className="text-3xl md:text-5xl font-serif text-black">Client Curated Stories</h2>
+                </motion.div>
 
-                <div className="max-w-5xl mx-auto text-center">
-                    <div className="relative min-h-[350px] md:min-h-[280px] flex items-center justify-center">
-                        {testimonials.map((testimonial, index) => {
-                            const isActive = index === activeIndex;
-                            const isPrev = index === (activeIndex - 1 + testimonials.length) % testimonials.length;
-                            const isNext = index === (activeIndex + 1) % testimonials.length;
-                            const profileColor = getProfileColor(testimonial.author);
-                            const initials = getInitials(testimonial.author);
-
-                            return (
-                                <div
-                                    key={testimonial.id}
-                                    className={`absolute inset-0 flex flex-col items-center justify-center transition-all duration-700 ease-out ${isActive
-                                        ? "opacity-100 translate-x-0 scale-100 blur-0"
-                                        : isPrev
-                                            ? "opacity-0 -translate-x-12 scale-95 blur-sm"
-                                            : isNext
-                                                ? "opacity-0 translate-x-12 scale-95 blur-sm"
-                                                : "opacity-0 translate-y-8 scale-90 blur-md"
-                                        }`}
-                                    style={{
-                                        pointerEvents: isActive ? "auto" : "none",
-                                        visibility: isActive ? "visible" : "hidden"
-                                    }}
-                                >
-                                    {/* Star Rating */}
-                                    <div className={`transition-all duration-700 mb-6 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                                        }`}>
-                                        <StarRating rating={5} />
+                {/* Carousel Container */}
+                <div
+                    className="relative"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                >
+                    {/* Desktop/Tablet 3-Row View */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                        {visibleTestimonials.map((item, index) => (
+                            <motion.div
+                                key={`${item.id}-${currentIndex}-${index}`}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -50 }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-stone-100 flex flex-col h-full hover:shadow-md transition-shadow duration-300"
+                            >
+                                <div className="flex items-center gap-4 mb-6">
+                                    <div
+                                        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0"
+                                        style={{ backgroundColor: getProfileColor(item.name) }}
+                                    >
+                                        {getInitials(item.name)}
                                     </div>
-
-                                    {/* Quote */}
-                                    <div className={`transition-all duration-700 delay-100 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                                        }`}>
-                                        <h3 className="text-2xl md:text-4xl font-serif italic text-black leading-tight mb-8 max-w-4xl">
-                                            &quot;{testimonial.quote}&quot;
-                                        </h3>
+                                    <div>
+                                        <h4 className="font-serif text-lg text-black leading-tight">{item.name}</h4>
+                                        <p className="text-xs text-stone-400 uppercase tracking-wider">{item.role}</p>
                                     </div>
-
-                                    {/* Profile Icon and Name */}
-                                    <div className={`flex items-center gap-3 transition-all duration-700 delay-200 ${isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                                        }`}>
-                                        {/* Google-style Profile Icon */}
-                                        <div
-                                            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-medium text-sm shadow-md"
-                                            style={{ backgroundColor: profileColor }}
-                                        >
-                                            {initials}
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="text-sm font-medium text-black">
-                                                {testimonial.author}
-                                            </p>
-                                            <p className="text-xs text-gray-500">
-                                                Verified Client
-                                            </p>
-                                        </div>
+                                    <div className="ml-auto">
+                                        <Quote className="w-8 h-8 text-stone-100 fill-stone-100" />
                                     </div>
                                 </div>
-                            );
-                        })}
-                    </div>
 
-                    <div className="flex justify-center gap-3 mt-12">
-                        {testimonials.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => {
-                                    setIsPaused(true);
-                                    setActiveIndex(index);
-                                }}
-                                className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === activeIndex ? "bg-black w-6" : "bg-gray-300"
-                                    }`}
-                                aria-label={`Go to testimonial ${index + 1}`}
-                            />
+                                <div className="mb-6 flex-grow">
+                                    <p className="text-stone-600 font-light leading-relaxed italic text-sm md:text-base">
+                                        &quot;{item.quote}&quot;
+                                    </p>
+                                </div>
+
+                                <div className="mt-auto border-t border-stone-100 pt-4 flex justify-between items-center">
+                                    <StarRating rating={item.rating} />
+                                    <span className="text-xs text-stone-400 font-medium">Verified Client</span>
+                                </div>
+                            </motion.div>
                         ))}
                     </div>
-                </div>
 
-                {/* Navigation Buttons */}
-                <div className="hidden md:flex absolute top-1/2 -translate-y-1/2 left-0 right-0 justify-between pointer-events-none">
+                    {/* Navigation Buttons (Absolute) */}
                     <button
-                        onClick={handlePrevious}
-                        className="pointer-events-auto p-4 rounded-full border border-stone-200 text-black hover:bg-black hover:text-white hover:border-black transition-all group"
-                        aria-label="Previous testimonial"
-                    >
-                        <ChevronLeft className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                    <button
-                        onClick={handleNext}
-                        className="pointer-events-auto p-4 rounded-full border border-stone-200 text-black hover:bg-black hover:text-white hover:border-black transition-all group"
-                        aria-label="Next testimonial"
-                    >
-                        <ChevronRight className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </button>
-                </div>
-
-                {/* Mobile Navigation Buttons */}
-                <div className="flex md:hidden justify-center gap-4 mt-8">
-                    <button
-                        onClick={handlePrevious}
-                        className="p-3 rounded-full border border-stone-200 text-black"
-                        aria-label="Previous testimonial"
+                        onClick={handlePrev}
+                        className="absolute top-1/2 -left-12 xl:-left-16 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-3 rounded-full shadow-lg backdrop-blur-sm border border-stone-100 transition-all z-10 hidden md:block"
+                        aria-label="Previous"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                         onClick={handleNext}
-                        className="p-3 rounded-full border border-stone-200 text-black"
-                        aria-label="Next testimonial"
+                        className="absolute top-1/2 -right-12 xl:-right-16 -translate-y-1/2 bg-white/80 hover:bg-white text-black p-3 rounded-full shadow-lg backdrop-blur-sm border border-stone-100 transition-all z-10 hidden md:block"
+                        aria-label="Next"
                     >
                         <ChevronRight className="w-5 h-5" />
                     </button>
+
+                    {/* Mobile Navigation Dots */}
+                    <div className="flex justify-center gap-2 mt-8 md:hidden">
+                        {testimonials.map((_, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => {
+                                    setCurrentIndex(idx);
+                                    setIsPaused(true);
+                                }}
+                                className={`w-2 h-2 rounded-full transition-all ${idx === currentIndex ? "bg-black w-6" : "bg-stone-300"
+                                    }`}
+                                aria-label={`Go to slide ${idx + 1}`}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
         </section>
