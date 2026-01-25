@@ -82,9 +82,8 @@ export default function ProjectsHome() {
       {/* Header */}
       <div
         ref={headerRef}
-        className={`flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8 transition-all duration-1000 ease-out ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 gap-8 transition-all duration-1000 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          }`}
       >
         <div className="max-w-2xl">
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500 block mb-4">
@@ -120,11 +119,10 @@ export default function ProjectsHome() {
         {PROJECTS.map((project, index) => (
           <div
             key={project.id}
-            className={`group relative rounded-2xl overflow-hidden h-[420px] cursor-pointer shadow-md transition-all duration-1000 ease-out ${
-              isVisible
+            className={`group relative rounded-2xl overflow-hidden h-[420px] cursor-pointer shadow-md transition-all duration-1000 ease-out bg-stone-100 ${isVisible
                 ? "opacity-100 translate-y-0"
                 : "opacity-0 translate-y-12"
-            }`}
+              }`}
             style={{ transitionDelay: `${index * 100}ms` }}
           >
             <Image

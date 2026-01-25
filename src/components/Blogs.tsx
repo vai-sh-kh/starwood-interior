@@ -139,7 +139,7 @@ export default function Blogs() {
 
       {/* Hero Header */}
       <header className="relative h-[75vh] w-full flex items-center justify-center overflow-hidden pt-20">
-        <div className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 w-full h-full bg-stone-200">
           {/* Const hero image */}
           <Image
             alt="Minimalist interior"
@@ -327,7 +327,7 @@ export default function Blogs() {
 
           {/* Static Insert from Design: "Curated Mood" Banner */}
           <div className="md:col-span-2 py-12 mt-15">
-            <div className="relative w-full h-96 overflow-hidden">
+            <div className="relative w-full h-96 overflow-hidden bg-stone-200">
               <Image
                 alt="Marble texture"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCinG-OqKAwGh55zkUxoUQt6WffGUV89Eyg-SDFA2jlHysm-i7naBd42c39_Ab3WLULZKsPoLPLKifuqIhyu3QPv3nV-FaoPiTR0i-wZmgP-yZux-vLP51fPlLH-j3xkRdU6aX05QWGfVie6ad30AQ1dZ60Fwpwtks_I_WCTcv50YNc-pNO7GoXDIvSzgBEjyHsY16O4g4yczdbiv71qXMtDYrBWlaTWQQKMZOgjt0Qo77gSXM6f5M6gYpR3d4KYUiTar0mTkElUXqq"

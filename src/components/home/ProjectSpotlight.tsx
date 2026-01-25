@@ -25,7 +25,7 @@ export default function ProjectSpotlight() {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-8 space-y-4">
-                        <div className="relative aspect-video w-full overflow-hidden">
+                        <div className="relative aspect-video w-full overflow-hidden bg-stone-800">
                             <Image
                                 alt="Aspen Residence Living Room"
                                 fill

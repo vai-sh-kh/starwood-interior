@@ -253,7 +253,7 @@ export default function ServiceDetail({
               {featuredImage &&
                 isValidImageUrl(featuredImage) &&
                 !imageErrors["mobile"] && (
-                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl">
+                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl bg-stone-200">
                     <Image
                       src={featuredImage}
                       alt={service.title}
@@ -327,7 +327,7 @@ export default function ServiceDetail({
                         >
                           <div className="relative h-48 overflow-hidden bg-gray-100">
                             {isValidImageUrl(subserviceImage) &&
-                            !imageErrors[subserviceImageKey] ? (
+                              !imageErrors[subserviceImageKey] ? (
                               <Image
                                 src={subserviceImage}
                                 alt={subservice.title}
@@ -379,7 +379,7 @@ export default function ServiceDetail({
                 isValidImageUrl(featuredImage) &&
                 !imageErrors["main"] && (
                   <div
-                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer"
+                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer bg-stone-200"
                     onClick={() =>
                       allImagesForLightbox.length > 0 &&
                       setSelectedImageIndex(0)
@@ -417,7 +417,7 @@ export default function ServiceDetail({
                         }
                       >
                         {isValidImageUrl(galleryImg.image_url) &&
-                        !imageErrors[imageKey] ? (
+                          !imageErrors[imageKey] ? (
                           <>
                             <Image
                               src={galleryImg.image_url}
@@ -507,9 +507,8 @@ export default function ServiceDetail({
               <div className="relative w-full h-full flex items-center justify-center">
                 <Image
                   src={allImagesForLightbox[selectedImageIndex]}
-                  alt={`${service.title} - Gallery image ${
-                    selectedImageIndex + 1
-                  }`}
+                  alt={`${service.title} - Gallery image ${selectedImageIndex + 1
+                    }`}
                   fill
                   className="object-contain p-4"
                   sizes="95vw"

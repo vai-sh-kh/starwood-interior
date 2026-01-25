@@ -13,7 +13,7 @@ const ServiceDetailIntro: React.FC<ServiceDetailIntroProps> = ({ imageSrc, since
         <section className="py-24 bg-stone-50">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div className="aspect-[4/5] overflow-hidden relative">
+                    <div className="aspect-[4/5] overflow-hidden relative bg-stone-200">
                         <Image
                             alt="Architectural Planning"
                             className="w-full h-full object-cover"

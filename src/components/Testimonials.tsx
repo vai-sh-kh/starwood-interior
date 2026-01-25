@@ -268,7 +268,7 @@ export default function Testimonials() {
               </div>
 
               {/* Client Image */}
-              <div className="relative w-full max-w-full md:max-w-xs h-40 md:h-80 rounded-2xl overflow-hidden shadow-2xl border border-white/10 mt-6">
+              <div className="relative w-full max-w-full md:max-w-xs h-40 md:h-80 rounded-2xl overflow-hidden shadow-2xl border border-white/10 mt-6 bg-stone-800">
                 <Image
                   src={IMAGES.testimonials[testimonial.imageKey]}
                   alt={testimonial.name}

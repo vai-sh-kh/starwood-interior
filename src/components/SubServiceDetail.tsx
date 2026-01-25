@@ -185,15 +185,15 @@ export default function SubServiceDetail({
       {/* Hero Section */}
       <header className="relative pt-24 min-h-[50vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 w-full h-full">
-         
-            <Image
-              src={BANNER_IMAGE}
-              alt={subservice.title}
-              fill
-              className="w-full h-full object-cover object-center scale-105"
-              priority
-              sizes="100vw"
-            />
+
+          <Image
+            src={BANNER_IMAGE}
+            alt={subservice.title}
+            fill
+            className="w-full h-full object-cover object-center scale-105"
+            priority
+            sizes="100vw"
+          />
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-linear-to-b from-black/60 via-black/40 to-black/70"></div>
           <div className="absolute inset-0 bg-linear-to-r from-black/30 via-transparent to-black/30"></div>
@@ -238,7 +238,7 @@ export default function SubServiceDetail({
               {subservice.image &&
                 isValidImageUrl(subservice.image) &&
                 !imageErrors["mobile"] && (
-                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl">
+                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl bg-stone-200">
                     <Image
                       src={subservice.image}
                       alt={subservice.title}
@@ -291,19 +291,17 @@ export default function SubServiceDetail({
                               }
                             >
                               <h3
-                                className={`text-lg font-bold transition-colors flex-1 pr-4 ${
-                                  openFaqId === index
+                                className={`text-lg font-bold transition-colors flex-1 pr-4 ${openFaqId === index
                                     ? "text-primary-dark"
                                     : "text-gray-900"
-                                }`}
+                                  }`}
                               >
                                 {faqItem.question || `Question ${index + 1}`}
                               </h3>
                               <span className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 group-hover:text-gray-600 transition-colors shrink-0">
                                 <span
-                                  className={`material-symbols-outlined text-xl transition-transform duration-300 ${
-                                    openFaqId === index ? "rotate-45" : ""
-                                  }`}
+                                  className={`material-symbols-outlined text-xl transition-transform duration-300 ${openFaqId === index ? "rotate-45" : ""
+                                    }`}
                                 >
                                   add
                                 </span>
@@ -329,7 +327,7 @@ export default function SubServiceDetail({
                 isValidImageUrl(subservice.image) &&
                 !imageErrors["main"] && (
                   <div
-                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer"
+                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer bg-stone-200"
                     onClick={() =>
                       allImagesForLightbox.length > 0 &&
                       setSelectedImageIndex(0)
@@ -367,7 +365,7 @@ export default function SubServiceDetail({
                         }
                       >
                         {isValidImageUrl(galleryImg.image_url) &&
-                        !imageErrors[imageKey] ? (
+                          !imageErrors[imageKey] ? (
                           <>
                             <Image
                               src={galleryImg.image_url}

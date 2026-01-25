@@ -104,9 +104,8 @@ export default function ServiceHome() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div
-          className={`text-center mb-8 md:mb-16 transition-all duration-1000 ease-out ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          }`}
+          className={`text-center mb-8 md:mb-16 transition-all duration-1000 ease-out ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            }`}
         >
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/40">
             — How we work —
@@ -122,19 +121,17 @@ export default function ServiceHome() {
             {SERVICES_LIST.map((service, index) => (
               <div
                 key={service.title}
-                className={`group w-full text-center relative transition-all duration-1000 ease-out px-4 ${
-                  isVisible
+                className={`group w-full text-center relative transition-all duration-1000 ease-out px-4 ${isVisible
                     ? "opacity-100 translate-y-0"
                     : "opacity-0 translate-y-12"
-                }`}
+                  }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >
                 <h3
-                  className={`text-2xl md:text-4xl lg:text-[4.5rem] font-display transition-all duration-300 cursor-pointer font-light tracking-tight leading-[1.2] md:leading-[1.3] lg:leading-[1.2] ${
-                    service.active
+                  className={`text-2xl md:text-4xl lg:text-[4.5rem] font-display transition-all duration-300 cursor-pointer font-light tracking-tight leading-[1.2] md:leading-[1.3] lg:leading-[1.2] ${service.active
                       ? "text-white relative inline-block"
                       : "text-white/30 group-hover:text-white"
-                  }`}
+                    }`}
                 >
                   {service.title}
                   {service.count && (
@@ -150,7 +147,7 @@ export default function ServiceHome() {
           {/* Left Image */}
           <div
             ref={leftImageRef}
-            className="absolute left-4 lg:left-10 top-1/4 w-48 lg:w-64 h-32 lg:h-44 rounded-xl overflow-hidden shadow-2xl transform -rotate-6 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
+            className="absolute left-4 lg:left-10 top-1/4 w-48 lg:w-64 h-32 lg:h-44 rounded-xl overflow-hidden shadow-2xl transform -rotate-6 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5 bg-stone-800"
           >
             <Image
               src={IMAGES.services.left}
@@ -163,7 +160,7 @@ export default function ServiceHome() {
           {/* Right Image */}
           <div
             ref={rightImageRef}
-            className="absolute right-4 lg:right-10 bottom-1/4 w-56 lg:w-72 h-36 lg:h-48 rounded-xl overflow-hidden shadow-2xl transform rotate-3 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5"
+            className="absolute right-4 lg:right-10 bottom-1/4 w-56 lg:w-72 h-36 lg:h-48 rounded-xl overflow-hidden shadow-2xl transform rotate-3 opacity-0 lg:opacity-60 hover:opacity-100 hover:scale-105 transition-all duration-500 hidden md:block border-4 border-white/5 bg-stone-800"
           >
             <Image
               src={IMAGES.services.right}

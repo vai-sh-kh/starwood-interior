@@ -47,7 +47,7 @@ export default function AboutValues() {
                     {values.map((value, index) => (
                         <div
                             key={index}
-                            className="relative aspect-square overflow-hidden group"
+                            className="relative aspect-square overflow-hidden group bg-stone-100"
                         >
                             <Image
                                 alt={value.alt}
