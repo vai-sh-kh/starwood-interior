@@ -1,4 +1,5 @@
 import Blogs from "@/components/Blogs";
+import BlogHeader from "@/components/blog/BlogHeader";
 import { getBooleanSetting } from "@/lib/settings";
 import { redirect } from "next/navigation";
 
@@ -9,5 +10,10 @@ export default async function BlogsPage() {
     redirect("/");
   }
 
-  return <Blogs />;
+  return (
+    <>
+      <BlogHeader />
+      <Blogs />
+    </>
+  );
 }

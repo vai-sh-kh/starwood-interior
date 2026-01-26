@@ -808,4 +808,4 @@ html.lenis {
 
 details[open] summary .expand-icon {
   transform: rotate(45deg);
-}
+}.scrollbar-hide::-webkit-scrollbar { display: none; } .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
