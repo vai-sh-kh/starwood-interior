@@ -1,14 +1,16 @@
 import React from 'react';
+import Image from "next/image";
 
 export default function BlogHeader() {
     return (
-        <header className="relative w-full h-[80vh] min-h-[600px] flex flex-col justify-end pb-24">
-            <div
-                className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0 transition-transform duration-[2000ms] hover:scale-105"
-                style={{
-                    backgroundImage: `url("/images/home/blogs-banner.jpeg")`,
-                }}
-            ></div>
+        <header className="relative w-full h-[80vh] min-h-[600px] flex flex-col justify-end pb-24 overflow-hidden">
+            <Image
+                src="/images/home/blogs-banner.jpeg"
+                alt="The Journal"
+                fill
+                priority
+                className="object-cover object-center z-0 transition-transform duration-[2000ms] hover:scale-105"
+            />
             {/* Black Overlay */}
             <div className="absolute inset-0 bg-black/50 z-[5]"></div>
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
