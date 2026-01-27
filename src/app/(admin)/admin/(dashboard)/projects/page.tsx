@@ -183,9 +183,10 @@ export default function ProjectsPage() {
   const [projectServices, setProjectServices] = useState<string[]>([]);
   const [serviceInput, setServiceInput] = useState("");
 
-  // Quote state
-  const [quote, setQuote] = useState("");
-  const [quoteAuthor, setQuoteAuthor] = useState("");
+  // SEO state
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
+  const [metaKeywords, setMetaKeywords] = useState("");
 
   // Validation errors
   const [errors, setErrors] = useState<
@@ -299,8 +300,9 @@ export default function ProjectsPage() {
     setProjectCompletion("");
     setProjectServices([]);
     setServiceInput("");
-    setQuote("");
-    setQuoteAuthor("");
+    setMetaTitle("");
+    setMetaDescription("");
+    setMetaKeywords("");
   };
 
   const openCreate = () => {
@@ -355,9 +357,10 @@ export default function ProjectsPage() {
       setProjectServices([]);
     }
 
-    // Load quote fields
-    setQuote(project.quote || "");
-    setQuoteAuthor(project.quote_author || "");
+    // Load SEO fields
+    setMetaTitle(project.meta_title || "");
+    setMetaDescription(project.meta_description || "");
+    setMetaKeywords(project.meta_keywords || "");
 
     // Fetch gallery images for this project
     const { data: galleryData, error } = await supabase
@@ -584,8 +587,9 @@ export default function ProjectsPage() {
           updated_at: new Date().toISOString(),
           project_info:
             Object.keys(projectInfo).length > 0 ? projectInfo : null,
-          quote: quote || null,
-          quote_author: quoteAuthor || null,
+          meta_title: metaTitle || null,
+          meta_description: metaDescription || null,
+          meta_keywords: metaKeywords || null,
         };
 
         const { error } = await supabase
@@ -622,8 +626,9 @@ export default function ProjectsPage() {
           is_new: isNew,
           project_info:
             Object.keys(projectInfo).length > 0 ? projectInfo : null,
-          quote: quote || null,
-          quote_author: quoteAuthor || null,
+          meta_title: metaTitle || null,
+          meta_description: metaDescription || null,
+          meta_keywords: metaKeywords || null,
         };
 
         const { data, error } = await supabase
@@ -1256,46 +1261,75 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      {/* Quote Section */}
+      {/* SEO Section */}
       <div className="border-t pt-6 space-y-4">
-        <div>
-          <h3 className="text-lg font-semibold mb-4">Testimonial Quote</h3>
-          <p className="text-sm text-gray-500 mb-4">
-            Display a quote/testimonial on the project detail page
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">SEO Settings</h3>
+            <p className="text-sm text-gray-500">
+              Optimize how this project appears in search engines
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setMetaTitle(title ? `${title} - Starwood Interiors` : "");
+              setMetaDescription(description || "");
+            }}
+            disabled={!title}
+          >
+            Generate from Title
+          </Button>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="quote" className="text-base">
-            Quote Text
+          <Label htmlFor="metaTitle" className="text-base">
+            Meta Title
+          </Label>
+          <Input
+            id="metaTitle"
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            placeholder="e.g., Modern Kitchen Renovation - Starwood Interiors"
+            className="h-12 text-base"
+          />
+          <p className="text-xs text-gray-400">Recommended: 50-60 characters</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="metaDescription" className="text-base">
+            Meta Description
           </Label>
           <Textarea
-            id="quote"
-            value={quote}
-            onChange={(e) => setQuote(e.target.value)}
+            id="metaDescription"
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
             onKeyDown={(e) => {
-              // Allow Shift+Enter for new line, but prevent Enter from submitting
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
               }
             }}
-            placeholder='e.g., "Starwood Interiors transformed a cold warehouse into a sanctuary. The attention to detail in the joinery is absolutely world-class."'
-            rows={5}
-            className="min-h-[140px] text-base"
+            placeholder="A brief description of this project for search engines..."
+            rows={3}
+            className="min-h-[80px] text-base"
           />
+          <p className="text-xs text-gray-400">Recommended: 150-160 characters</p>
         </div>
 
-        <div className="space-y-2 mt-6">
-          <Label htmlFor="quoteAuthor" className="text-base">
-            Quote Author
+        <div className="space-y-2">
+          <Label htmlFor="metaKeywords" className="text-base">
+            Meta Keywords
           </Label>
           <Input
-            id="quoteAuthor"
-            value={quoteAuthor}
-            onChange={(e) => setQuoteAuthor(e.target.value)}
-            placeholder="e.g., Homeowner"
+            id="metaKeywords"
+            value={metaKeywords}
+            onChange={(e) => setMetaKeywords(e.target.value)}
+            placeholder="e.g., kitchen renovation, modern design, custom cabinetry"
             className="h-12 text-base"
           />
+          <p className="text-xs text-gray-400">Comma-separated keywords</p>
         </div>
       </div>
     </form>
@@ -1557,8 +1591,8 @@ export default function ProjectsPage() {
                       >
                         <SelectTrigger
                           className={`w-[120px] h-8 text-xs border-0 ${project.status === "published"
-                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
                         >
                           <SelectValue>
@@ -1735,7 +1769,7 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1781,7 +1815,7 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">

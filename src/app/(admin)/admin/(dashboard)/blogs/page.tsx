@@ -88,7 +88,7 @@ import AdminImage from "../AdminImage";
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
-type SortField = "title" | "created_at" | "author" | "category";
+type SortField = "title" | "created_at" | "category";
 type SortDirection = "asc" | "desc";
 
 const ITEMS_PER_PAGE = 7;
@@ -129,10 +129,6 @@ const blogSchema = z.object({
       (val) => z.string().url().safeParse(val).success,
       "Image must be a valid URL"
     ),
-  author: z
-    .string()
-    .max(100, "Author name must be less than 100 characters")
-    .optional(),
   categoryId: z
     .string()
     .refine(
@@ -181,8 +177,12 @@ export default function BlogsPage() {
   const [content, setContent] = useState("");
   const [image, setImage] = useState("");
   const [categoryId, setCategoryId] = useState<string>("");
-  const [author, setAuthor] = useState("");
   const [status, setStatus] = useState<"draft" | "published">("draft");
+
+  // SEO state
+  const [metaTitle, setMetaTitle] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
+  const [metaKeywords, setMetaKeywords] = useState("");
 
   // Validation errors
   const [errors, setErrors] = useState<
@@ -276,8 +276,10 @@ export default function BlogsPage() {
     setContent("");
     setImage("");
     setCategoryId("");
-    setAuthor("");
     setStatus("draft");
+    setMetaTitle("");
+    setMetaDescription("");
+    setMetaKeywords("");
     setSelectedBlog(null);
     setIsEditing(false);
     setErrors({});
@@ -309,8 +311,11 @@ export default function BlogsPage() {
     setContent(blog.content || "");
     setImage(blog.image || "");
     setCategoryId(blog.category_id || "");
-    setAuthor(blog.author || "");
     setStatus((blog.status as "draft" | "published") || "draft");
+    // Load SEO fields
+    setMetaTitle(blog.meta_title || "");
+    setMetaDescription(blog.meta_description || "");
+    setMetaKeywords(blog.meta_keywords || "");
     setIsEditing(true);
     setIsOpen(true);
   };
@@ -340,7 +345,6 @@ export default function BlogsPage() {
       excerpt,
       content,
       image,
-      author,
       categoryId: categoryId || undefined,
       status,
     });
@@ -370,7 +374,6 @@ export default function BlogsPage() {
             content: "content-editor",
             image: "image-dropzone",
             categoryId: "category-select",
-            author: "author",
           };
 
           const selector = fieldMap[fieldName];
@@ -424,8 +427,10 @@ export default function BlogsPage() {
           content: content || null,
           image: image || null,
           category_id: categoryId || null,
-          author: author || null,
           status: status,
+          meta_title: metaTitle || null,
+          meta_description: metaDescription || null,
+          meta_keywords: metaKeywords || null,
           updated_at: new Date().toISOString(),
         };
 
@@ -445,8 +450,10 @@ export default function BlogsPage() {
           content: content || null,
           image: image || null,
           category_id: categoryId || null,
-          author: author || null,
           status: status,
+          meta_title: metaTitle || null,
+          meta_description: metaDescription || null,
+          meta_keywords: metaKeywords || null,
         };
 
         const { error } = await supabase.from("blogs").insert(insertData);
@@ -585,8 +592,6 @@ export default function BlogsPage() {
         blog.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (blog.excerpt &&
           blog.excerpt.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (blog.author &&
-          blog.author.toLowerCase().includes(searchQuery.toLowerCase())) ||
         (blog.blog_categories?.name &&
           blog.blog_categories.name
             .toLowerCase()
@@ -808,28 +813,6 @@ export default function BlogsPage() {
           )}
         </div>
         <div className="space-y-3">
-          <Label htmlFor="author" className="text-base">
-            Author
-          </Label>
-          <Input
-            id="author"
-            value={author}
-            onChange={(e) => {
-              setAuthor(e.target.value);
-              // Clear error when user types
-              if (errors.author) {
-                setErrors((prev) => ({ ...prev, author: undefined }));
-              }
-            }}
-            placeholder="Author name"
-            className={`h-12 text-base ${errors.author ? "border-red-500" : ""
-              }`}
-          />
-          {errors.author && (
-            <p className="text-sm text-red-500">{errors.author}</p>
-          )}
-        </div>
-        <div className="space-y-3">
           <Label htmlFor="status" className="text-base">
             Status *
           </Label>
@@ -936,6 +919,78 @@ export default function BlogsPage() {
         </div>
         <Switch checked={false} onCheckedChange={() => {}} />
       </div> */}
+
+      {/* SEO Section */}
+      <div className="border-t pt-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold mb-2">SEO Settings</h3>
+            <p className="text-sm text-gray-500">
+              Optimize how this blog appears in search engines
+            </p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setMetaTitle(title ? `${title} - Starwood Interiors` : "");
+              setMetaDescription(excerpt || "");
+            }}
+            disabled={!title}
+          >
+            Generate from Title
+          </Button>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="metaTitle" className="text-base">
+            Meta Title
+          </Label>
+          <Input
+            id="metaTitle"
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            placeholder="e.g., Interior Design Tips - Starwood Interiors"
+            className="h-12 text-base"
+          />
+          <p className="text-xs text-gray-400">Recommended: 50-60 characters</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="metaDescription" className="text-base">
+            Meta Description
+          </Label>
+          <Textarea
+            id="metaDescription"
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+              }
+            }}
+            placeholder="A brief description of this blog for search engines..."
+            rows={3}
+            className="min-h-[80px] text-base"
+          />
+          <p className="text-xs text-gray-400">Recommended: 150-160 characters</p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="metaKeywords" className="text-base">
+            Meta Keywords
+          </Label>
+          <Input
+            id="metaKeywords"
+            value={metaKeywords}
+            onChange={(e) => setMetaKeywords(e.target.value)}
+            placeholder="e.g., interior design, home decor, renovation tips"
+            className="h-12 text-base"
+          />
+          <p className="text-xs text-gray-400">Comma-separated keywords</p>
+        </div>
+      </div>
     </form>
   );
 
@@ -1055,15 +1110,6 @@ export default function BlogsPage() {
                     {getSortIcon("category")}
                   </button>
                 </TableHead>
-                <TableHead className="hidden md:table-cell w-[150px] px-4 py-4">
-                  <button
-                    onClick={() => handleSort("author")}
-                    className="flex items-center hover:bg-transparent hover:text-current"
-                  >
-                    Author
-                    {getSortIcon("author")}
-                  </button>
-                </TableHead>
                 <TableHead className="w-[120px] px-4 py-4">
                   <button
                     onClick={() => handleSort("created_at")}
@@ -1095,9 +1141,6 @@ export default function BlogsPage() {
                     <TableCell className="w-[150px] px-4 py-4">
                       <Skeleton className="h-5 w-20" />
                     </TableCell>
-                    <TableCell className="hidden md:table-cell w-[150px] px-4 py-4">
-                      <Skeleton className="h-5 w-24" />
-                    </TableCell>
                     <TableCell className="hidden lg:table-cell w-[120px] px-4 py-4">
                       <Skeleton className="h-5 w-24" />
                     </TableCell>
@@ -1108,7 +1151,7 @@ export default function BlogsPage() {
                 ))
               ) : paginatedBlogs.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={8} className="h-[400px] px-4 py-4">
+                  <TableCell colSpan={7} className="h-[400px] px-4 py-4">
                     <div className="flex flex-col items-center justify-center h-full">
                       <FileText className="h-10 w-10 text-gray-300 mb-2" />
                       <p className="text-gray-500 text-center">
@@ -1177,9 +1220,6 @@ export default function BlogsPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell w-[150px] px-4 py-4 text-gray-600 truncate">
-                      {blog.author || "—"}
-                    </TableCell>
                     <TableCell className="w-[120px] px-4 py-4 text-gray-600 truncate">
                       {blog.created_at
                         ? new Date(blog.created_at).toLocaleDateString(
@@ -1204,8 +1244,8 @@ export default function BlogsPage() {
                       >
                         <SelectTrigger
                           className={`w-[120px] h-8 text-xs border-0 ${blog.status === "published"
-                              ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            ? "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
                         >
                           <SelectValue>
@@ -1370,7 +1410,7 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -1416,7 +1456,7 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">

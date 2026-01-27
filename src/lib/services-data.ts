@@ -700,7 +700,7 @@ export function getServiceBySlug(slug: string): ServiceData | undefined {
 }
 
 export const HOME_SERVICES_LIST = SERVICES_DATA.slice(0, 6).map((service, index) => ({
-    title: service.hero.title.replace(" Interiors", "").replace(" Services", "").replace(" Shop Drawings", ""), // Simplify titles for home page if needed, or keep full. User said "data from service page data". 
+    title: service.listingTitle, // Use full listingTitle instead of truncated hero title
     // Actually, looking at the design in ServiceHome, titles are short: "Design Concept", "Execution".
     // Wait, the current ServiceHome has "Process" steps, not "Services".
     // The user said: "update the home page service section with the data from service page data".
@@ -721,4 +721,3 @@ export const HOME_SERVICES_LIST = SERVICES_DATA.slice(0, 6).map((service, index)
     image: service.listingImage,
     slug: service.slug
 }));
-

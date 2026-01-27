@@ -453,25 +453,6 @@ export default function ProjectDetail({
 
 
 
-      {/* Quote Section - Moved to bottom */}
-      {
-        project.quote && (
-          <section className="py-16 md:py-20 bg-white border-t border-stone-100">
-            <div className="max-w-5xl mx-auto px-6 text-center">
-              <Quote className="w-12 h-12 text-stone-300 mx-auto mb-8" strokeWidth={1} />
-              <blockquote className="text-3xl md:text-5xl font-serif leading-tight text-stone-900">
-                "{project.quote}"
-              </blockquote>
-              {project.quote_author && (
-                <footer className="mt-8 text-sm font-bold text-stone-400 uppercase tracking-widest">
-                  — {project.quote_author}
-                </footer>
-              )}
-            </div>
-          </section>
-        )
-      }
-
       {/* CTA Section - Matching Home page style with Project detail content */}
       <CTASection
         title="Ready to start your project?"

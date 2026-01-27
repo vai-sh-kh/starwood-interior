@@ -128,14 +128,14 @@ export default function Blogs() {
   return (
     <div className={`${playfair.variable} ${inter.variable} font-sans min-h-screen bg-white text-[#1a1a1a] selection:bg-[#d4cdc3] selection:text-[#1a1a1a]`}>
 
-      <main className="max-w-7xl mx-auto px-6 pt-12 pb-24">
+      <main className="max-w-[1600px] mx-auto px-6 pt-12 pb-24">
 
 
 
         {/* Category Filter */}
         {/* Category Filter */}
         {/* Category Filter */}
-        <div className="relative w-full md:max-w-5xl mx-auto mb-10 px-0 md:px-12">
+        <div className="relative w-full md:max-w-7xl mx-auto mb-10 px-0 md:px-12">
           <div
             className="flex gap-4 md:gap-8 overflow-x-auto scrollbar-hide scroll-smooth py-4 items-center justify-start md:justify-center px-4 md:px-4"
             id="category-container"

@@ -20,6 +20,9 @@ import {
   Heading1,
   Heading2,
   Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
   Code,
   Minus,
 } from "lucide-react";
@@ -84,7 +87,7 @@ export default function TipTapEditor({
     extensions: [
       StarterKit.configure({
         heading: {
-          levels: [1, 2, 3],
+          levels: [1, 2, 3, 4, 5, 6],
         },
         // Exclude link and underline from StarterKit since we're adding them separately
         link: false,
@@ -136,11 +139,11 @@ export default function TipTapEditor({
   // Update editor content when content prop changes (but not from user edits)
   useEffect(() => {
     if (!editor || isInitialMountRef.current) return;
-    
+
     const currentContent = editor.getHTML();
     const normalizedCurrent = (currentContent || "").trim();
     const normalizedProp = (content || "").trim();
-    
+
     // Only update if content actually changed and it's different from what we have
     if (normalizedProp !== normalizedCurrent && normalizedProp !== contentRef.current) {
       isUpdatingFromPropRef.current = true;
@@ -230,6 +233,45 @@ export default function TipTapEditor({
             tooltip="Heading 3"
           >
             <Heading3 className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 4 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 4:", error);
+              }
+            }}
+            isActive={editor.isActive("heading", { level: 4 })}
+            tooltip="Heading 4"
+          >
+            <Heading4 className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 5 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 5:", error);
+              }
+            }}
+            isActive={editor.isActive("heading", { level: 5 })}
+            tooltip="Heading 5"
+          >
+            <Heading5 className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            onClick={() => {
+              try {
+                editor.chain().focus().toggleHeading({ level: 6 }).run();
+              } catch (error) {
+                console.error("Error toggling heading 6:", error);
+              }
+            }}
+            isActive={editor.isActive("heading", { level: 6 })}
+            tooltip="Heading 6"
+          >
+            <Heading6 className="h-4 w-4" />
           </ToolbarButton>
 
           <div className="w-px h-6 bg-gray-200 mx-1" />

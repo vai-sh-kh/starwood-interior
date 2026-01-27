@@ -587,13 +587,13 @@ export default function CategoriesPage() {
                     <TableCell className="hidden lg:table-cell w-[150px] px-4 py-4 text-gray-600 truncate">
                       {category.created_at
                         ? new Date(category.created_at).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )
                         : "—"}
                     </TableCell>
                     <TableCell className="w-[80px] px-4 py-4">
@@ -731,7 +731,7 @@ export default function CategoriesPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-md overflow-y-auto flex flex-col p-0 bg-white"
           >
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
@@ -768,7 +768,7 @@ export default function CategoriesPage() {
       {/* Mobile Drawer */}
       {isMobile && (
         <Sheet open={isOpen} onOpenChange={handleClose}>
-          <SheetContent side="right" className="w-full sm:max-w-6xl overflow-hidden flex flex-col p-0 bg-white">
+          <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto flex flex-col p-0 bg-white">
             <div className="flex flex-col h-full overflow-hidden">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
                 <SheetTitle>

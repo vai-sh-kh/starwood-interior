@@ -1,14 +1,25 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 
 export default function AboutHeader() {
+    const [imageLoaded, setImageLoaded] = useState(false);
+
     return (
         <header className="relative w-full h-[80vh] min-h-[600px] flex flex-col justify-end pb-24 overflow-hidden">
+            {/* Image with loading state */}
+            <div className={`absolute inset-0 transition-opacity duration-500 ${imageLoaded ? 'opacity-0' : 'opacity-100'} z-0`}>
+                <div className="w-full h-full bg-gray-300 animate-pulse" />
+            </div>
             <Image
                 src="/images/home/about-banner.jpeg"
                 alt="About Us"
                 fill
                 priority
-                className="object-cover object-center z-0 transition-transform duration-[2000ms] hover:scale-105"
+                className={`object-cover object-center z-0 transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} hover:scale-105`}
+                style={{ transitionDuration: imageLoaded ? '2000ms' : '700ms' }}
+                onLoad={() => setImageLoaded(true)}
             />
             {/* Black Overlay - Darker */}
             {/* <div className="absolute inset-0 bg-black/50 z-[5]"></div> */}

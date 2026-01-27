@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import { getAvatarHexColor } from "@/lib/utils";
 import { z } from "zod";
 import { Send, ArrowRight } from "lucide-react";
+import { SERVICES_DATA } from "@/lib/services-data";
+
+import { MultiSelect } from "@/components/ui/multi-select";
 
 // Zod validation schema
 const contactFormSchema = z.object({
@@ -30,6 +33,7 @@ const contactFormSchema = z.object({
         .min(1, "Message is required")
         .min(10, "Message must be at least 10 characters")
         .max(2000, "Message must be less than 2000 characters"),
+    serviceInterest: z.array(z.string()).optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -40,11 +44,16 @@ export default function ContactForm() {
         email: "",
         phone: "",
         message: "",
+        serviceInterest: [] as string[],
     });
+    // List of services from constant
+    const services = SERVICES_DATA.map(service => ({
+        id: service.listingTitle, // Use title as ID since we want to store titles
+        title: service.listingTitle
+    }));
+
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [errors, setErrors] = useState<
-        Partial<Record<keyof ContactFormData, string>>
-    >({});
+    const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -55,6 +64,7 @@ export default function ContactForm() {
             email: formData.email.trim(),
             phone: formData.phone.trim(),
             message: formData.message.trim(),
+            serviceInterest: formData.serviceInterest,
         });
 
         if (!validationResult.success) {
@@ -83,12 +93,11 @@ export default function ContactForm() {
                     email: validationResult.data.email,
                     phone: validationResult.data.phone,
                     message: validationResult.data.message,
+                    service_interest: validationResult.data.serviceInterest?.length ? validationResult.data.serviceInterest : null,
                     source: "contact_form",
                     status: "new",
                     avatar_color: getAvatarHexColor(validationResult.data.name),
-                })
-                .select()
-                .single();
+                });
 
             if (error) {
                 throw error;
@@ -113,13 +122,11 @@ export default function ContactForm() {
                 email: "",
                 phone: "",
                 message: "",
+                serviceInterest: [],
             });
-        } catch (error: unknown) {
-            console.error("Error submitting form:", error);
-            const errorMessage =
-                error instanceof Error
-                    ? error.message
-                    : "Failed to submit form. Please try again.";
+        } catch (err: any) {
+            console.error("Error submitting form:", err);
+            const errorMessage = err?.message || "Failed to submit form. Please try again.";
             toast.error(errorMessage, {
                 style: {
                     backgroundColor: "white",
@@ -151,6 +158,14 @@ export default function ContactForm() {
             });
         }
     };
+
+    const handleServiceChange = (selected: string[]) => {
+        setFormData({
+            ...formData,
+            serviceInterest: selected
+        });
+    };
+
 
     return (
         <section className="py-24 bg-stone-50" id="contact-form">
@@ -205,6 +220,7 @@ export default function ContactForm() {
                     <div>
                         <form
                             onSubmit={handleSubmit}
+                            noValidate
                             className="bg-white p-8 md:p-12 rounded-3xl shadow-sm"
                         >
                             <div className="space-y-6">
@@ -216,7 +232,6 @@ export default function ContactForm() {
                                     <input
                                         name="name"
                                         placeholder="Enter your full name"
-                                        required
                                         type="text"
                                         value={formData.name}
                                         onChange={handleChange}
@@ -237,7 +252,6 @@ export default function ContactForm() {
                                     <input
                                         name="email"
                                         placeholder="your@email.com"
-                                        required
                                         type="email"
                                         value={formData.email}
                                         onChange={handleChange}
@@ -258,7 +272,6 @@ export default function ContactForm() {
                                     <input
                                         name="phone"
                                         placeholder="+91 0000 000 000"
-                                        required
                                         type="tel"
                                         value={formData.phone}
                                         onChange={handleChange}
@@ -271,6 +284,20 @@ export default function ContactForm() {
                                     )}
                                 </div>
 
+                                {/* Service Interest Field */}
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-widest text-stone-500 mb-3 font-medium">
+                                        Services of Interest (Optional)
+                                    </label>
+                                    <MultiSelect
+                                        options={services}
+                                        selected={formData.serviceInterest}
+                                        onChange={handleServiceChange}
+                                        placeholder="Select services..."
+                                    />
+                                </div>
+
+
                                 {/* Message Field */}
                                 <div>
                                     <label className="block text-[11px] uppercase tracking-widest text-stone-500 mb-3 font-medium">
@@ -280,7 +307,6 @@ export default function ContactForm() {
                                         name="message"
                                         placeholder="Tell us about your project, requirements, and timeline..."
                                         rows={5}
-                                        required
                                         value={formData.message}
                                         onChange={handleChange}
                                         className="w-full bg-stone-50 border-0 rounded-xl px-5 py-4 text-stone-900 placeholder:text-stone-400 focus:ring-2 focus:ring-stone-900 transition-all text-[15px] resize-none"

@@ -80,7 +80,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Bot,
+  Hammer,
 } from "lucide-react";
+import { SERVICES_DATA } from "@/lib/services-data";
+
+import { MultiSelect } from "@/components/ui/multi-select";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -147,12 +151,10 @@ const leadFormSchema = z.object({
         message: "Phone number must contain between 10 and 15 digits",
       }
     ),
-  message: z
-    .string()
-    .max(2000, "Message must be less than 2000 characters")
-    .optional(),
+  message: z.string().optional(),
   status: z.string().min(1, "Status is required"),
   source: z.string().min(1, "Source is required"),
+  service_interest: z.array(z.string()).optional(),
 });
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
@@ -180,6 +182,7 @@ export default function LeadsPage() {
     message: "",
     status: "new" as string,
     source: "manual" as string,
+    service_interest: [] as string[],
   });
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof LeadFormData, string>>
@@ -189,6 +192,13 @@ export default function LeadsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [leadToDelete, setLeadToDelete] = useState<Lead | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // List of services from constant
+  const services = useMemo(() => SERVICES_DATA.map(service => ({
+    id: service.listingTitle,
+    title: service.listingTitle
+  })), []);
+
 
   const supabase = createClient();
 
@@ -233,6 +243,7 @@ export default function LeadsPage() {
       message: "",
       status: "new",
       source: "manual",
+      service_interest: [],
     });
     setFormErrors({});
     setIsFormOpen(true);
@@ -247,6 +258,7 @@ export default function LeadsPage() {
       message: lead.message || "",
       status: lead.status || "new",
       source: lead.source || "manual",
+      service_interest: lead.service_interest || [],
     });
     setFormErrors({});
     setSelectedLead(lead);
@@ -262,6 +274,7 @@ export default function LeadsPage() {
       message: formData.message?.trim() || "",
       status: formData.status,
       source: formData.source,
+      service_interest: formData.service_interest,
     });
 
     if (!validationResult.success) {
@@ -294,6 +307,7 @@ export default function LeadsPage() {
           message: validationResult.data.message?.trim() || null,
           status: validationResult.data.status,
           source: validationResult.data.source,
+          service_interest: validationResult.data.service_interest || null,
           avatar_color: getAvatarHexColor(validationResult.data.name),
           updated_at: new Date().toISOString(),
         };
@@ -323,6 +337,7 @@ export default function LeadsPage() {
           message: validationResult.data.message?.trim() || null,
           status: validationResult.data.status,
           source: validationResult.data.source,
+          service_interest: validationResult.data.service_interest || null,
           avatar_color: getAvatarHexColor(validationResult.data.name),
         };
 
@@ -457,6 +472,7 @@ export default function LeadsPage() {
       Message: lead.message || "",
       Status: lead.status,
       Source: lead.source,
+      Service_Interest: lead.service_interest ? lead.service_interest.join(", ") : "",
       Created_At: lead.created_at ? new Date(lead.created_at).toLocaleString() : "",
     }));
 
@@ -532,6 +548,7 @@ export default function LeadsPage() {
                   </TableHead>
                   <TableHead className="max-w-[200px] px-4">Email</TableHead>
                   <TableHead className="max-w-[150px] px-4">Phone</TableHead>
+                  <TableHead className="max-w-[150px] px-4">Service</TableHead>
                   <TableHead className="max-w-[140px] px-4">Status</TableHead>
                   <TableHead className="max-w-[120px] px-4">Source</TableHead>
                   <TableHead className="max-w-[120px] px-4">Date</TableHead>
@@ -634,6 +651,19 @@ export default function LeadsPage() {
                             </a>
                           ) : (
                             <span className="text-gray-400">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-gray-600 px-4 max-w-[150px] truncate">
+                          {lead.service_interest && lead.service_interest.length > 0 ? (
+                            <div className="flex flex-col gap-1 max-h-[60px] overflow-hidden">
+                              {lead.service_interest.map((service, i) => (
+                                <span key={i} className="truncate block text-xs bg-gray-100 rounded px-1.5 py-0.5 w-fit max-w-full" title={service}>
+                                  {service}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-gray-400">_</span>
                           )}
                         </TableCell>
                         <TableCell className="px-4 max-w-[140px]">
@@ -826,7 +856,7 @@ export default function LeadsPage() {
 
       {/* Add/Edit Form Sheet */}
       <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
-        <SheetContent className="w-full sm:max-w-5xl overflow-hidden flex flex-col p-0 bg-white">
+        <SheetContent className="w-full sm:max-w-5xl overflow-y-auto flex flex-col p-0 bg-white">
           <div className="flex flex-col h-full overflow-hidden">
             <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
               <SheetTitle>{isEditing ? "Edit Lead" : "Add New Lead"}</SheetTitle>
@@ -1002,6 +1032,25 @@ export default function LeadsPage() {
                   </Select>
                 </div>
 
+
+                <div className="space-y-2">
+                  <Label htmlFor="service_interest" className="text-base">Service Interest</Label>
+                  <MultiSelect
+                    options={services}
+                    selected={formData.service_interest}
+                    onChange={(selected) =>
+                      setFormData({ ...formData, service_interest: selected })
+                    }
+                    placeholder="Select services..."
+                    className="w-full"
+                  />
+                  {formErrors.service_interest && (
+                    <p className="text-sm text-red-500">
+                      {formErrors.service_interest}
+                    </p>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="message" className="text-base">Message</Label>
                   <Textarea
@@ -1155,6 +1204,21 @@ export default function LeadsPage() {
                     </p>
                   </div>
                 </div>
+
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="shrink-0">
+                    <Hammer className="h-5 w-5 text-gray-500" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                      Service Interest
+                    </p>
+                    <p className="text-gray-900 font-medium">
+                      {selectedLead.service_interest && selectedLead.service_interest !== "_" ? selectedLead.service_interest : "—"}
+                    </p>
+                  </div>
+                </div>
+
 
                 {selectedLead.chat_id && (
                   <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">

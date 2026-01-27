@@ -113,36 +113,24 @@ export default function BlogDetail({
   return (
     <div className={`${playfair.variable} ${inter.variable} font-sans antialiased text-stone-900 bg-white selection:bg-stone-900 selection:text-white`}>
 
-      {/* Hero Header - Same as Projects */}
-      <header className="relative w-full h-[75vh] min-h-[600px] flex flex-col justify-end pb-24">
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
-          style={{
-            backgroundImage: isValidImageUrl(blog.image) ? `url("${blog.image}")` : "none",
-            backgroundColor: "#e7e5e4"
-          }}
-        ></div>
-        {/* Black Overlay */}
-        <div className="absolute inset-0 bg-black/50 z-[5]"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/60 to-transparent z-10"></div>
-
-        <div className="relative z-20 max-w-[1600px] w-full mx-auto px-6 md:px-12">
-          <div className="max-w-4xl animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            <span className="block text-[10px] uppercase tracking-[0.5em] font-bold text-white/90 mb-6 drop-shadow-sm">
+      {/* Simple Header */}
+      <header className="pt-32 pb-16 bg-stone-50">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+          <div className="max-w-4xl">
+            <span className="block text-[10px] uppercase tracking-[0.5em] font-bold text-stone-400 mb-6">
               {blog.category?.name || "Journal"}
             </span>
-            <h1 className="text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif italic font-light leading-none tracking-tighter drop-shadow-md">
+            <h1 className="text-stone-900 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif italic font-light leading-tight tracking-tighter">
               {blog.title}
             </h1>
-            <div className="mt-8 w-24 h-[1px] bg-white/50"></div>
+            <div className="mt-8 w-24 h-[1px] bg-stone-300"></div>
           </div>
         </div>
       </header>
 
       {/* Detail Section & Intro */}
       <section className="py-24 bg-stone-50">
-        <div className="max-w-[1440px] mx-auto px-6 md:px-12">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
 
             {/* Left Column: Featured Image Context */}
@@ -157,11 +145,6 @@ export default function BlogDetail({
                     unoptimized={blog.image!.startsWith("http")}
                   />
                 </div>
-              )}
-              {blog.excerpt && (
-                <p className="mt-12 text-2xl md:text-3xl font-serif italic text-stone-800 leading-relaxed indent-12">
-                  "{blog.excerpt}"
-                </p>
               )}
             </div>
 
@@ -225,7 +208,7 @@ export default function BlogDetail({
 
       {/* Main Content Body */}
       <section className="py-24 md:py-32 bg-white border-y border-stone-100">
-        <div className="max-w-[1500px] mx-auto px-6 md:px-12">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12">
           <div className="flex flex-col gap-4 lg:gap-10">
             <div className="max-w-4xl">
               <span className="block text-[10px] font-bold tracking-[0.4em] uppercase text-stone-400 mb-6">

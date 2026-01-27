@@ -26,15 +26,17 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${blog.title} - Starwood Interiors`;
+  // Use custom meta fields if available, otherwise use defaults
+  const title = blog.meta_title || `${blog.title} - Starwood Interiors`;
   const description =
+    blog.meta_description ||
     blog.excerpt ||
     `Read our latest blog post: ${blog.title.toLowerCase()}. Discover expert insights and inspiration for your interior design journey.`;
   const url = `/blogs/${blog.slug}`;
 
-  // Extract first paragraph from content for better Open Graph description
+  // Extract first paragraph from content for better Open Graph description if no meta description
   let ogDescription = description;
-  if (blog.content) {
+  if (!blog.meta_description && blog.content) {
     const descriptionMatch = blog.content.match(/<p>(.*?)<\/p>/);
     if (descriptionMatch) {
       ogDescription = descriptionMatch[1]
@@ -50,8 +52,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: blog.meta_keywords ? blog.meta_keywords.split(',').map(k => k.trim()) : undefined,
     openGraph: {
-      title,
+      title: blog.meta_title || title,
       description: ogDescription,
       url,
       siteName: "Starwood Interiors",
@@ -68,7 +71,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: blog.meta_title || title,
       description: ogDescription,
       images: [imageUrl],
     },

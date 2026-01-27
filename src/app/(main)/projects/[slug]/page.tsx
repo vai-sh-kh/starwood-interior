@@ -25,15 +25,17 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${project.title} - Starwood Interiors`;
+  // Use custom meta fields if available, otherwise use defaults
+  const title = project.meta_title || `${project.title} - Starwood Interiors`;
   const description =
+    project.meta_description ||
     project.description ||
     `Discover our ${project.title.toLowerCase()} project. Premium design solutions tailored to your unique vision.`;
   const url = `/projects/${project.slug}`;
 
-  // Extract first paragraph from content for better Open Graph description
+  // Extract first paragraph from content for better Open Graph description if no meta description
   let ogDescription = description;
-  if (project.content) {
+  if (!project.meta_description && project.content) {
     const descriptionMatch = project.content.match(/<p>(.*?)<\/p>/);
     if (descriptionMatch) {
       ogDescription = descriptionMatch[1]
@@ -49,8 +51,9 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: project.meta_keywords ? project.meta_keywords.split(',').map(k => k.trim()) : undefined,
     openGraph: {
-      title,
+      title: project.meta_title || title,
       description: ogDescription,
       url,
       siteName: "Starwood Interiors",
@@ -67,7 +70,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: project.meta_title || title,
       description: ogDescription,
       images: [imageUrl],
     },
@@ -83,7 +86,7 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }> | { slug: string };
 }) {
   const resolvedParams = await params;
-  
+
   // Check if projects are enabled
   const projectsEnabled = await getBooleanSetting("projects_enabled", true);
   if (!projectsEnabled) {
@@ -138,19 +141,19 @@ export default async function ProjectDetailPage({
     content: project!.content,
     category: project!.blog_categories
       ? {
-          name: project!.blog_categories.name,
-        }
+        name: project!.blog_categories.name,
+      }
       : null,
     tags: project!.tags,
     is_new: project!.is_new,
     project_info: project!.project_info as
       | {
-          client?: string;
-          location?: string;
-          size?: string;
-          completion?: string;
-          services?: string[];
-        }
+        client?: string;
+        location?: string;
+        size?: string;
+        completion?: string;
+        services?: string[];
+      }
       | null,
     quote: project!.quote,
     quote_author: project!.quote_author,
@@ -170,8 +173,8 @@ export default async function ProjectDetailPage({
       description: rp.description,
       category: rp.blog_categories
         ? {
-            name: rp.blog_categories.name,
-          }
+          name: rp.blog_categories.name,
+        }
         : null,
     })) || [];
 
