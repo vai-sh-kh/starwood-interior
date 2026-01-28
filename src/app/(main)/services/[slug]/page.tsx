@@ -92,7 +92,6 @@ export default async function ServiceDetailPage(props: ServiceDetailPageProps) {
 
             <ServiceDetailProcess
                 steps={service.process}
-                title={(service.slug === 'residential-interiors' || service.slug === 'joinery-shop-drawings' || service.slug === 'interior-floor-plans') ? "How We Work (Brief Overview)" : undefined}
                 overview={service.processOverview}
             />
 
