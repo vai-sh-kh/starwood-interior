@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 
-const ADMIN_EMAIL = "vaishakhpat2003@gmail.com";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
 
 // Zod validation schema for login form
 const loginFormSchema = z.object({
@@ -118,7 +118,7 @@ export default function LoginPage() {
       router.refresh();
     } catch (error: unknown) {
       let errorMessage = "An error occurred during sign in";
-      
+
       if (error instanceof Error) {
         errorMessage = error.message;
         // Provide user-friendly error messages
@@ -128,7 +128,7 @@ export default function LoginPage() {
           errorMessage = "Please confirm your email address before signing in.";
         }
       }
-      
+
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -160,9 +160,8 @@ export default function LoginPage() {
               onChange={handleEmailChange}
               placeholder="Enter your email address"
               disabled={isLoading}
-              className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 ${
-                errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-              }`}
+              className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 ${errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                }`}
             />
             {errors.email && (
               <p className="text-sm text-red-600 mt-1">{errors.email}</p>
@@ -181,9 +180,8 @@ export default function LoginPage() {
                 onChange={handlePasswordChange}
                 placeholder="••••••••"
                 disabled={isLoading}
-                className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 pr-10 ${
-                  errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
-                }`}
+                className={`bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-black focus:ring-black h-12 pr-10 ${errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500" : ""
+                  }`}
               />
               <button
                 type="button"

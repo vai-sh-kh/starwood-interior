@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 /**
  * Admin email that is allowed to access admin routes
  */
-export const ADMIN_EMAIL = "vaishakhpat2003@gmail.com";
+export const ADMIN_EMAIL = "starwoodinteriorsdigital@gmail.com";
 
 /**
  * Verifies if the provided email matches the admin email

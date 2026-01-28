@@ -238,7 +238,7 @@ export default function SubServiceDetail({
               {subservice.image &&
                 isValidImageUrl(subservice.image) &&
                 !imageErrors["mobile"] && (
-                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl bg-stone-200">
+                  <div className="md:hidden mb-8 relative w-full h-48 rounded-2xl overflow-hidden shadow-xl">
                     <Image
                       src={subservice.image}
                       alt={subservice.title}
@@ -292,8 +292,8 @@ export default function SubServiceDetail({
                             >
                               <h3
                                 className={`text-lg font-bold transition-colors flex-1 pr-4 ${openFaqId === index
-                                    ? "text-primary-dark"
-                                    : "text-gray-900"
+                                  ? "text-primary-dark"
+                                  : "text-gray-900"
                                   }`}
                               >
                                 {faqItem.question || `Question ${index + 1}`}
@@ -327,7 +327,7 @@ export default function SubServiceDetail({
                 isValidImageUrl(subservice.image) &&
                 !imageErrors["main"] && (
                   <div
-                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer bg-stone-200"
+                    className="rounded-3xl overflow-hidden shadow-soft aspect-4/3 group relative cursor-pointer"
                     onClick={() =>
                       allImagesForLightbox.length > 0 &&
                       setSelectedImageIndex(0)
@@ -358,7 +358,7 @@ export default function SubServiceDetail({
                     return (
                       <div
                         key={imageKey}
-                        className="aspect-square rounded-2xl overflow-hidden bg-gray-100 relative group cursor-pointer"
+                        className="aspect-square rounded-2xl overflow-hidden relative group cursor-pointer"
                         onClick={() =>
                           lightboxIndex >= 0 &&
                           setSelectedImageIndex(lightboxIndex)

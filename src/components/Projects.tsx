@@ -193,7 +193,7 @@ export default function Projects() {
                                         }`}
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                    <div className="aspect-[4/5] overflow-hidden mb-8 bg-stone-100 relative">
+                                    <div className="aspect-[4/5] overflow-hidden mb-8 relative">
                                         {project.image &&
                                             !imageErrors[project.id] &&
                                             !project.image.includes("placeholder.com") ? (
