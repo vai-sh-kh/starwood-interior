@@ -195,6 +195,11 @@ export type Database = {
           meta_description: string | null
           meta_keywords: string | null
           meta_title: string | null
+          banner_title: string | null
+          client_name: string | null
+          sarea: string | null
+          project_type: string | null
+          completion_date: string | null
           project_info: Json | null
           quote: string | null
           quote_author: string | null
@@ -215,6 +220,11 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          banner_title?: string | null
+          client_name?: string | null
+          sarea?: string | null
+          project_type?: string | null
+          completion_date?: string | null
           project_info?: Json | null
           quote?: string | null
           quote_author?: string | null
@@ -235,6 +245,11 @@ export type Database = {
           meta_description?: string | null
           meta_keywords?: string | null
           meta_title?: string | null
+          banner_title?: string | null
+          client_name?: string | null
+          sarea?: string | null
+          project_type?: string | null
+          completion_date?: string | null
           project_info?: Json | null
           quote?: string | null
           quote_author?: string | null

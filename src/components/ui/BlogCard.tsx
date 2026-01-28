@@ -35,7 +35,7 @@ export function BlogCard({ blog, index }: BlogCardProps) {
             {/* Image Container with Dynamic Background */}
             <Link href={`/blogs/${blog.slug}`} className="block mb-6">
                 <div className="bg-gray-100 rounded-3xl aspect-[4/3] relative overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:-translate-y-1">
-                    <div className="relative w-full h-full shadow-sm overflow-hidden bg-white/50">
+                    <div className="relative w-full h-full shadow-sm overflow-hidden bg-gray-100">
                         {isValidImageUrl(blog.image) ? (
                             <Image
                                 alt={blog.title}

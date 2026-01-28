@@ -146,6 +146,11 @@ export default async function ProjectDetailPage({
       : null,
     tags: project!.tags,
     is_new: project!.is_new,
+    banner_title: project!.banner_title,
+    client_name: project!.client_name,
+    sarea: project!.sarea,
+    project_type: project!.project_type,
+    completion_date: project!.completion_date,
     project_info: project!.project_info as
       | {
         client?: string;

@@ -4,22 +4,14 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function BlogHeader() {
-    const [imageLoaded, setImageLoaded] = useState(false);
-
     return (
         <header className="relative w-full h-[80vh] min-h-[600px] flex flex-col justify-end pb-24 overflow-hidden">
-            {/* Loading skeleton */}
-            <div className={`absolute inset-0 transition-opacity duration-500 ${imageLoaded ? 'opacity-0' : 'opacity-100'} z-0`}>
-                <div className="w-full h-full bg-gray-300 animate-pulse" />
-            </div>
             <Image
                 src="/images/home/blogs-banner.jpeg"
                 alt="Blogs"
                 fill
                 priority
-                className={`object-cover object-center z-0 transition-all duration-700 ${imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'} hover:scale-105`}
-                style={{ transitionDuration: imageLoaded ? '2000ms' : '700ms' }}
-                onLoad={() => setImageLoaded(true)}
+                className="object-cover object-center z-0 hover:scale-105 transition-transform duration-700"
             />
             {/* Overlays */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent z-10"></div>
@@ -31,11 +23,11 @@ export default function BlogHeader() {
                         Starwood Interiors
                     </p>
                     <h2 className="text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif italic font-medium leading-[1.15] md:leading-[1.1] tracking-tight mb-6 md:mb-8 lg:mb-10">
-                        The Journal
+                        Blogs
                     </h2>
                     <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
-                        <p className="text-white/80 text-base md:text-lg font-light max-w-[350px] leading-relaxed">
-                            Insights on high-end interior architecture, material narratives, and the art of living well.
+                        <p className="text-white/80 text-base md:text-lg font-light max-w-2xl leading-relaxed">
+                            Insights, ideas, and expert perspectives on interior design, space planning, materials, and trends to help you make informed design decisions.
                         </p>
                     </div>
                 </div>

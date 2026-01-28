@@ -1410,9 +1410,9 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white overflow-y-auto"
           >
-            <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex flex-col min-h-full">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
                 <SheetTitle>
                   {isEditing ? "Edit Blog" : "Create New Blog"}
@@ -1423,7 +1423,7 @@ export default function BlogsPage() {
                     : "Fill in the details for your new blog post"}
                 </SheetDescription>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+              <div className="px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
@@ -1456,9 +1456,9 @@ export default function BlogsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white overflow-y-auto"
           >
-            <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex flex-col min-h-full">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
                 <SheetTitle>
                   {isEditing ? "Edit Blog" : "Create New Blog"}
@@ -1469,7 +1469,7 @@ export default function BlogsPage() {
                     : "Fill in the details for your new blog post"}
                 </SheetDescription>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+              <div className="px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">

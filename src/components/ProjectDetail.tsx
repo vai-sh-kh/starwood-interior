@@ -29,6 +29,11 @@ interface Project {
   } | null;
   tags?: string[] | null;
   is_new?: boolean | null;
+  banner_title?: string | null;
+  client_name?: string | null;
+  sarea?: string | null;
+  project_type?: string | null;
+  completion_date?: string | null;
   project_info?: ProjectInfo | null;
   quote?: string | null;
   quote_author?: string | null;
@@ -62,6 +67,13 @@ export default function ProjectDetail({
 
   const projectInfo = project.project_info || {};
   const categoryName = project.category?.name || (projectInfo as ProjectInfo)?.location?.split(",")[0] || "Residential Design";
+
+  // Resolve fields from new columns or fallback to project_info
+  const clientVal = project.client_name || projectInfo.client;
+  const sizeVal = project.sarea || projectInfo.size;
+  const completionVal = project.completion_date || projectInfo.completion;
+  const projectTypeVal = project.project_type;
+  const bannerTitleVal = project.banner_title;
 
   // Validate image URL
   const isValidImageUrl = (url: string | null | undefined): boolean => {
@@ -117,7 +129,6 @@ export default function ProjectDetail({
           className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
           style={{
             backgroundImage: featuredImage ? `url("${featuredImage}")` : "none",
-            backgroundColor: featuredImage ? undefined : "#e7e5e4",
           }}
         ></div>
         {/* Overlays */}
@@ -131,7 +142,7 @@ export default function ProjectDetail({
               {categoryName}
             </span>
             <h1 className="text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif italic font-light leading-none tracking-tighter drop-shadow-md">
-              {project.title}
+              {bannerTitleVal || project.title}
             </h1>
             <div className="mt-8 w-24 h-[1px] bg-white/50"></div>
             {project.description && (
@@ -148,19 +159,13 @@ export default function ProjectDetail({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
             {/* Featured Image */}
             {featuredImage && isValidImageUrl(featuredImage) && (
-              <div className="w-full relative bg-gray-200 animate-pulse overflow-hidden rounded-sm shadow-sm transition-all duration-500">
+              <div className="w-full relative overflow-hidden rounded-sm shadow-sm transition-all duration-500">
                 {!imageErrors["featured"] ? (
                   <img
                     alt={project.title}
                     src={featuredImage}
-                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block opacity-0 transition-opacity duration-500"
+                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block bg-stone-100"
                     onError={() => handleImageError("featured")}
-                    onLoad={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.classList.remove('opacity-0');
-                      target.parentElement?.classList.remove('animate-pulse', 'bg-gray-200');
-                      target.parentElement?.classList.add('bg-stone-100');
-                    }}
                   />
                 ) : (
                   <div className="w-full h-[60vh] flex items-center justify-center bg-stone-200">
@@ -189,47 +194,62 @@ export default function ProjectDetail({
               </div>
 
               <div className="space-y-8">
-                {projectInfo.client && (
-                  <div className="border-b border-stone-200 pb-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
-                      Client
-                    </p>
-                    <p className="text-lg text-stone-900 font-light">
-                      {projectInfo.client}
-                    </p>
-                  </div>
-                )}
+                {(clientVal || projectTypeVal || projectInfo.location || sizeVal || completionVal) && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-8 border-b border-stone-200 pb-8">
+                    {clientVal && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
+                          Client
+                        </p>
+                        <p className="text-lg text-stone-900 font-light">
+                          {clientVal}
+                        </p>
+                      </div>
+                    )}
 
-                {projectInfo.location && (
-                  <div className="border-b border-stone-200 pb-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
-                      Location
-                    </p>
-                    <p className="text-lg text-stone-900 font-light">
-                      {projectInfo.location}
-                    </p>
-                  </div>
-                )}
+                    {projectTypeVal && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
+                          Project Type
+                        </p>
+                        <p className="text-lg text-stone-900 font-light">
+                          {projectTypeVal}
+                        </p>
+                      </div>
+                    )}
 
-                {projectInfo.size && (
-                  <div className="border-b border-stone-200 pb-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
-                      Size
-                    </p>
-                    <p className="text-lg text-stone-900 font-light">
-                      {projectInfo.size}
-                    </p>
-                  </div>
-                )}
+                    {projectInfo.location && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
+                          Location
+                        </p>
+                        <p className="text-lg text-stone-900 font-light">
+                          {projectInfo.location}
+                        </p>
+                      </div>
+                    )}
 
-                {projectInfo.completion && (
-                  <div className="border-b border-stone-200 pb-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
-                      Completion
-                    </p>
-                    <p className="text-lg text-stone-900 font-light">
-                      {projectInfo.completion}
-                    </p>
+                    {sizeVal && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
+                          Size (Sarea)
+                        </p>
+                        <p className="text-lg text-stone-900 font-light">
+                          {sizeVal}
+                        </p>
+                      </div>
+                    )}
+
+                    {completionVal && (
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-stone-400 mb-2">
+                          Completion
+                        </p>
+                        <p className="text-lg text-stone-900 font-light">
+                          {completionVal}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -270,7 +290,7 @@ export default function ProjectDetail({
         project.content && (
           <section className="py-24 md:py-32 bg-white border-y border-stone-100">
             <div className="max-w-[1600px] mx-auto px-6 md:px-12">
-              <div className="flex flex-col gap-4 lg:gap-4">
+              <div className="flex flex-col gap-12 md:gap-20">
                 <div className="max-w-4xl">
                   <span className="block text-[10px] font-bold tracking-[0.4em] uppercase text-stone-400 mb-6">
                     Project Deep Dive
@@ -327,7 +347,7 @@ export default function ProjectDetail({
                   return (
                     <div
                       key={img.id || index}
-                      className="relative group overflow-hidden cursor-pointer aspect-square bg-gray-200 animate-pulse transition-all duration-500"
+                      className="relative group overflow-hidden cursor-pointer aspect-square transition-all duration-500"
                       onClick={() => isValid && !imageErrors[imageKey] && setSelectedImageIndex(index)}
                     >
                       {isValid && !imageErrors[imageKey] ? (
@@ -336,16 +356,10 @@ export default function ProjectDetail({
                             alt={`${project.title} - Gallery image ${index + 1}`}
                             src={img.image_url}
                             fill
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-0 transition-opacity"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 bg-stone-100"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             onError={() => handleImageError(imageKey)}
                             unoptimized={img.image_url.includes("supabase.co")}
-                            onLoad={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.classList.remove('opacity-0');
-                              target.parentElement?.parentElement?.classList.remove('animate-pulse', 'bg-gray-200');
-                              target.parentElement?.parentElement?.classList.add('bg-stone-100');
-                            }}
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">

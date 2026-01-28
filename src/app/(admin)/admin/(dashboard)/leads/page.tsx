@@ -1214,7 +1214,7 @@ export default function LeadsPage() {
                       Service Interest
                     </p>
                     <p className="text-gray-900 font-medium">
-                      {selectedLead.service_interest && selectedLead.service_interest !== "_" ? selectedLead.service_interest : "—"}
+                      {selectedLead.service_interest && selectedLead.service_interest.length > 0 ? selectedLead.service_interest.join(", ") : "—"}
                     </p>
                   </div>
                 </div>

@@ -133,6 +133,11 @@ const projectSchema = z.object({
   status: z.enum(["draft", "published"], {
     message: "Status is required",
   }),
+  bannerTitle: z.string().optional(),
+  clientName: z.string().optional(),
+  sarea: z.string().optional(),
+  projectType: z.string().optional(),
+  completionDate: z.string().optional(),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
@@ -176,10 +181,12 @@ export default function ProjectsPage() {
   const [isNew, setIsNew] = useState(false);
 
   // Project info state
-  const [projectClient, setProjectClient] = useState("");
+  const [bannerTitle, setBannerTitle] = useState("");
+  const [clientName, setClientName] = useState("");
   const [projectLocation, setProjectLocation] = useState("");
-  const [projectSize, setProjectSize] = useState("");
-  const [projectCompletion, setProjectCompletion] = useState("");
+  const [sarea, setSarea] = useState("");
+  const [projectType, setProjectType] = useState("");
+  const [completionDate, setCompletionDate] = useState("");
   const [projectServices, setProjectServices] = useState<string[]>([]);
   const [serviceInput, setServiceInput] = useState("");
 
@@ -294,10 +301,12 @@ export default function ProjectsPage() {
     setIsImageUploading(false);
     setIsGalleryUploading(false); // Setter is used by GalleryImagesManager
     setGalleryImages([]);
-    setProjectClient("");
+    setBannerTitle("");
+    setClientName("");
     setProjectLocation("");
-    setProjectSize("");
-    setProjectCompletion("");
+    setSarea("");
+    setProjectType("");
+    setCompletionDate("");
     setProjectServices([]);
     setServiceInput("");
     setMetaTitle("");
@@ -335,27 +344,30 @@ export default function ProjectsPage() {
     setIsEditing(true);
     setIsOpen(true);
 
-    // Load project_info if it exists
+    // Load new fields
+    // Parse project_info first to use as fallback
+    let projectInfo: {
+      location?: string;
+      services?: string[];
+      client?: string;
+      size?: string;
+      completion?: string;
+    } = {};
+
     if (project.project_info && typeof project.project_info === "object") {
-      const info = project.project_info as {
-        client?: string;
-        location?: string;
-        size?: string;
-        completion?: string;
-        services?: string[];
-      };
-      setProjectClient(info.client || "");
-      setProjectLocation(info.location || "");
-      setProjectSize(info.size || "");
-      setProjectCompletion(info.completion || "");
-      setProjectServices(info.services || []);
-    } else {
-      setProjectClient("");
-      setProjectLocation("");
-      setProjectSize("");
-      setProjectCompletion("");
-      setProjectServices([]);
+      projectInfo = project.project_info as typeof projectInfo;
     }
+
+    // Load new fields with fallback to project_info
+    setBannerTitle(project.banner_title || "");
+    setClientName(project.client_name || projectInfo.client || "");
+    setSarea(project.sarea || projectInfo.size || "");
+    setProjectType(project.project_type || "");
+    setCompletionDate(project.completion_date || projectInfo.completion || "");
+
+    // Load legacy info
+    setProjectLocation(projectInfo.location || "");
+    setProjectServices(projectInfo.services || []);
 
     // Load SEO fields
     setMetaTitle(project.meta_title || "");
@@ -450,6 +462,11 @@ export default function ProjectsPage() {
       image,
       categoryId: categoryId || undefined,
       status,
+      bannerTitle,
+      clientName,
+      sarea,
+      projectType,
+      completionDate,
     });
 
     if (!validationResult.success) {
@@ -561,17 +578,12 @@ export default function ProjectsPage() {
 
       if (isEditing && selectedProject) {
         projectId = selectedProject.id;
+        // project_info only contains location and services now
         const projectInfo: {
-          client?: string;
           location?: string;
-          size?: string;
-          completion?: string;
           services?: string[];
         } = {};
-        if (projectClient) projectInfo.client = projectClient;
         if (projectLocation) projectInfo.location = projectLocation;
-        if (projectSize) projectInfo.size = projectSize;
-        if (projectCompletion) projectInfo.completion = projectCompletion;
         if (projectServices.length > 0) projectInfo.services = projectServices;
 
         const updateData: ProjectUpdate = {
@@ -585,6 +597,11 @@ export default function ProjectsPage() {
           tags: tags.length > 0 ? tags : null,
           is_new: isNew,
           updated_at: new Date().toISOString(),
+          banner_title: bannerTitle || null,
+          client_name: clientName || null,
+          sarea: sarea || null,
+          project_type: projectType || null,
+          completion_date: completionDate || null,
           project_info:
             Object.keys(projectInfo).length > 0 ? projectInfo : null,
           meta_title: metaTitle || null,
@@ -602,16 +619,10 @@ export default function ProjectsPage() {
         toast.success("Project updated successfully");
       } else {
         const projectInfo: {
-          client?: string;
           location?: string;
-          size?: string;
-          completion?: string;
           services?: string[];
         } = {};
-        if (projectClient) projectInfo.client = projectClient;
         if (projectLocation) projectInfo.location = projectLocation;
-        if (projectSize) projectInfo.size = projectSize;
-        if (projectCompletion) projectInfo.completion = projectCompletion;
         if (projectServices.length > 0) projectInfo.services = projectServices;
 
         const insertData: ProjectInsert = {
@@ -624,6 +635,11 @@ export default function ProjectsPage() {
           status,
           tags: tags.length > 0 ? tags : null,
           is_new: isNew,
+          banner_title: bannerTitle || null,
+          client_name: clientName || null,
+          sarea: sarea || null,
+          project_type: projectType || null,
+          completion_date: completionDate || null,
           project_info:
             Object.keys(projectInfo).length > 0 ? projectInfo : null,
           meta_title: metaTitle || null,
@@ -1167,13 +1183,40 @@ export default function ProjectsPage() {
 
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="projectClient" className="text-base">
-              Client
+            <Label htmlFor="bannerTitle" className="text-base">
+              Banner Title
             </Label>
             <Input
-              id="projectClient"
-              value={projectClient}
-              onChange={(e) => setProjectClient(e.target.value)}
+              id="bannerTitle"
+              value={bannerTitle}
+              onChange={(e) => setBannerTitle(e.target.value)}
+              placeholder="Enter Banner Title"
+              className="h-12 text-base"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="projectType" className="text-base">
+              Project Type
+            </Label>
+            <Input
+              id="projectType"
+              value={projectType}
+              onChange={(e) => setProjectType(e.target.value)}
+              placeholder="e.g., Commercial, Residential"
+              className="h-12 text-base"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2 mt-6">
+          <div className="space-y-2">
+            <Label htmlFor="clientName" className="text-base">
+              Client Name
+            </Label>
+            <Input
+              id="clientName"
+              value={clientName}
+              onChange={(e) => setClientName(e.target.value)}
               placeholder="e.g., Private Residential"
               className="h-12 text-base"
             />
@@ -1194,25 +1237,25 @@ export default function ProjectsPage() {
 
         <div className="grid gap-6 sm:grid-cols-2 mt-6">
           <div className="space-y-2">
-            <Label htmlFor="projectSize" className="text-base">
-              Size
+            <Label htmlFor="sarea" className="text-base">
+              Sarea (Size/Area)
             </Label>
             <Input
-              id="projectSize"
-              value={projectSize}
-              onChange={(e) => setProjectSize(e.target.value)}
+              id="sarea"
+              value={sarea}
+              onChange={(e) => setSarea(e.target.value)}
               placeholder="e.g., 2,500 sqft"
               className="h-12 text-base"
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="projectCompletion" className="text-base">
+            <Label htmlFor="completionDate" className="text-base">
               Completion Date
             </Label>
             <Input
-              id="projectCompletion"
-              value={projectCompletion}
-              onChange={(e) => setProjectCompletion(e.target.value)}
+              id="completionDate"
+              value={completionDate}
+              onChange={(e) => setCompletionDate(e.target.value)}
               placeholder="e.g., October 2023"
               className="h-12 text-base"
             />
@@ -1769,9 +1812,9 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white overflow-y-auto"
           >
-            <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex flex-col min-h-full">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
                 <SheetTitle>
                   {isEditing ? "Edit Project" : "Create New Project"}
@@ -1782,7 +1825,7 @@ export default function ProjectsPage() {
                     : "Fill in the details for your new project"}
                 </SheetDescription>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+              <div className="px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
@@ -1815,9 +1858,9 @@ export default function ProjectsPage() {
         <Sheet open={isOpen} onOpenChange={handleClose}>
           <SheetContent
             side="right"
-            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white"
+            className="w-full sm:max-w-5xl flex flex-col p-0 bg-white overflow-y-auto"
           >
-            <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex flex-col min-h-full">
               <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
                 <SheetTitle>
                   {isEditing ? "Edit Project" : "Create New Project"}
@@ -1828,7 +1871,7 @@ export default function ProjectsPage() {
                     : "Fill in the details for your new project"}
                 </SheetDescription>
               </SheetHeader>
-              <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+              <div className="px-6 py-6">
                 {formContent}
               </div>
               <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">

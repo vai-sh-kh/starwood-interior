@@ -6,9 +6,9 @@ import { getBooleanSetting } from "@/lib/settings";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Projects - Starwood Interiors",
+  title: "Projects | Spaces We’ve Transformed | Starwood Interiors",
   description:
-    "Explore our portfolio of exceptional design and construction projects. Premium design solutions tailored to your unique vision.",
+    "Discover our portfolio of interior solutions designed with clarity & craftsmanship. Explore our exceptional design and construction projects.",
 };
 
 export default async function ProjectsPage() {

@@ -20,7 +20,7 @@ export default function HeaderContent({
 }: HeaderContentProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
-    const isTransparentPage = pathname === "/" || pathname === "/contact" || pathname === "/about-us" || pathname === "/services" || pathname?.startsWith("/projects") || pathname === "/blogs" || pathname?.startsWith("/blogs");
+    const isTransparentPage = pathname === "/" || pathname === "/contact" || pathname === "/about-us" || pathname === "/services" || pathname?.startsWith("/projects") || pathname === "/blogs";
 
     useEffect(() => {
         const handleScroll = () => {
