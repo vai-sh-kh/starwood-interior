@@ -106,15 +106,11 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
                         ))
                     ) : blogs.length > 0 ? (
                         blogs.map((blog, index) => (
-                            <motion.article
+                            <article
                                 key={blog.id}
                                 className="flex flex-col group"
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: index * 0.1 }}
                             >
-                                <div className="mb-6 overflow-hidden aspect-[3/4] relative bg-stone-100">
+                                <div className="mb-6 overflow-hidden aspect-[3/4] relative">
                                     <Link href={`/blogs/${blog.slug}`}>
                                         {isValidImageUrl(blog.image) ? (
                                             <Image
@@ -146,7 +142,7 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
                                         Read Article
                                     </Link>
                                 </div>
-                            </motion.article>
+                            </article>
                         ))
                     ) : (
                         <div className="col-span-full py-20 text-center text-gray-400">

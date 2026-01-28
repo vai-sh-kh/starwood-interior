@@ -119,11 +119,7 @@ export default function ProjectsHome() {
         {PROJECTS.map((project, index) => (
           <div
             key={project.id}
-            className={`group relative rounded-2xl overflow-hidden h-[420px] cursor-pointer shadow-md transition-all duration-1000 ease-out bg-stone-100 ${isVisible
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-12"
-              }`}
-            style={{ transitionDelay: `${index * 100}ms` }}
+            className="group relative rounded-2xl overflow-hidden h-[420px] cursor-pointer shadow-md opacity-100 translate-y-0"
           >
             <Image
               src={IMAGES.projects[project.imageKey]}

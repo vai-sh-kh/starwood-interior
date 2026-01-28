@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { z } from "zod";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL!;
+const ADMIN_EMAIL =  "starwoodinteriorsdigital@gmail.com";
 
 // Zod validation schema for login form
 const loginFormSchema = z.object({

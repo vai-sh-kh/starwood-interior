@@ -164,7 +164,7 @@ export default function ProjectDetail({
                   <img
                     alt={project.title}
                     src={featuredImage}
-                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block bg-stone-100"
+                    className="w-full h-auto min-h-[400px] md:min-h-[600px] max-h-[800px] object-cover block"
                     onError={() => handleImageError("featured")}
                   />
                 ) : (
@@ -356,7 +356,7 @@ export default function ProjectDetail({
                             alt={`${project.title} - Gallery image ${index + 1}`}
                             src={img.image_url}
                             fill
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 bg-stone-100"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             onError={() => handleImageError(imageKey)}
                             unoptimized={img.image_url.includes("supabase.co")}

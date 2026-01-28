@@ -24,7 +24,7 @@ const ServiceDetailSubServices: React.FC<ServiceDetailSubServicesProps> = ({ ser
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     {services.map((service, index) => (
                         <div key={index} className="group service-card">
-                            <div className="aspect-square bg-stone-100 mb-6 overflow-hidden relative">
+                            <div className="aspect-square mb-6 overflow-hidden relative">
                                 <Image
                                     alt={service.title}
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
