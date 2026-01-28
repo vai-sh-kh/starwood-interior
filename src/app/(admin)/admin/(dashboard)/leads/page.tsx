@@ -70,7 +70,7 @@ import {
   Eye,
   Mail,
   Phone,
-  Calendar,
+  Calendar as CalendarIcon,
   MessageSquare,
   ExternalLink,
   Plus,
@@ -81,8 +81,10 @@ import {
   ChevronRight,
   Bot,
   Hammer,
+  Filter,
 } from "lucide-react";
 import { SERVICES_DATA } from "@/lib/services-data";
+import { Calendar } from "@/components/ui/calendar";
 
 import { MultiSelect } from "@/components/ui/multi-select";
 
@@ -198,6 +200,15 @@ export default function LeadsPage() {
     id: service.listingTitle,
     title: service.listingTitle
   })), []);
+
+  // Filter state
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: new Date(),
+    to: new Date()
+  });
+  const [filterServices, setFilterServices] = useState<string[]>([]);
+  const [filterStatus, setFilterStatus] = useState<string[]>([]);
 
 
   const supabase = createClient();
@@ -419,14 +430,48 @@ export default function LeadsPage() {
   };
 
   const filteredLeads = useMemo(() => {
-    return leads.filter(
-      (lead) =>
+    return leads.filter((lead) => {
+      // Text search
+      const matchesSearch =
         lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (lead.phone &&
-          lead.phone.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-  }, [leads, searchQuery]);
+        (lead.phone && lead.phone.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      if (!matchesSearch) return false;
+
+      // Date Range Filter
+      if (dateRange.from) {
+        const leadDate = new Date(lead.created_at || "");
+        const fromDate = new Date(dateRange.from);
+        fromDate.setHours(0, 0, 0, 0);
+        const leadDateCheck = new Date(leadDate);
+        leadDateCheck.setHours(0, 0, 0, 0);
+
+        if (leadDateCheck < fromDate) return false;
+      }
+      if (dateRange.to) {
+        const leadDate = new Date(lead.created_at || "");
+        const toDate = new Date(dateRange.to);
+        toDate.setHours(23, 59, 59, 999);
+
+        if (leadDate > toDate) return false;
+      }
+
+      // Service Filter
+      if (filterServices.length > 0) {
+        if (!lead.service_interest || lead.service_interest.length === 0) return false;
+        const hasService = lead.service_interest.some(s => filterServices.includes(s));
+        if (!hasService) return false;
+      }
+
+      // Status Filter
+      if (filterStatus.length > 0) {
+        if (!filterStatus.includes(lead.status || "new")) return false;
+      }
+
+      return true;
+    });
+  }, [leads, searchQuery, dateRange, filterServices, filterStatus]);
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredLeads.length / ITEMS_PER_PAGE);
@@ -465,7 +510,7 @@ export default function LeadsPage() {
   };
 
   const handleExport = () => {
-    const exportData = leads.map((lead) => ({
+    const exportData = filteredLeads.map((lead) => ({
       Name: lead.name,
       Email: lead.email,
       Phone: lead.phone || "",
@@ -499,6 +544,10 @@ export default function LeadsPage() {
               <Button variant="outline" onClick={handleExport} className="gap-2 shrink-0">
                 <Download className="h-4 w-4" />
                 <span>Export Excel</span>
+              </Button>
+              <Button variant="outline" onClick={() => setIsFilterOpen(true)} className="gap-2 shrink-0">
+                <Filter className="h-4 w-4" />
+                <span>Filter</span>
               </Button>
               <Button onClick={openAddSheet} className="gap-2 shrink-0">
                 <Plus className="h-4 w-4" />
@@ -854,6 +903,86 @@ export default function LeadsPage() {
         )}
       </div>
 
+      {/* Filter Sheet */}
+      <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <SheetContent className="w-full sm:max-w-md overflow-y-auto flex flex-col p-0 bg-white">
+          <div className="flex flex-col h-full overflow-hidden">
+            <SheetHeader className="px-6 pt-6 pb-4 border-b shrink-0">
+              <SheetTitle>Filter Leads</SheetTitle>
+              <SheetDescription>
+                Filter leads by date range, services, and status
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+              <div className="space-y-6">
+                {/* Date Range */}
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Date Range</Label>
+                  <div className="border rounded-md p-2">
+                    <Calendar
+                      mode="range"
+                      selected={dateRange}
+                      onSelect={(range) =>
+                        setDateRange(range || { from: undefined, to: undefined })
+                      }
+                      className="rounded-md border-0 w-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Services */}
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Services</Label>
+                  <MultiSelect
+                    options={services}
+                    selected={filterServices}
+                    onChange={setFilterServices}
+                    placeholder="Select services..."
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Status */}
+                <div className="space-y-2">
+                  <Label className="text-base font-medium">Status</Label>
+                  <MultiSelect
+                    options={LEAD_STATUSES.map((s) => ({
+                      id: s.value,
+                      title: s.label,
+                    }))}
+                    selected={filterStatus}
+                    onChange={setFilterStatus}
+                    placeholder="Select status..."
+                    className="w-full"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Footer with Clear Button */}
+            <div className="flex justify-end gap-3 pt-4 px-6 pb-6 border-t shrink-0 bg-white">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => {
+                  setDateRange({ from: undefined, to: undefined });
+                  setFilterServices([]);
+                  setFilterStatus([]);
+                  setSearchQuery("");
+                  setIsFilterOpen(false);
+                }}
+              >
+                Clear All Filters
+              </Button>
+              <Button onClick={() => setIsFilterOpen(false)} className="w-full">
+                Apply Filters
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+
       {/* Add/Edit Form Sheet */}
       <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
         <SheetContent className="w-full sm:max-w-5xl overflow-y-auto flex flex-col p-0 bg-white">
@@ -1191,7 +1320,7 @@ export default function LeadsPage() {
 
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="shrink-0">
-                    <Calendar className="h-5 w-5 text-gray-500" />
+                    <CalendarIcon className="h-5 w-5 text-gray-500" />
                   </div>
                   <div className="flex-1">
                     <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">

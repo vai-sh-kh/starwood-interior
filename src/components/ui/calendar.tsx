@@ -4,6 +4,13 @@ import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export type CalendarProps = {
   mode?: "single" | "range"
@@ -29,6 +36,15 @@ function Calendar({
         ? selected.from
         : new Date()
   )
+
+  // Update current month when selected changes (if valid)
+  React.useEffect(() => {
+    if (selected instanceof Date) {
+      setCurrentMonth(selected)
+    } else if (selected?.from) {
+      setCurrentMonth(selected.from)
+    }
+  }, [selected])
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear()
@@ -61,7 +77,7 @@ function Calendar({
 
   const handleDateClick = (day: number) => {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
-    
+
     if (disabled && disabled(date)) return
 
     if (mode === "single") {
@@ -70,7 +86,7 @@ function Calendar({
       const range = selected && typeof selected === "object" && "from" in selected
         ? selected
         : { from: undefined, to: undefined }
-      
+
       if (!range.from || (range.from && range.to)) {
         onSelect?.({ from: date, to: undefined })
       } else if (range.from && !range.to) {
@@ -95,10 +111,28 @@ function Calendar({
     )
   }
 
-  const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentMonth)
-  const monthName = currentMonth.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+  const handleMonthChange = (value: string) => {
+    const newMonth = parseInt(value)
+    setCurrentMonth(new Date(currentMonth.getFullYear(), newMonth, 1))
+  }
 
-  const selectedDate = mode === "single" 
+  const handleYearChange = (value: string) => {
+    const newYear = parseInt(value)
+    setCurrentMonth(new Date(newYear, currentMonth.getMonth(), 1))
+  }
+
+  const { daysInMonth, startingDayOfWeek, year, month } = getDaysInMonth(currentMonth)
+
+  // Year range: current year - 10 to current year + 10 (or dynamic based on needs)
+  const currentYear = new Date().getFullYear()
+  const years = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i)
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ]
+
+  const selectedDate = mode === "single"
     ? (selected instanceof Date ? selected : undefined)
     : undefined
 
@@ -107,37 +141,73 @@ function Calendar({
     : undefined
 
   return (
-    <div className={cn("p-3 bg-white", className)}>
-      <div className="flex items-center justify-between mb-4">
+    <div className={cn("p-4 bg-white w-full", className)}>
+      <div className="flex items-center justify-between mb-4 gap-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={previousMonth}
-          className="h-7 w-7"
+          className="h-8 w-8 text-gray-500 hover:text-gray-900"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <div className="font-semibold text-sm">{monthName}</div>
+
+        <div className="flex flex-1 items-center justify-center gap-2">
+          <Select
+            value={month.toString()}
+            onValueChange={handleMonthChange}
+          >
+            <SelectTrigger className="h-8 w-[110px] bg-transparent border-gray-200 hover:bg-gray-50 focus:ring-0">
+              <SelectValue>{monthNames[month]}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {monthNames.map((name, index) => (
+                <SelectItem key={name} value={index.toString()}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={year.toString()}
+            onValueChange={handleYearChange}
+          >
+            <SelectTrigger className="h-8 w-[90px] bg-transparent border-gray-200 hover:bg-gray-50 focus:ring-0">
+              <SelectValue>{year}</SelectValue>
+            </SelectTrigger>
+            <SelectContent className="max-h-[300px]">
+              {years.map((y) => (
+                <SelectItem key={y} value={y.toString()}>
+                  {y}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={nextMonth}
-          className="h-7 w-7"
+          className="h-8 w-8 text-gray-500 hover:text-gray-900"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
+
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+        {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
           <div
             key={day}
-            className="text-center text-xs font-medium text-gray-500 py-1"
+            className="text-center text-[0.8rem] font-medium text-gray-500 py-1"
           >
             {day}
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7 gap-1">
+
+      <div className="grid grid-cols-7 gap-y-2 gap-x-1">
         {Array.from({ length: startingDayOfWeek }).map((_, i) => (
           <div key={`empty-${i}`} className="aspect-square" />
         ))}
@@ -152,6 +222,7 @@ function Calendar({
           const isToday = isSameDay(date, new Date())
           const isStart = selectedRange?.from && isSameDay(date, selectedRange.from)
           const isEnd = selectedRange?.to && isSameDay(date, selectedRange.to)
+          const isInRange = selectedRange?.from && selectedRange?.to && date > selectedRange.from && date < selectedRange.to
 
           return (
             <button
@@ -159,28 +230,16 @@ function Calendar({
               onClick={() => handleDateClick(day)}
               disabled={isDisabled}
               className={cn(
-                "aspect-square rounded-md text-sm font-medium transition-colors",
-                "hover:bg-gray-100 focus:bg-gray-100 focus:outline-none",
-                isDisabled && "opacity-50 cursor-not-allowed",
-                isSelected &&
-                  "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
-                !isSelected &&
-                  !isDisabled &&
-                  "hover:bg-gray-100",
-                isToday && !isSelected && "border border-blue-600",
-                mode === "range" &&
-                  selectedRange?.from &&
-                  !selectedRange?.to &&
-                  date >= selectedRange.from &&
-                  "bg-blue-100",
-                mode === "range" &&
-                  selectedRange?.from &&
-                  selectedRange?.to &&
-                  date > selectedRange.from &&
-                  date < selectedRange.to &&
-                  "bg-blue-100",
-                isStart && "rounded-l-md",
-                isEnd && "rounded-r-md"
+                "relative flex items-center justify-center w-full aspect-square text-sm font-normal transition-all rounded-full",
+                isDisabled && "opacity-30 cursor-not-allowed",
+                !isDisabled && "hover:bg-blue-50 hover:text-blue-600",
+                isSelected && !isInRange &&
+                "bg-blue-600 text-white hover:bg-blue-700 hover:text-white shadow-sm font-medium",
+                isToday && !isSelected && "ring-1 ring-blue-600 font-medium text-blue-600",
+                isInRange && "bg-blue-50 text-blue-700 rounded-none hover:bg-blue-100",
+                isStart && isEnd && "rounded-full", // Only one day selected
+                isStart && !isEnd && "rounded-l-full rounded-r-none",
+                !isStart && isEnd && "rounded-l-none rounded-r-full",
               )}
             >
               {day}
