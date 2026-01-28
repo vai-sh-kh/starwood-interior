@@ -115,6 +115,7 @@ export type Database = {
           source: string | null
           status: string
           updated_at: string
+          file_path: string | null
         }
         Insert: {
           avatar_color?: string | null
@@ -130,6 +131,7 @@ export type Database = {
           source?: string | null
           status?: string
           updated_at?: string
+          file_path?: string | null
         }
         Update: {
           avatar_color?: string | null
@@ -145,6 +147,7 @@ export type Database = {
           source?: string | null
           status?: string
           updated_at?: string
+          file_path?: string | null
         }
         Relationships: []
       }

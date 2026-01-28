@@ -1,8 +1,7 @@
-import { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { SERVICES_DATA } from '@/lib/services-data'
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap() {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://starwoodinteriors.com'
     const supabase = await createClient()
 
@@ -53,7 +52,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/services',
         '/blogs',
         '/projects',
-        '/works',
     ].map((route) => ({
         url: `${baseUrl}${route}`,
         lastModified: new Date(),

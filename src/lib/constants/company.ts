@@ -27,22 +27,22 @@ export interface CompanyInfo {
 export const COMPANY_INFO: CompanyInfo = {
     name: "Starwood Interiors",
     address: {
-        street: "TC 25/1234, MG Road",
-        area: "Thampanoor",
+        street: "4th floor, Uthradam Properties, Opposite SP Grand Days Hotel, Panavila",
+        area: "Thycaud",
         city: "Trivandrum",
         state: "Kerala",
-        pincode: "695001",
+        pincode: "695014",
         country: "India"
     },
     contact: {
-        phone: "+91 77368 32115",
+        phone: "+91 7736832115",
         email: "starwood@designstudio.ae",
         whatsapp: "917736832115"
     },
     social: {
-        instagram: "https://www.instagram.com/starwoodinteriors",
-        facebook: "https://www.facebook.com/starwoodinteriors",
-        linkedin: "https://www.linkedin.com/company/starwoodinteriors"
+        instagram: "https://www.instagram.com/starwoodinteriors?igsh=bm5zeGgzdjJ0dnJq",
+        facebook: "https://www.instagram.com/starwoodinteriors?igsh=bm5zeGgzdjJ0dnJq",
+        linkedin: "https://www.linkedin.com/company/starwood-interiors-kerala/"
     },
     hours: {
         weekdays: "Monday to Saturday: 9:00 AM – 5:00 PM",

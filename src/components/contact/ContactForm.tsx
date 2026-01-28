@@ -10,6 +10,8 @@ import { SERVICES_DATA } from "@/lib/services-data";
 
 import { MultiSelect } from "@/components/ui/multi-select";
 
+import { MAX_FILE_SIZE, ACCEPTED_FILE_EXTENSIONS, ACCEPTED_FILE_TYPES } from "@/lib/constants";
+
 // Zod validation schema
 const contactFormSchema = z.object({
     name: z
@@ -30,10 +32,14 @@ const contactFormSchema = z.object({
         .regex(/^[0-9+\s()-]+$/, "Invalid phone number format"),
     message: z
         .string()
-        .min(1, "Message is required")
-        .min(10, "Message must be at least 10 characters")
-        .max(2000, "Message must be less than 2000 characters"),
+        .max(2000, "Message must be less than 2000 characters")
+        .optional()
+        .or(z.literal('')),
     serviceInterest: z.array(z.string()).optional(),
+    attachment: z
+        .custom<File>((val) => val instanceof File, "Attachment is required")
+        .optional()
+        .nullable(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -55,6 +61,102 @@ export default function ContactForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
 
+    const [file, setFile] = useState<File | null>(null);
+    const [uploadProgress, setUploadProgress] = useState(0);
+
+    const validateFile = (selectedFile: File): boolean => {
+        // Check file size
+        if (selectedFile.size > MAX_FILE_SIZE) {
+            const errorMsg = `File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB`;
+            toast.error(errorMsg, {
+                style: {
+                    backgroundColor: "white",
+                    color: "#111827",
+                    border: "1px solid #e5e7eb",
+                    zIndex: 99999,
+                },
+            });
+            setErrors(prev => ({ ...prev, attachment: errorMsg }));
+            return false;
+        }
+
+        // Check file type
+        if (!ACCEPTED_FILE_TYPES.includes(selectedFile.type as any)) {
+            const errorMsg = "File type not supported";
+            toast.error(errorMsg, {
+                style: {
+                    backgroundColor: "white",
+                    color: "#111827",
+                    border: "1px solid #e5e7eb",
+                    zIndex: 99999,
+                },
+            });
+            setErrors(prev => ({ ...prev, attachment: errorMsg }));
+            return false;
+        }
+
+        return true;
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const selectedFile = e.target.files[0];
+
+            if (validateFile(selectedFile)) {
+                setFile(selectedFile);
+                setErrors(prev => ({ ...prev, attachment: undefined }));
+            } else {
+                // Clear the input value so the same file can be selected again if needed (triggered by change)
+                e.target.value = "";
+            }
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            const selectedFile = e.dataTransfer.files[0];
+
+            if (validateFile(selectedFile)) {
+                setFile(selectedFile);
+                setErrors(prev => ({ ...prev, attachment: undefined }));
+            }
+        }
+    };
+
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+    };
+
+    const removeFile = () => {
+        setFile(null);
+    };
+
+    const uploadFile = async (fileToUpload: File): Promise<string | null> => {
+        try {
+            const supabase = createClient();
+            const fileExt = fileToUpload.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('leads')
+                .upload(filePath, fileToUpload, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            return filePath;
+        } catch (error) {
+            console.error('Error uploading file:', error);
+            throw new Error("Failed to upload file");
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -65,6 +167,7 @@ export default function ContactForm() {
             phone: formData.phone.trim(),
             message: formData.message.trim(),
             serviceInterest: formData.serviceInterest,
+            attachment: file,
         });
 
         if (!validationResult.success) {
@@ -84,6 +187,11 @@ export default function ContactForm() {
         setIsSubmitting(true);
 
         try {
+            let filePath = null;
+            if (file) {
+                filePath = await uploadFile(file);
+            }
+
             const supabase = createClient();
 
             const { error } = await supabase
@@ -97,6 +205,7 @@ export default function ContactForm() {
                     source: "contact_form",
                     status: "new",
                     avatar_color: getAvatarHexColor(validationResult.data.name),
+                    file_path: filePath
                 });
 
             if (error) {
@@ -124,6 +233,7 @@ export default function ContactForm() {
                 message: "",
                 serviceInterest: [],
             });
+            setFile(null);
         } catch (err: any) {
             console.error("Error submitting form:", err);
             const errorMessage = err?.message || "Failed to submit form. Please try again.";
@@ -301,7 +411,7 @@ export default function ContactForm() {
                                 {/* Message Field */}
                                 <div>
                                     <label className="block text-[11px] uppercase tracking-widest text-stone-500 mb-3 font-medium">
-                                        Your Message *
+                                        Your Message (Optional)
                                     </label>
                                     <textarea
                                         name="message"
@@ -314,6 +424,54 @@ export default function ContactForm() {
                                     {errors.message && (
                                         <span className="text-red-500 text-xs mt-2 block">
                                             {errors.message}
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* File Attachment Field */}
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-widest text-stone-500 mb-3 font-medium">
+                                        Attachments (Optional)
+                                    </label>
+                                    <div
+                                        onDrop={handleDrop}
+                                        onDragOver={handleDragOver}
+                                        className={`w-full border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer ${file ? 'border-stone-900 bg-stone-50' : 'border-stone-200 hover:border-stone-400 hover:bg-stone-50'
+                                            } ${errors.attachment ? 'border-red-500 bg-red-50' : ''}`}
+                                    >
+                                        <input
+                                            type="file"
+                                            onChange={handleFileChange}
+                                            className="hidden"
+                                            id="file-upload"
+                                            accept={ACCEPTED_FILE_EXTENSIONS}
+                                        />
+                                        <label htmlFor="file-upload" className="cursor-pointer w-full h-full block">
+                                            {file ? (
+                                                <div className="flex items-center justify-center gap-3 text-stone-900">
+                                                    <span className="text-sm font-medium truncate max-w-[200px]">{file.name}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            removeFile();
+                                                        }}
+                                                        className="text-stone-400 hover:text-red-500 transition-colors text-xs uppercase font-bold tracking-wider"
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    <p className="text-stone-600 font-medium text-sm">Click to upload or drag and drop</p>
+                                                    <p className="text-stone-400 text-xs">Images, PDF, DOC up to {MAX_FILE_SIZE / (1024 * 1024)}MB</p>
+                                                </div>
+                                            )}
+                                        </label>
+                                    </div>
+                                    {errors.attachment && (
+                                        <span className="text-red-500 text-xs mt-2 block">
+                                            {errors.attachment}
                                         </span>
                                     )}
                                 </div>

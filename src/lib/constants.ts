@@ -360,14 +360,14 @@ export const FOOTER_LINKS = {
   ],
   contact: [
     { label: "starwood@designstudio.ae", href: "mailto:starwood@designstudio.ae" },
-    { label: "+91 77368 32115", href: "tel:+917736832115" },
-    { label: "TC 25/1234, MG Road, Thampanoor, Trivandrum", href: "#" },
+    { label: "+91 7736832115", href: "tel:+917736832115" },
+    { label: "4th floor, Uthradam Properties, Opposite SP Grand Days Hotel, Panavila, Thycaud, Trivandrum, Kerala 695014", href: "#" },
   ],
   socialMedia: [
-    { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
-    { label: "Facebook", href: "https://facebook.com", icon: "facebook" },
+    { label: "Instagram", href: "https://www.instagram.com/starwoodinteriors?igsh=bm5zeGgzdjJ0dnJq", icon: "instagram" },
+    { label: "Facebook", href: "https://www.instagram.com/starwoodinteriors?igsh=bm5zeGgzdjJ0dnJq", icon: "facebook" },
     { label: "Twitter", href: "https://twitter.com", icon: "twitter" },
-    { label: "LinkedIn", href: "https://linkedin.com", icon: "linkedin" },
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/starwood-interiors-kerala/", icon: "linkedin" },
   ],
   // Legacy structure for backward compatibility
   about: [
@@ -438,8 +438,8 @@ export const CONTACT_CONTENT = {
     "We would love to hear from you. Fill out the form below or use our contact details to get in touch. Our team is ready to assist you with any inquiries about our designs and services.",
   details: {
     email: "starwood@designstudio.ae",
-    phone: "+91 77368 32115",
-    address: "TC 25/1234, MG Road\nThampanoor, Trivandrum 695001",
+    phone: "+91 7736832115",
+    address: "4th floor, Uthradam Properties, Opposite SP Grand Days Hotel, Panavila\nThycaud, Trivandrum, Kerala 695014",
   },
 } as const;
 
@@ -899,3 +899,22 @@ export const AVATAR_COLORS = [
 
 // Gallery Images Configuration
 export const MAX_GALLERY_IMAGES = 6;
+
+// File Upload Configuration
+export const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+export const ACCEPTED_FILE_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
+  "text/plain",
+] as const;
+
+export const ACCEPTED_FILE_EXTENSIONS = ".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt";

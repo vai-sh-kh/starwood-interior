@@ -1183,11 +1183,13 @@ export default function BlogsPage() {
                     </TableCell>
                     <TableCell className="w-[250px] px-4 py-4">
                       <div className="flex items-center gap-2 min-w-0">
-                        <AdminImage
-                          src={blog.image}
-                          alt={blog.title}
-                          type="blog"
-                        />
+                        <div className="bg-gray-200 rounded-lg shrink-0 hidden sm:block">
+                          <AdminImage
+                            src={blog.image}
+                            alt={blog.title}
+                            type="blog"
+                          />
+                        </div>
                         <div className="min-w-0 flex-1 overflow-hidden">
                           <div className="flex items-center gap-2 min-w-0">
                             <p className="font-medium text-gray-900 truncate text-sm">

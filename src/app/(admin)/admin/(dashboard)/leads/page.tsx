@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import * as XLSX from "xlsx";
 import { createClient } from "@/lib/supabase/client";
 import { Lead, LeadInsert, LeadUpdate } from "@/lib/supabase/types";
-import { LEAD_STATUSES } from "@/lib/constants";
+import { LEAD_STATUSES, MAX_FILE_SIZE, ACCEPTED_FILE_EXTENSIONS } from "@/lib/constants";
 import { getAvatarHexColor } from "@/lib/utils";
 import LeadAvatar from "@/components/LeadAvatar";
 import { Button } from "@/components/ui/button";
@@ -82,6 +82,8 @@ import {
   Bot,
   Hammer,
   Filter,
+  Paperclip,
+  FileText,
 } from "lucide-react";
 import { SERVICES_DATA } from "@/lib/services-data";
 import { Calendar } from "@/components/ui/calendar";
@@ -157,6 +159,7 @@ const leadFormSchema = z.object({
   status: z.string().min(1, "Status is required"),
   source: z.string().min(1, "Source is required"),
   service_interest: z.array(z.string()).optional(),
+  file_path: z.string().optional().nullable(),
 });
 
 type LeadFormData = z.infer<typeof leadFormSchema>;
@@ -185,7 +188,9 @@ export default function LeadsPage() {
     status: "new" as string,
     source: "manual" as string,
     service_interest: [] as string[],
+    file_path: null as string | null,
   });
+  const [file, setFile] = useState<File | null>(null);
   const [formErrors, setFormErrors] = useState<
     Partial<Record<keyof LeadFormData, string>>
   >({});
@@ -255,7 +260,9 @@ export default function LeadsPage() {
       status: "new",
       source: "manual",
       service_interest: [],
+      file_path: null,
     });
+    setFile(null);
     setFormErrors({});
     setIsFormOpen(true);
   };
@@ -270,7 +277,9 @@ export default function LeadsPage() {
       status: lead.status || "new",
       source: lead.source || "manual",
       service_interest: lead.service_interest || [],
+      file_path: lead.file_path || null,
     });
+    setFile(null);
     setFormErrors({});
     setSelectedLead(lead);
     setIsFormOpen(true);
@@ -286,6 +295,7 @@ export default function LeadsPage() {
       status: formData.status,
       source: formData.source,
       service_interest: formData.service_interest,
+      file_path: formData.file_path,
     });
 
     if (!validationResult.success) {
@@ -310,6 +320,30 @@ export default function LeadsPage() {
     setIsSaving(true);
 
     try {
+      let filePath = formData.file_path; // Keep existing path by default
+
+      // Upload new file if selected
+      if (file) {
+        if (file.size > MAX_FILE_SIZE) {
+          toast.error(`File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB`);
+          setIsSaving(false);
+          return;
+        }
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+        const newPath = `${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('leads')
+          .upload(newPath, file, {
+            cacheControl: '3600',
+            upsert: false
+          });
+
+        if (uploadError) throw uploadError;
+        filePath = newPath;
+      }
+
       if (isEditing && selectedLead) {
         const updateData: LeadUpdate = {
           name: validationResult.data.name,
@@ -319,6 +353,7 @@ export default function LeadsPage() {
           status: validationResult.data.status,
           source: validationResult.data.source,
           service_interest: validationResult.data.service_interest || null,
+          file_path: filePath,
           avatar_color: getAvatarHexColor(validationResult.data.name),
           updated_at: new Date().toISOString(),
         };
@@ -349,6 +384,7 @@ export default function LeadsPage() {
           status: validationResult.data.status,
           source: validationResult.data.source,
           service_interest: validationResult.data.service_interest || null,
+          file_path: filePath,
           avatar_color: getAvatarHexColor(validationResult.data.name),
         };
 
@@ -370,6 +406,9 @@ export default function LeadsPage() {
         toast.success("Lead created successfully");
       }
 
+
+
+      setFile(null);
       setIsFormOpen(false);
       setSelectedLead(null);
       fetchLeads();
@@ -589,19 +628,20 @@ export default function LeadsPage() {
             <Table className="w-full">
               <TableHeader className="sticky top-0 bg-white z-10">
                 <TableRow className="bg-gray-50/80 backdrop-blur-sm hover:bg-gray-50/80">
-                  <TableHead className="w-[60px] max-w-[60px] px-4">
+                  <TableHead className="w-[60px] px-4">
                     No
                   </TableHead>
-                  <TableHead className="w-[20%] max-w-[20%] px-4">
+                  <TableHead className="px-4">
                     Contact
                   </TableHead>
-                  <TableHead className="max-w-[200px] px-4">Email</TableHead>
-                  <TableHead className="max-w-[150px] px-4">Phone</TableHead>
-                  <TableHead className="max-w-[150px] px-4">Service</TableHead>
-                  <TableHead className="max-w-[140px] px-4">Status</TableHead>
-                  <TableHead className="max-w-[120px] px-4">Source</TableHead>
-                  <TableHead className="max-w-[120px] px-4">Date</TableHead>
-                  <TableHead className="text-right w-[80px] max-w-[80px] px-4">
+                  <TableHead className="px-4">Email</TableHead>
+                  <TableHead className="px-4">Phone</TableHead>
+                  <TableHead className="px-4">Service</TableHead>
+                  <TableHead className="px-4">Status</TableHead>
+                  <TableHead className="px-4">Source</TableHead>
+                  <TableHead className="w-[60px] px-4">Attachment</TableHead>
+                  <TableHead className="px-4">Date</TableHead>
+                  <TableHead className="text-right w-[80px] px-4">
                     Actions
                   </TableHead>
                 </TableRow>
@@ -661,7 +701,7 @@ export default function LeadsPage() {
                         <TableCell className="text-gray-600 px-4">
                           {startIndex + index + 1}
                         </TableCell>
-                        <TableCell className="px-4 max-w-[20%]">
+                        <TableCell className="px-4">
                           <div className="flex items-center gap-3 min-w-0">
                             <LeadAvatar
                               name={lead.name}
@@ -680,7 +720,7 @@ export default function LeadsPage() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="px-4 max-w-[200px]">
+                        <TableCell className="px-4">
                           <a
                             href={`mailto:${lead.email}`}
                             className="text-blue-600 hover:text-blue-700 hover:underline truncate block"
@@ -689,7 +729,7 @@ export default function LeadsPage() {
                             {lead.email}
                           </a>
                         </TableCell>
-                        <TableCell className="text-gray-600 px-4 max-w-[150px] truncate">
+                        <TableCell className="text-gray-600 px-4">
                           {lead.phone ? (
                             <a
                               href={`tel:${lead.phone}`}
@@ -702,7 +742,7 @@ export default function LeadsPage() {
                             <span className="text-gray-400">—</span>
                           )}
                         </TableCell>
-                        <TableCell className="text-gray-600 px-4 max-w-[150px] truncate">
+                        <TableCell className="text-gray-600 px-4">
                           {lead.service_interest && lead.service_interest.length > 0 ? (
                             <div className="flex flex-col gap-1 max-h-[60px] overflow-hidden">
                               {lead.service_interest.map((service, i) => (
@@ -715,7 +755,7 @@ export default function LeadsPage() {
                             <span className="text-gray-400">_</span>
                           )}
                         </TableCell>
-                        <TableCell className="px-4 max-w-[140px]">
+                        <TableCell className="px-4">
                           <Select
                             value={lead.status || "new"}
                             onValueChange={(value) =>
@@ -743,7 +783,7 @@ export default function LeadsPage() {
                             </SelectContent>
                           </Select>
                         </TableCell>
-                        <TableCell className="px-4 max-w-[120px]">
+                        <TableCell className="px-4">
                           <Badge
                             variant="secondary"
                             className={`${getSourceBadgeColor(
@@ -758,7 +798,27 @@ export default function LeadsPage() {
                             </span>
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-gray-600 px-4 max-w-[120px] truncate">
+                        <TableCell className="px-4">
+                          {lead.file_path ? (
+                            <a
+                              href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/leads/${lead.file_path}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 group text-blue-600 hover:text-blue-700"
+                              title="View Attachment"
+                            >
+                              <div className="h-8 w-8 rounded-full bg-blue-50 group-hover:bg-blue-100 flex items-center justify-center shrink-0 transition-colors">
+                                <Paperclip className="h-4 w-4" />
+                              </div>
+                              <span className="text-sm font-medium truncate max-w-[120px] underline-offset-4 group-hover:underline">
+                                {lead.file_path.split("_").slice(1).join("_") || lead.file_path}
+                              </span>
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">_</span>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-gray-600 px-4">
                           {lead.created_at
                             ? new Date(lead.created_at).toLocaleDateString()
                             : "—"}
@@ -788,6 +848,24 @@ export default function LeadsPage() {
                                   <Pencil className="mr-2 h-4 w-4" />
                                   Edit
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                {lead.file_path && (
+                                  <DropdownMenuItem
+                                    onClick={() => {
+                                      const link = document.createElement('a');
+                                      const filePath = lead.file_path || "";
+                                      link.href = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/leads/${filePath}`;
+                                      link.download = filePath.split("_").slice(1).join("_") || filePath;
+                                      link.target = "_blank";
+                                      document.body.appendChild(link);
+                                      link.click();
+                                      document.body.removeChild(link);
+                                    }}
+                                  >
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download Attachment
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
                                   onClick={() => {
@@ -1202,6 +1280,58 @@ export default function LeadsPage() {
                     </span>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="file" className="text-base">Attachment</Label>
+                  <div className="flex flex-col gap-2">
+                    {(formData.file_path || file) && (
+                      <div className="flex items-center gap-2 p-2 bg-gray-50 border rounded-md">
+                        <Paperclip className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm truncate flex-1">
+                          {file ? file.name : formData.file_path}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 w-6 p-0 hover:bg-red-50 text-gray-400 hover:text-red-500"
+                          onClick={() => {
+                            setFile(null);
+                            setFormData({ ...formData, file_path: null });
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                    {!formData.file_path && !file && (
+                      <div
+                        className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-gray-50 transition-colors cursor-pointer"
+                        onClick={() => document.getElementById('admin-file-upload')?.click()}
+                      >
+                        <input
+                          type="file"
+                          id="admin-file-upload"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              const selectedFile = e.target.files[0];
+                              if (selectedFile.size > MAX_FILE_SIZE) {
+                                toast.error(`File size must be less than ${MAX_FILE_SIZE / (1024 * 1024)}MB`);
+                                return;
+                              }
+                              setFile(selectedFile);
+                            }
+                          }}
+                          accept={ACCEPTED_FILE_EXTENSIONS}
+                        />
+                        <Paperclip className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500 font-medium">Click to upload file</p>
+                        <p className="text-xs text-gray-400 mt-1">Images, PDF, DOC up to {MAX_FILE_SIZE / (1024 * 1024)}MB</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1362,6 +1492,29 @@ export default function LeadsPage() {
                       <p className="text-gray-900 font-medium font-mono text-sm">
                         {selectedLead.chat_id}
                       </p>
+                    </div>
+                  </div>
+                )}
+
+                {selectedLead.file_path && (
+                  <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="shrink-0">
+                      <Paperclip className="h-5 w-5 text-gray-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">
+                        Attachment
+                      </p>
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/leads/${selectedLead.file_path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-700 font-medium break-all flex items-center gap-2"
+                      >
+                        <FileText className="h-4 w-4" />
+                        View Document
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
                     </div>
                   </div>
                 )}
