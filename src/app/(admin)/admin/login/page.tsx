@@ -19,13 +19,7 @@ const loginFormSchema = z.object({
     .min(1, "Email is required")
     .trim()
     .toLowerCase()
-    .email("Please enter a valid email address")
-    .refine(
-      (email) => email.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
-      {
-        message: "Access denied. Only authorized administrators can sign in.",
-      }
-    ),
+    .email("Please enter a valid email address"),
   password: z
     .string()
     .min(1, "Password is required")
@@ -105,7 +99,7 @@ export default function LoginPage() {
       }
 
       // Server-side email verification (double check)
-      if (data.user?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
+      if (!ADMIN_EMAIL || data.user?.email?.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
         // Sign out the user if email doesn't match
         await supabase.auth.signOut();
         toast.error("Access denied. Only authorized administrators can sign in.");
