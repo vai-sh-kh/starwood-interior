@@ -923,9 +923,10 @@ export default function LeadsPage() {
                     <Calendar
                       mode="range"
                       selected={dateRange}
-                      onSelect={(range) =>
-                        setDateRange(range || { from: undefined, to: undefined })
-                      }
+                      onSelect={(range) => {
+                        const r = range as { from?: Date; to?: Date } | undefined;
+                        setDateRange({ from: r?.from, to: r?.to });
+                      }}
                       className="rounded-md border-0 w-full"
                     />
                   </div>
