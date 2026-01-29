@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { PROJECTS } from "@/lib/constants";
 import { IMAGES } from "@/lib/constants";
 

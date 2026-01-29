@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { Blog, BlogCategory } from "@/lib/supabase/types";
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };

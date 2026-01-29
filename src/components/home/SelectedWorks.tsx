@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { motion } from "framer-motion";
 import { HOME_SERVICES_LIST } from "@/lib/services-data";
 

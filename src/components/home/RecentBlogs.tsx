@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { createClient } from "@/lib/supabase/client";
 import { Blog, BlogCategory } from "@/lib/supabase/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,18 +10,27 @@ import { motion } from "framer-motion";
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
-interface RecentBlogsProps {
-    blogsEnabled: boolean;
-}
+import { getBooleanSettingClient } from "@/lib/api/client/settings";
 
-export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
+export default function RecentBlogs() {
     const [blogs, setBlogs] = useState<BlogWithCategory[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [blogsEnabled, setBlogsEnabled] = useState(true);
     const supabase = createClient();
 
     useEffect(() => {
-        const fetchRecentBlogs = async () => {
+        const fetchData = async () => {
             try {
+                // Check if blogs are enabled
+                const enabled = await getBooleanSettingClient("blogs_enabled", true);
+                setBlogsEnabled(enabled);
+
+                if (!enabled) {
+                    setIsLoading(false);
+                    return;
+                }
+
+                // Fetch blogs
                 const { data, error } = await supabase
                     .from("blogs")
                     .select("*, blog_categories(*)")
@@ -42,7 +51,7 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
             }
         };
 
-        fetchRecentBlogs();
+        fetchData();
     }, [supabase]);
 
     // Validate image URL
@@ -56,8 +65,37 @@ export default function RecentBlogs({ blogsEnabled }: RecentBlogsProps) {
         }
     };
 
-    // Don't render section if blogs are disabled or no blogs are available
-    if (!blogsEnabled || (!isLoading && blogs.length === 0)) {
+    // Don't render section if blogs are disabled or no blogs are available after loading
+    if (!blogsEnabled) {
+        return null;
+    }
+
+    if (isLoading) {
+        return (
+            <section className="py-24 bg-stone-50">
+                <div className="max-w-[1600px] mx-auto px-6 md:px-12">
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+                        <div className="max-w-xl space-y-4">
+                            <Skeleton className="h-4 w-32 bg-stone-200" />
+                            <Skeleton className="h-10 w-64 bg-stone-200" />
+                            <Skeleton className="h-20 w-full bg-stone-200" />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {[1, 2, 3].map((i) => (
+                            <div key={i} className="flex flex-col gap-4">
+                                <Skeleton className="aspect-[4/3] w-full rounded-2xl bg-stone-200" />
+                                <Skeleton className="h-6 w-3/4 bg-stone-200" />
+                                <Skeleton className="h-4 w-1/2 bg-stone-200" />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+
+    if (blogs.length === 0) {
         return null;
     }
 

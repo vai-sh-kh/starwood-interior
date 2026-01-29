@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
 import { toast } from "sonner";
+import { updateSettingClient } from "@/lib/api/client/settings";
 
 interface BlogsToggleProps {
   initialValue: boolean;
@@ -34,20 +35,10 @@ export default function BlogsToggle({ initialValue }: BlogsToggleProps) {
   const handleToggle = async (checked: boolean) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/settings", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          key: "blogs_enabled",
-          value: checked,
-        }),
-      });
+      const { error } = await updateSettingClient("blogs_enabled", checked);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update setting");
+      if (error) {
+        throw new Error(error.message || "Failed to update setting");
       }
 
       setEnabled(checked);

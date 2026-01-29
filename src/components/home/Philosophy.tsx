@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 
 export default function Philosophy() {
     return (

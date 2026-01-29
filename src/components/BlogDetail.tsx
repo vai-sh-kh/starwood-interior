@@ -1,16 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { useState, useEffect } from "react";
-import { Inter } from "next/font/google";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: 'swap',
-});
+// Font Inter is inherited from RootLayout
 
 interface BlogPost {
   id: string;
@@ -105,7 +99,7 @@ export default function BlogDetail({
   };
 
   return (
-    <div className={`${inter.variable} font-sans antialiased text-gray-900 bg-white selection:bg-gray-100 selection:text-black`}>
+    <div className={`font-sans antialiased text-gray-900 bg-white selection:bg-gray-100 selection:text-black`}>
 
       <main className="max-w-[1000px] mx-auto px-6 pt-32 pb-24">
 

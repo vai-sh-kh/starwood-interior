@@ -5,25 +5,18 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Blog, BlogCategory } from "@/lib/supabase/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Playfair_Display, Inter } from "next/font/google";
 import { BlogCard } from "@/components/ui/BlogCard";
 
-// Initialize fonts
-const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-playfair" });
-const inter = Inter({ subsets: ["latin"], weight: ["300", "400", "500"], variable: "--font-inter" });
+// Fonts are inherited from RootLayout
 
 type BlogWithCategory = Blog & { blog_categories: BlogCategory | null };
 
 
 
 
-const ITEMS_PER_PAGE = 9;
+import { getBlogs } from "@/lib/api/client/blogs";
 
-interface BlogsResponse {
-  blogs: BlogWithCategory[];
-  hasMore: boolean;
-  total: number;
-}
+const ITEMS_PER_PAGE = 9;
 
 export default function Blogs() {
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -82,15 +75,11 @@ export default function Blogs() {
     else setIsLoading(true);
 
     try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: ITEMS_PER_PAGE.toString(),
+      const data = await getBlogs({
+        page,
+        limit: ITEMS_PER_PAGE,
         category: categoryId,
       });
-
-      const response = await fetch(`/api/blogs?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch blogs");
-      const data: BlogsResponse = await response.json();
 
       setBlogs((prev) => (append ? [...prev, ...data.blogs] : data.blogs));
       setHasMore(data.hasMore);
@@ -126,7 +115,7 @@ export default function Blogs() {
 
 
   return (
-    <div className={`${playfair.variable} ${inter.variable} font-sans min-h-screen bg-white text-[#1a1a1a] selection:bg-[#d4cdc3] selection:text-[#1a1a1a]`}>
+    <div className={`font-sans min-h-screen bg-white text-[#1a1a1a] selection:bg-[#d4cdc3] selection:text-[#1a1a1a]`}>
 
       <main className="max-w-[1600px] mx-auto px-6 pt-12 pb-24">
 

@@ -1,9 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/static'
 import { SERVICES_DATA } from '@/lib/services-data'
+
+export const dynamic = "force-static";
 
 export default async function sitemap() {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://starwoodinteriors.com'
-    const supabase = await createClient()
+    const supabase = createStaticClient()
 
     // Fetch Blogs
     const { data: blogs } = await supabase

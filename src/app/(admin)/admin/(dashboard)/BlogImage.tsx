@@ -2,7 +2,7 @@
 
 import { FileText } from "lucide-react";
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 
 interface BlogImageProps {
   src: string | null;

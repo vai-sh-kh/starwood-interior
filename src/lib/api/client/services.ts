@@ -1,10 +1,23 @@
-import { NextResponse } from "next/server";
 import { SERVICES_DATA } from "@/lib/services-data";
 
-export async function GET(request: Request) {
-    const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "9");
+export interface ServicesResponse {
+    services: any[];
+    hasMore: boolean;
+    total: number;
+    page: number;
+    limit: number;
+}
+
+export interface FetchServicesParams {
+    page?: number;
+    limit?: number;
+}
+
+export async function getServices({
+    page = 1,
+    limit = 9
+}: FetchServicesParams): Promise<ServicesResponse> {
+    // Simulate async network delay if needed, but not necessary for static client logic
 
     const start = (page - 1) * limit;
     const end = start + limit;
@@ -15,18 +28,19 @@ export async function GET(request: Request) {
         slug: service.slug,
         image: service.listingImage,
         description: service.listingDescription,
-        created_at: new Date().toISOString(),
+        created_at: new Date().toISOString(), // Mock dates as per original API
         updated_at: new Date().toISOString(),
         category_id: null,
         status: 'published'
     }));
+
     const hasMore = end < SERVICES_DATA.length;
 
-    return NextResponse.json({
+    return {
         services: paginatedServices,
         hasMore,
         total: SERVICES_DATA.length,
         page,
         limit
-    });
+    };
 }

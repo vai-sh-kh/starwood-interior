@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import { TESTIMONIALS } from "@/lib/constants";
 import { IMAGES } from "@/lib/constants";

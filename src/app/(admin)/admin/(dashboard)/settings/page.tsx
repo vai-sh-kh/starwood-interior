@@ -1,12 +1,34 @@
-import { getBooleanSetting } from "@/lib/settings";
+"use client";
+import { useEffect, useState } from "react";
+import { getBooleanSettingClient } from "@/lib/api/client/settings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings } from "lucide-react";
 import ProjectsToggle from "../ProjectsToggle";
 import BlogsToggle from "../BlogsToggle";
 
-export default async function SettingsPage() {
-  const projectsEnabled = await getBooleanSetting("projects_enabled", true);
-  const blogsEnabled = await getBooleanSetting("blogs_enabled", true);
+export default function SettingsPage() {
+  const [loading, setLoading] = useState(true);
+  const [projectsEnabled, setProjectsEnabled] = useState(true);
+  const [blogsEnabled, setBlogsEnabled] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const p = await getBooleanSettingClient("projects_enabled", true);
+      const b = await getBooleanSettingClient("blogs_enabled", true);
+      setProjectsEnabled(p);
+      setBlogsEnabled(b);
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -34,7 +56,7 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-     
+
     </div>
   );
 }

@@ -2,20 +2,14 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProjectWithCategory } from "@/lib/supabase/types";
 
-const ITEMS_PER_PAGE = 9;
+import { getProjects } from "@/lib/api/client/projects";
 
-interface ProjectsResponse {
-    projects: ProjectWithCategory[];
-    hasMore: boolean;
-    total: number;
-    page: number;
-    limit: number;
-}
+const ITEMS_PER_PAGE = 9;
 
 export default function Projects() {
     const sectionRef = useRef<HTMLElement>(null);
@@ -40,14 +34,10 @@ export default function Projects() {
             }
 
             try {
-                const response = await fetch(
-                    `/api/projects?page=${page}&limit=${ITEMS_PER_PAGE}`
-                );
-                if (!response.ok) {
-                    throw new Error("Failed to fetch projects");
-                }
-
-                const data: ProjectsResponse = await response.json();
+                const data = await getProjects({
+                    page,
+                    limit: ITEMS_PER_PAGE
+                });
 
                 if (append) {
                     setProjects((prev) => [...prev, ...data.projects]);

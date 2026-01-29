@@ -1,5 +1,5 @@
 import { COMPANY_INFO } from "@/lib/constants/company";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 
 export default function ContactMap() {
     return (

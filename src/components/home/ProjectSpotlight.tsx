@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { ArrowRight } from "lucide-react";
 import { motion, useInView, useSpring, useMotionValue } from "framer-motion";
 import { useEffect, useRef } from "react";

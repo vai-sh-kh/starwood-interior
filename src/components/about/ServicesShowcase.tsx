@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import Link from "next/link";
 import { ArrowRightIcon } from "lucide-react";
 import { SERVICES_DATA } from "@/lib/services-data";

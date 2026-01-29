@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { SERVICES_DATA } from "@/lib/services-data";
 
 const slugs = [

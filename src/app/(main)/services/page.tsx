@@ -1,13 +1,15 @@
-"use client";
-
 import type { Metadata } from "next";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import Link from "next/link";
-import { useState } from "react";
 import ServiceHeader from "@/components/services/ServiceHeader";
 import { ArrowRightIcon } from "lucide-react";
 import { SERVICES_DATA } from "@/lib/services-data";
 import CTASection from "@/components/home/CTASection";
+
+export const metadata: Metadata = {
+  title: "Our Expertise | Services - Starwood Interiors",
+  description: "Explore our comprehensive interior design services including residential, commercial, 3D rendering, and joinery solutions.",
+};
 
 export default function ExpertisePage() {
 

@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { createClient } from "@/lib/supabase/client";
+import { useEffect, useState } from "react";
 import {
   FileText,
   FolderKanban,
@@ -10,80 +13,87 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import RecentLeadItem from "./RecentLeadItem";
 import QuickActionsWidget from "./QuickActionsWidget";
 import BlogImage from "./BlogImage";
 
-async function getStats() {
-  const supabase = await createClient();
+export default function DashboardPage() {
+  const [stats, setStats] = useState({
+    blogs: 0,
+    projects: 0,
+    categories: 0,
+    leads: 0,
+  });
+  const [recentBlogs, setRecentBlogs] = useState<any[]>([]);
+  const [recentLeads, setRecentLeads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [blogsResult, projectsResult, categoriesResult, leadsResult] =
-    await Promise.all([
-      supabase.from("blogs").select("id", { count: "exact", head: true }),
-      supabase.from("projects").select("id", { count: "exact", head: true }),
-      supabase
-        .from("blog_categories")
-        .select("id", { count: "exact", head: true }),
-      supabase.from("leads").select("id", { count: "exact", head: true }),
-    ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      const supabase = createClient();
 
-  return {
-    blogs: blogsResult.count ?? 0,
-    projects: projectsResult.count ?? 0,
-    categories: categoriesResult.count ?? 0,
-    leads: leadsResult.count ?? 0,
-  };
-}
+      const [blogsResult, projectsResult, categoriesResult, leadsResult] =
+        await Promise.all([
+          supabase.from("blogs").select("id", { count: "exact", head: true }),
+          supabase.from("projects").select("id", { count: "exact", head: true }),
+          supabase
+            .from("blog_categories")
+            .select("id", { count: "exact", head: true }),
+          supabase.from("leads").select("id", { count: "exact", head: true }),
+        ]);
 
-async function getRecentBlogs() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("blogs")
-    .select("id, title, slug, image, created_at, author")
-    .order("created_at", { ascending: false })
-    .limit(7);
-  return data ?? [];
-}
+      setStats({
+        blogs: blogsResult.count ?? 0,
+        projects: projectsResult.count ?? 0,
+        categories: categoriesResult.count ?? 0,
+        leads: leadsResult.count ?? 0,
+      });
 
-async function getRecentLeads() {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("leads")
-    .select("id, name, email, phone, created_at, status, avatar_color")
-    .order("created_at", { ascending: false })
-    .limit(4);
-  return data ?? [];
-}
+      const { data: blogsData } = await supabase
+        .from("blogs")
+        .select("id, title, slug, image, created_at, author")
+        .order("created_at", { ascending: false })
+        .limit(7);
+      setRecentBlogs(blogsData ?? []);
 
-function formatDate(dateString: string | null) {
-  if (!dateString) return "Unknown";
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInMs = now.getTime() - date.getTime();
-  const diffInHours = diffInMs / (1000 * 60 * 60);
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+      const { data: leadsData } = await supabase
+        .from("leads")
+        .select("id, name, email, phone, created_at, status, avatar_color")
+        .order("created_at", { ascending: false })
+        .limit(4);
+      setRecentLeads(leadsData ?? []);
 
-  if (diffInHours < 1) {
-    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-    return diffInMinutes < 1 ? "Just now" : `${diffInMinutes}m ago`;
-  } else if (diffInHours < 24) {
-    return `${Math.floor(diffInHours)}h ago`;
-  } else if (diffInDays < 7) {
-    return `${Math.floor(diffInDays)}d ago`;
-  } else {
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-    });
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  function formatDate(dateString: string | null) {
+    if (!dateString) return "Unknown";
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInHours = diffInMs / (1000 * 60 * 60);
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+      return diffInMinutes < 1 ? "Just now" : `${diffInMinutes}m ago`;
+    } else if (diffInHours < 24) {
+      return `${Math.floor(diffInHours)}h ago`;
+    } else if (diffInDays < 7) {
+      return `${Math.floor(diffInDays)}d ago`;
+    } else {
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
+      });
+    }
   }
-}
-
-export default async function DashboardPage() {
-  const stats = await getStats();
-  const recentBlogs = await getRecentBlogs();
-  const recentLeads = await getRecentLeads();
 
   const statCards = [
     {
@@ -115,6 +125,94 @@ export default async function DashboardPage() {
       color: "bg-orange-500",
     },
   ];
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-7">
+        {/* Header Skeleton */}
+        <div>
+          <Skeleton className="h-9 w-48 mb-2" />
+          <Skeleton className="h-5 w-96" />
+        </div>
+
+        {/* Stats Grid Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="border-0 shadow-sm">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Skeleton className="h-4 w-24 mb-2" />
+                    <Skeleton className="h-9 w-12" />
+                  </div>
+                  <Skeleton className="h-12 w-12 rounded-xl" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Recent Activity Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Recent Blogs Skeleton */}
+          <Card className="border-0 shadow-sm flex flex-col h-full">
+            <CardHeader className="pb-3 border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                  <Skeleton className="h-6 w-32" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="p-2.5 space-y-2">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-start gap-3.5 p-2.5 border-b border-gray-100 last:border-0">
+                    <Skeleton className="h-12 w-16 rounded-md" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <div className="flex gap-2">
+                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Leads Skeleton */}
+          <Card className="border-0 shadow-sm flex flex-col h-full">
+            <CardHeader className="pb-3 border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-4 rounded-full" />
+                  <Skeleton className="h-6 w-32" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </CardHeader>
+            <CardContent className="flex-1 p-0">
+              <div className="p-4 space-y-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-4 border-b border-gray-100 last:border-0 pb-4 last:pb-0">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                    <Skeleton className="h-6 w-16 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className=" flex flex-col gap-7">
@@ -177,11 +275,10 @@ export default async function DashboardPage() {
                   <Link
                     key={blog.id}
                     href={`/admin/blogs`}
-                    className={`group flex items-start gap-3.5 p-2.5 hover:bg-gray-50 transition-colors ${
-                      index < recentBlogs.length - 1
-                        ? "border-b border-gray-200"
-                        : ""
-                    }`}
+                    className={`group flex items-start gap-3.5 p-2.5 hover:bg-gray-50 transition-colors ${index < recentBlogs.length - 1
+                      ? "border-b border-gray-200"
+                      : ""
+                      }`}
                   >
                     <BlogImage src={blog.image} alt={blog.title} />
                     <div className="flex-1 min-w-0">

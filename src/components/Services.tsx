@@ -2,19 +2,13 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ServiceWithCategory } from "@/lib/supabase/types";
 
-const ITEMS_PER_PAGE = 9;
+import { getServices } from "@/lib/api/client/services";
 
-interface ServicesResponse {
-  services: ServiceWithCategory[];
-  hasMore: boolean;
-  total: number;
-  page: number;
-  limit: number;
-}
+const ITEMS_PER_PAGE = 9;
 
 export default function Services() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -40,14 +34,10 @@ export default function Services() {
       }
 
       try {
-        const response = await fetch(
-          `/api/services?page=${page}&limit=${ITEMS_PER_PAGE}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch services");
-        }
-
-        const data: ServicesResponse = await response.json();
+        const data = await getServices({
+          page,
+          limit: ITEMS_PER_PAGE
+        });
 
         if (append) {
           setServices((prev) => [...prev, ...data.services]);
@@ -241,8 +231,8 @@ export default function Services() {
                 key={service.id}
                 href={`/services/${service.slug || service.id}`}
                 className={`group relative overflow-hidden rounded-lg aspect-4/5 block transition-all duration-1000 ease-out bg-stone-200 ${isVisible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-12"
+                  ? "opacity-100 translate-y-0"
+                  : "opacity-0 translate-y-12"
                   }`}
                 style={{ transitionDelay: `${index * 100}ms` }}
               >

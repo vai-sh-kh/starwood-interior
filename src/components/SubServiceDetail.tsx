@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/SkeletonImage";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import SubServiceShareButton from "./SubServiceShareButton";
